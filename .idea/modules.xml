@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/AOP_Musikverwaltung.iml" filepath="$PROJECT_DIR$/.idea/AOP_Musikverwaltung.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AOP_Musikverwaltung.iml" filepath="$PROJECT_DIR$/AOP_Musikverwaltung.iml" />
     </modules>
   </component>
 </project>
