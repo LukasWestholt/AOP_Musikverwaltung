@@ -2,7 +2,9 @@
 
 ## JavaFX 18.0.1 SDK
 
-Run with Java VM Options: --module-path lib/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml
+Run with Java VM Options: 
+- Windows: `--module-path lib/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml`
+- Linux: `--module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml`
 
 ## Aufgabe
 Erstellen Sie ein Programm, welches Musikstücke verwaltet. Hierbei soll zu jedem
