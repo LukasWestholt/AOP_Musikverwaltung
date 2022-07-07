@@ -1,26 +1,29 @@
 package musikverwaltung;
 
 import javafx.application.Application;
+import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class Musikverwaltung extends Application {
-
-    @Override
-    public void start(Stage stage) {
-        String javaVersion = System.getProperty("java.version");
-        String javafxVersion = System.getProperty("javafx.version");
-        Label l = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        Scene scene = new Scene(new StackPane(l), 640, 480);
-        stage.setScene(scene);
-        stage.show();
-    }
+    ScreenController screenController;
 
     public static void main(String[] args) {
         System.out.println("Programm Startpunkt");
-        launch();
+        launch(args);
     }
 
+    @Override
+    public void start(Stage stage) throws Exception {
+        stage.setTitle("Musikverwaltung");
+        Scene scene = new Scene(new Group(), 650, 450);
+        stage.setScene(scene);
+        stage.show();
+
+        screenController = new ScreenController(stage.getScene());
+        screenController.addScreen("hello", new HelloView(scene.widthProperty(), scene.heightProperty()).get());
+        screenController.addScreen("musikverwaltung", new MainView(scene.widthProperty(), scene.heightProperty()).get());
+        screenController.activate("hello");
+        screenController.activate("musikverwaltung", true, 1);
+    }
 }
