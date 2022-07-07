@@ -103,8 +103,6 @@ public class MainView extends GenericView {
         genreCol.setCellValueFactory(cellData -> new SimpleStringProperty(
                 cellData.getValue().bekommeHighlighted(cellData.getValue().bekommeGenre(), textSearchField.getText())
         ));
-        /*genreCol.setCellValueFactory(
-                new PropertyValueFactory<>("bekommeGenre"));*/
         genreCol.setCellFactory(highlightedTableCell());
 
         TableView<Musikstueck> table = new TableView<>();
