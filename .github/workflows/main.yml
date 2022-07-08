@@ -1,0 +1,41 @@
+name: CI Java Test
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Checkstyle and compile
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v3
+    #- uses: dbelyaev/action-checkstyle@v0.6.1
+      # https://github.com/dbelyaev/action-checkstyle
+      #with:
+       # github_token: ${{ secrets.github_token }}
+        #reporter: github-pr-review
+        #level: warning
+    - uses: actions/setup-java@v3
+      # https://github.com/actions/setup-java
+      with:
+        distribution: 'temurin' # See 'Supported distributions' for available options
+        java-version: '17'
+    - run: |
+        find -name "*.java" > sources.txt
+        mkdir bin
+        javac -d bin --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml -encoding utf8 @sources.txt
+    # java --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml -Dfile.encoding=UTF-8 -classpath "bin" -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
+    - name: Run check style
+      uses: nikitasavinov/checkstyle-action@0.6.0
+      # https://github.com/nikitasavinov/checkstyle-action
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        reporter: 'github-pr-check'
+        tool_name: 'checkstyle'
+        level: 'error'
