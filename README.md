@@ -1,10 +1,44 @@
 # Musikverwaltung
 
-## JavaFX 18.0.1 SDK
+- This project uses JavaFX 18.0.1 SDK.
+- I use a newer JavaJDK-version: Oracle OpenJDK version 17.0.2
 
-Run with Java VM Options: 
-- Windows: `--module-path lib/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml`
-- Linux: `--module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml`
+## Contribution
+- hami
+- Zuko
+- Lukas
+
+## TODO
+- ...
+
+## Compile
+
+Compile with Java VM Options:
+
+Command for Windows:
+
+    dir /s /B *.java > sources.txt
+    mkdir bin
+    javac -d bin --module-path lib/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml -encoding utf8 @sources.txt
+
+Command for Linux:
+
+    find -name "*.java" > sources.txt
+    mkdir bin
+    javac -d bin --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml -encoding utf8 @sources.txt
+
+## Run
+
+Run with Java VM Options:
+
+Command for Windows:
+
+    java --module-path lib/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml -Dfile.encoding=UTF-8 -classpath "bin" -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
+
+Command for Linux:
+
+    java --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml -Dfile.encoding=UTF-8 -classpath "bin" -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
+
 
 ## Aufgabe
 Erstellen Sie ein Programm, welches Musikstücke verwaltet. Hierbei soll zu jedem
