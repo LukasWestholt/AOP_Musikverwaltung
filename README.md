@@ -9,7 +9,9 @@
 - Lukas
 
 ## TODO
-- ...
+- Add, edit and delete Musikstueck.
+- Add class Playlist and show it.
+- "Verwaltungsmodus" and "Usermodus"
 
 ## Compile
 
