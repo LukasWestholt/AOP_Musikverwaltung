@@ -12,6 +12,13 @@
 - Add, edit and delete Musikstueck.
 - Add class Playlist and show it.
 - "Verwaltungsmodus" and "Usermodus"
+- Musicvideo play? or open yt link?
+- ...
+
+## How to use in IDE
+
+- Eclipse: https://stackoverflow.com/a/52156678/8980073
+- JetBrains Idea: just clone
 
 ## Compile
 
