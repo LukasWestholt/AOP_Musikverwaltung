@@ -26,7 +26,7 @@ public class MainView extends GenericView {
             new Musikstueck("Atemlos", "Helene Fischer", "Schlager")
     );
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
-    public static final String HIGHLIGHT_END = "<HIGHLIGHT_START>";
+    public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
     public MainView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         super(width, height);
@@ -89,19 +89,19 @@ public class MainView extends GenericView {
 
         TableColumn<Musikstueck, String> titleCol = new TableColumn<>("Titel");
         titleCol.setCellValueFactory(cellData -> new SimpleStringProperty(
-                cellData.getValue().bekommeHighlighted(cellData.getValue().bekommeTitel(), textSearchField.getText())
+                cellData.getValue().bekommeHighlightedTitel(textSearchField.getText())
         ));
         titleCol.setCellFactory(highlightedTableCell());
 
         TableColumn<Musikstueck, String> interpretCol = new TableColumn<>("Interpret");
         interpretCol.setCellValueFactory(cellData -> new SimpleStringProperty(
-                cellData.getValue().bekommeHighlighted(cellData.getValue().bekommeInterpret(), textSearchField.getText())
+                cellData.getValue().bekommeHighlightedInterpret(textSearchField.getText())
         ));
         interpretCol.setCellFactory(highlightedTableCell());
 
         TableColumn<Musikstueck, String> genreCol = new TableColumn<>("Genre");
         genreCol.setCellValueFactory(cellData -> new SimpleStringProperty(
-                cellData.getValue().bekommeHighlighted(cellData.getValue().bekommeGenre(), textSearchField.getText())
+                cellData.getValue().bekommeHighlightedGenre(textSearchField.getText())
         ));
         genreCol.setCellFactory(highlightedTableCell());
 
@@ -111,12 +111,10 @@ public class MainView extends GenericView {
         interpretCol.prefWidthProperty().bind(table.widthProperty().divide(3));
         genreCol.prefWidthProperty().bind(table.widthProperty().divide(3));
 
-        table.setEditable(true);
         table.setItems(flMusikstueck); //Set the table's items using the filtered list
         table.getColumns().add(titleCol);
         table.getColumns().add(interpretCol);
         table.getColumns().add(genreCol);
-
 
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
@@ -182,12 +180,5 @@ public class MainView extends GenericView {
                 };
             }
         };
-    }
-
-    public void setSceneHeight(ReadOnlyDoubleProperty height) {
-        scene_height = height;
-    }
-    public void setSceneWidth(ReadOnlyDoubleProperty width) {
-        scene_width = width;
     }
 }

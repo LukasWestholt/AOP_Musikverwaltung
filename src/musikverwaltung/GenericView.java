@@ -12,7 +12,15 @@ public class GenericView {
     public GenericView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         scene_width = width;
         scene_height = height;
+
         stackPane.prefWidthProperty().bind(width);
         stackPane.prefHeightProperty().bind(height);
+    }
+
+    public void setSceneHeight(ReadOnlyDoubleProperty height) {
+        scene_height = height;
+    }
+    public void setSceneWidth(ReadOnlyDoubleProperty width) {
+        scene_width = width;
     }
 }

@@ -2,6 +2,7 @@
 
 - This project uses JavaFX 18.0.1 SDK.
 - I use a newer JavaJDK-version: Oracle OpenJDK version 17.0.2
+- 16.08. 24 Uhr Abgabe
 
 ## Contribution
 - hami
@@ -9,10 +10,16 @@
 - Lukas
 
 ## TODO
-- Add, edit and delete Musikstueck.
 - Add class Playlist and show it.
+- Add and delete Musikstueck in playlist.
 - "Verwaltungsmodus" and "Usermodus"
 - Musicvideo play? or open yt link?
+- Metadaten aus den Musikfiles auslesen
+- Projekt in der 106/107 (PC-Pool) lauffähig? (Java Version?)
+- settings: paths for media files
+- Edit Musikstueck (with setupEditableStringColumn) in adminMode
+and save it in settings file or in metadata.
+- Credits field for "Musik: https://www.musicfox.com/"
 
 ## How to use in IDE
 

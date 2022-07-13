@@ -61,7 +61,43 @@ public class Musikstueck {
                 || genre.get().toLowerCase().contains(searchKey.toLowerCase().trim());
     }
 
-    public String bekommeHighlighted(String text, String searchText) {
+    /**
+     * This method adds to matching substrings of title a prefix and suffix.
+     * If no match is found the title is returned without modification.
+     * @param searchTitle Text like "Atem"
+     * @return Highlighted title like "<HIGHLIGHT_START>Atem<HIGHLIGHT_END>los"
+     */
+    public String bekommeHighlightedTitel(String searchTitle) {
+        return bekommeHighlighted(bekommeTitel(), searchTitle);
+    }
+    /**
+     * This method adds to matching substrings of interpret a prefix and suffix.
+     * If no match is found the interpret is returned without modification.
+     * @param searchInterpret Text like "Helene"
+     * @return Highlighted interpret like "<HIGHLIGHT_START>Helene<HIGHLIGHT_END> Fischer"
+     */
+    public String bekommeHighlightedInterpret(String searchInterpret) {
+        return bekommeHighlighted(bekommeInterpret(), searchInterpret);
+    }
+    /**
+     * This method adds to matching substrings of genre a prefix and suffix.
+     * If no match is found the genre is returned without modification.
+     * @param searchText Text like "ager"
+     * @return Highlighted genre like "Schl<HIGHLIGHT_START>ager<HIGHLIGHT_END>"
+     */
+    public String bekommeHighlightedGenre(String searchText) {
+        return bekommeHighlighted(bekommeGenre(), searchText);
+    }
+
+
+    /**
+     * This method adds to matching substrings a prefix and suffix.
+     * If no match is found the text is returned without modification.
+     * @param text Text like "Helene Fischer"
+     * @param searchText Text like "Helene"
+     * @return Highlighted text like "<HIGHLIGHT_START>Helene<HIGHLIGHT_END> Fischer"
+     */
+    private static String bekommeHighlighted(String text, String searchText) {
         if (searchText.length() > 3) {
             searchText = searchText.toLowerCase();
             StringBuilder new_titel = new StringBuilder();
