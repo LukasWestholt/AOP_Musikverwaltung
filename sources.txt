@@ -1,6 +1,0 @@
-C:\Programmierung\IdeaProjects\AOP_Musikverwaltung\src\musikverwaltung\GenericView.java
-C:\Programmierung\IdeaProjects\AOP_Musikverwaltung\src\musikverwaltung\HelloView.java
-C:\Programmierung\IdeaProjects\AOP_Musikverwaltung\src\musikverwaltung\MainView.java
-C:\Programmierung\IdeaProjects\AOP_Musikverwaltung\src\musikverwaltung\Musikstueck.java
-C:\Programmierung\IdeaProjects\AOP_Musikverwaltung\src\musikverwaltung\Musikverwaltung.java
-C:\Programmierung\IdeaProjects\AOP_Musikverwaltung\src\musikverwaltung\ScreenController.java
