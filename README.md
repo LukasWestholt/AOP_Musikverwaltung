@@ -13,7 +13,6 @@
 - Add class Playlist and show it.
 - "Verwaltungsmodus" and "Usermodus"
 - Musicvideo play? or open yt link?
-- ...
 
 ## How to use in IDE
 
