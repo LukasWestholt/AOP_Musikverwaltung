@@ -34,13 +34,13 @@ Command for Windows:
 
     dir /s /B *.java > sources.txt
     mkdir bin
-    javac -d bin --module-path lib\openjfx-18.0.1_windows-x64_bin-sdk\javafx-sdk-18.0.1\lib --add-modules javafx.controls,javafx.media,javafx.fxml -encoding utf8 @sources.txt
+    javac -d bin --module-path lib\openjfx-18.0.1_windows-x64_bin-sdk\javafx-sdk-18.0.1\lib --add-modules javafx.controls,javafx.media -encoding utf8 @sources.txt
 
 Command for Linux:
 
     find -name "*.java" > sources.txt
     mkdir bin
-    javac -d bin --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml -encoding utf8 @sources.txt
+    javac -d bin --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media -encoding utf8 @sources.txt
 
 ## Run
 
@@ -48,11 +48,11 @@ Run with Java VM Options:
 
 Command for Windows:
 
-java --module-path lib/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.media,javafx.fxml -Dfile.encoding=UTF-8 -classpath "bin" -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
+    java --module-path lib/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media -classpath "bin" -Dfile.encoding=UTF-8 -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
 
 Command for Linux:
 
-    java --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules=javafx.controls,javafx.fxml -Dfile.encoding=UTF-8 -classpath "bin" -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
+    java --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media -classpath "bin" -Dfile.encoding=UTF-8 -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
 
 
 ## Aufgabe
