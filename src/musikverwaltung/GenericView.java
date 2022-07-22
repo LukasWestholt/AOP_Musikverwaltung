@@ -5,22 +5,20 @@ import javafx.scene.layout.StackPane;
 
 public class GenericView {
 
-    StackPane stackPane = new StackPane();
-    ReadOnlyDoubleProperty scene_width;
-    ReadOnlyDoubleProperty scene_height;
+    final StackPane stackPane = new StackPane();
 
-    public GenericView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
-        scene_width = width;
-        scene_height = height;
+    final ScreenController screenController;
 
+    public GenericView(ScreenController sc) {
+        screenController = sc;
+    }
+
+    public StackPane get() {
+        return stackPane;
+    }
+
+    public void bindSceneDimensions(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         stackPane.prefWidthProperty().bind(width);
         stackPane.prefHeightProperty().bind(height);
-    }
-
-    public void setSceneHeight(ReadOnlyDoubleProperty height) {
-        scene_height = height;
-    }
-    public void setSceneWidth(ReadOnlyDoubleProperty width) {
-        scene_width = width;
     }
 }

@@ -1,6 +1,5 @@
 package musikverwaltung;
 
-import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,8 +27,8 @@ public class MainView extends GenericView {
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
-    public MainView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
-        super(width, height);
+    public MainView(ScreenController sc) {
+        super(sc);
     }
 
     // https://stackoverflow.com/a/47560767/8980073
@@ -84,7 +83,13 @@ public class MainView extends GenericView {
             }
         });
 
-        HBox searchHBox = new HBox(choiceBox, textSearchField);//Add choiceBox and textField to hBox
+        Button musicPlayerButton = new Button("Player");
+        musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
+        musicPlayerButton.setOnAction(e -> {
+            actionLabel.setText("Starte Player");
+            screenController.activateWindow("songseite", true, 200, 0);
+        });
+        HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton);//Add choiceBox and textField to hBox
         searchHBox.setAlignment(Pos.CENTER);//Center HBox
 
         TableColumn<Musikstueck, String> titleCol = new TableColumn<>("Titel");
@@ -122,8 +127,8 @@ public class MainView extends GenericView {
         vbox.getChildren().addAll(welcomeLabel, menu, table, searchHBox);
 
         Rectangle rectangle = new Rectangle();
-        rectangle.widthProperty().bind(scene_width);
-        rectangle.heightProperty().bind(scene_height);
+        rectangle.widthProperty().bind(stackPane.widthProperty());
+        rectangle.heightProperty().bind(stackPane.heightProperty());
         rectangle.setFill(new LinearGradient(
                 0, 0, 1, 1, true, //sizing
                 CycleMethod.NO_CYCLE, //cycling

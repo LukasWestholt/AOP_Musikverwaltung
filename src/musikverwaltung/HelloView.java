@@ -6,8 +6,8 @@ import javafx.scene.layout.StackPane;
 
 public class HelloView extends GenericView {
 
-    public HelloView(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
-        super(width, height);
+    public HelloView(ScreenController sc) {
+        super(sc);
     }
 
     public StackPane get() {

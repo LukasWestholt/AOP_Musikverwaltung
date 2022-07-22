@@ -20,12 +20,11 @@ public class Musikverwaltung extends Application {
         stage.setScene(scene);
         stage.show();
 
-        screenController = new ScreenController(stage.getScene());
-        screenController.addScreen("hello", new HelloView(scene.widthProperty(), scene.heightProperty()).get());
-        //screenController.addScreen("musikverwaltung", new MainView(scene.widthProperty(), scene.heightProperty()).get());
-        screenController.addScreen("songseite", new SongView(scene.widthProperty(), scene.heightProperty()).get());
+        screenController = new ScreenController(stage);
+        screenController.addScreen("hello", new HelloView(screenController));
+        screenController.addScreen("musikverwaltung", new MainView(screenController));
+        screenController.addScreen("songseite", new SongView(screenController));
         screenController.activate("hello");
-        //screenController.activate("musikverwaltung", true, 1);
-        screenController.activate("songseite", true, 1);
+        screenController.activate("musikverwaltung", true, 1);
     }
 }
