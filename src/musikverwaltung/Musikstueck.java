@@ -9,11 +9,13 @@ public class Musikstueck {
     private final SimpleStringProperty titel = new SimpleStringProperty();
     private final SimpleStringProperty interpret = new SimpleStringProperty();
     private final SimpleStringProperty genre = new SimpleStringProperty();
+    private final SimpleStringProperty path = new SimpleStringProperty();
 
-    public Musikstueck(String titel, String interpret, String genre) {
+    public Musikstueck(String titel, String interpret, String genre, String path) {
         this.titel.setValue(titel);
         this.interpret.setValue(interpret);
         this.genre.setValue(genre);
+        this.path.setValue(path);
     }
 
     public String bekommeTitel() {
@@ -49,6 +51,16 @@ public class Musikstueck {
     public void setzeGenre(String genre) {
         this.genre.set(genre);
     }
+    
+     public String getpath() {
+        return path.get();
+    }
+    
+    public void setpath(String path) {
+        this.path.set(path);
+    }
+    
+   
 
     public SimpleStringProperty bekommeGenreProperty()
     {

@@ -1,0 +1,7 @@
+C:\Users\holge\eclipse-workspace\AOP_Musikverwaltung\src\musikverwaltung\GenericView.java
+C:\Users\holge\eclipse-workspace\AOP_Musikverwaltung\src\musikverwaltung\HelloView.java
+C:\Users\holge\eclipse-workspace\AOP_Musikverwaltung\src\musikverwaltung\MainView.java
+C:\Users\holge\eclipse-workspace\AOP_Musikverwaltung\src\musikverwaltung\Musikstueck.java
+C:\Users\holge\eclipse-workspace\AOP_Musikverwaltung\src\musikverwaltung\Musikverwaltung.java
+C:\Users\holge\eclipse-workspace\AOP_Musikverwaltung\src\musikverwaltung\ScreenController.java
+C:\Users\holge\eclipse-workspace\AOP_Musikverwaltung\src\musikverwaltung\SongView.java

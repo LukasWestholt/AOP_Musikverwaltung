@@ -23,7 +23,7 @@ import javafx.util.Callback;
 public class MainView extends GenericView {
     private final ObservableList<Musikstueck> data
             = FXCollections.observableArrayList(
-            new Musikstueck("Atemlos", "Helene Fischer", "Schlager")
+            new Musikstueck("Atemlos", "Helene Fischer", "Schlager","-")
     );
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
