@@ -127,8 +127,8 @@ public class MainView extends GenericView {
         vbox.getChildren().addAll(welcomeLabel, menu, table, searchHBox);
 
         Rectangle rectangle = new Rectangle();
-        rectangle.widthProperty().bind(stackPane.widthProperty());
-        rectangle.heightProperty().bind(stackPane.heightProperty());
+        rectangle.widthProperty().bind(stackPane.prefWidthProperty());
+        rectangle.heightProperty().bind(stackPane.prefHeightProperty());
         rectangle.setFill(new LinearGradient(
                 0, 0, 1, 1, true, //sizing
                 CycleMethod.NO_CYCLE, //cycling

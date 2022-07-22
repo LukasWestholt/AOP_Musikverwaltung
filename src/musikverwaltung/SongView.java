@@ -62,8 +62,8 @@ public class SongView extends GenericView{
 		*/
 
 		viewer = new ImageView();
-		viewer.fitHeightProperty().bind(stackPane.heightProperty().divide(3));
-		viewer.fitWidthProperty().bind(stackPane.widthProperty().divide(2));
+		viewer.fitHeightProperty().bind(stackPane.prefHeightProperty().divide(3));
+		viewer.fitWidthProperty().bind(stackPane.prefWidthProperty().divide(2));
 		displayImage();
 		labelSongName = new Label(songName);
 		labelSongName.setFont(Font.font(50));
@@ -79,8 +79,8 @@ public class SongView extends GenericView{
 		player.setVolume(0);
 
 		ProgressBar pbar = new ProgressBar();
-		pbar.prefHeightProperty().bind(stackPane.heightProperty().divide(15));
-		pbar.prefWidthProperty().bind(stackPane.widthProperty().subtract(stackPane.widthProperty().divide(20)));;
+		pbar.prefHeightProperty().bind(stackPane.prefHeightProperty().divide(15));
+		pbar.prefWidthProperty().bind(stackPane.prefWidthProperty().subtract(stackPane.prefWidthProperty().divide(20)));;
 		pbar.setProgress(0);
 
 		songLengthListener = new ChangeListener<Duration>() {
@@ -144,32 +144,33 @@ public class SongView extends GenericView{
 	    });*/
 
 	    startStop = new Button("start");
-	    startStop.setShape(new Circle((stackPane.widthProperty().divide(5).get())));
-	    startStop.prefWidthProperty().bind(((stackPane.widthProperty().greaterThan(stackPane.heightProperty())).get() ? stackPane.heightProperty().divide(5) : stackPane.widthProperty().divide(5) ));
-	    startStop.prefHeightProperty().bind(((stackPane.widthProperty().greaterThan(stackPane.heightProperty())).get() ? stackPane.heightProperty().divide(5): stackPane.widthProperty().divide(5) ));
+		System.out.println(stackPane.prefWidthProperty().divide(5).get());
+		startStop.setShape(new Circle(stackPane.prefWidthProperty().divide(5).get()));
+	    startStop.prefWidthProperty().bind(((stackPane.prefWidthProperty().greaterThan(stackPane.prefHeightProperty())).get() ? stackPane.prefHeightProperty().divide(5) : stackPane.prefWidthProperty().divide(5) ));
+	    startStop.prefHeightProperty().bind(((stackPane.prefWidthProperty().greaterThan(stackPane.prefHeightProperty())).get() ? stackPane.prefHeightProperty().divide(5): stackPane.prefWidthProperty().divide(5) ));
 	    startStop.setOnAction(e -> startStopSong());
 
 	    Button skipforward = new Button("skip +");
-	    skipforward.prefWidthProperty().bind(stackPane.widthProperty().divide(9));
-	    skipforward.prefHeightProperty().bind(stackPane.heightProperty().divide(8));
+	    skipforward.prefWidthProperty().bind(stackPane.prefWidthProperty().divide(9));
+	    skipforward.prefHeightProperty().bind(stackPane.prefHeightProperty().divide(8));
 	    skipforward.setOnAction(e -> skipforwards());
 
 	    Button skipbackward = new Button("skip -");
 	    skipbackward.setOnAction(e -> skipbackwards());
-	    skipbackward.prefWidthProperty().bind(stackPane.widthProperty().divide(9));
-	    skipbackward.prefHeightProperty().bind(stackPane.heightProperty().divide(8));
+	    skipbackward.prefWidthProperty().bind(stackPane.prefWidthProperty().divide(9));
+	    skipbackward.prefHeightProperty().bind(stackPane.prefHeightProperty().divide(8));
 
 	    Button reset = new Button("reset");
 	    reset.setOnAction(e -> reset());
-	    reset.prefWidthProperty().bind(stackPane.widthProperty().divide(9));
-	    reset.prefHeightProperty().bind(stackPane.heightProperty().divide(8));
+	    reset.prefWidthProperty().bind(stackPane.prefWidthProperty().divide(9));
+	    reset.prefHeightProperty().bind(stackPane.prefHeightProperty().divide(8));
 
 	    Slider slider = new Slider(0, 1, 0);
-	    slider.prefWidthProperty().bind(stackPane.widthProperty().divide(30));
-	    slider.prefHeightProperty().bind(stackPane.heightProperty().divide(5));
+	    slider.prefWidthProperty().bind(stackPane.prefWidthProperty().divide(30));
+	    slider.prefHeightProperty().bind(stackPane.prefHeightProperty().divide(5));
 	    slider.setOrientation(Orientation.VERTICAL);
 
-       // slider.setPrefSize((stackPane.heightProperty().divide(5)).get(), (stackPane.widthProperty().divide(50)).get());
+       // slider.setPrefSize((stackPane.prefHeightProperty().divide(5)).get(), (stackPane.prefWidthProperty().divide(50)).get());
         slider.valueProperty().addListener((useless1, useless2, sliderValue) -> {
         	volume = sliderValue.doubleValue();
 			player.setVolume(volume);
@@ -186,18 +187,18 @@ public class SongView extends GenericView{
 		lowerHBox.setSpacing(5);
 		//lowerHBox.setStyle("-fx-background-color: #FFFA9F;");
 		//lowerHBox.setBackground(new Background(new BackgroundFill(Color.BEIGE, null, null)));
-		lowerHBox.maxHeightProperty().bind(stackPane.heightProperty().divide(3));
+		lowerHBox.maxHeightProperty().bind(stackPane.prefHeightProperty().divide(3));
 	    //vBox.setBackground(Color.web("#81c483"));
 		HBox middleHBox = new HBox(pbar);
 		middleHBox.setAlignment(Pos.BOTTOM_CENTER);
 		middleHBox.setSpacing(10);
 		middleHBox.setPrefHeight(200);
-		middleHBox.maxHeightProperty().bind(stackPane.heightProperty().divide(3));
+		middleHBox.maxHeightProperty().bind(stackPane.prefHeightProperty().divide(3));
 		//middleHBox.setStyle("-fx-background-color: #00FA9F;");
 
 		VBox upperVBox = new VBox(labelSongName, viewer);
 		upperVBox.setAlignment(Pos.TOP_CENTER);
-		upperVBox.maxHeightProperty().bind(stackPane.heightProperty().divide(3));
+		upperVBox.maxHeightProperty().bind(stackPane.prefHeightProperty().divide(3));
 		//upperVBox.setStyle("-fx-background-color: #00FA9F;");
 
 		stackPane.getChildren().add(lowerHBox);
