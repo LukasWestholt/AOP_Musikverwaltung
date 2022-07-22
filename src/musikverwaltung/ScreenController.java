@@ -116,9 +116,10 @@ public class ScreenController {
             double y = mainStage.getY();
             if (bounds.getMinX() + bounds.getWidth() < x + stage.getWidth() || bounds.getMinY() + bounds.getHeight() < y + stage.getHeight()) {
                 System.out.println("out of bounds");
+            } else {
+                stage.setX(x);
+                stage.setY(y);
             }
-            stage.setX(x);
-            stage.setY(y);
         }
         stage.show();
         stage.toFront();
