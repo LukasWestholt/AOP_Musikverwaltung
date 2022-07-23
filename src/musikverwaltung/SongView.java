@@ -44,9 +44,9 @@ public class SongView extends GenericView{
 	public SongView(ScreenController sc) {
 		super(sc);
 		playlist = FXCollections.observableArrayList(
-													 new Musikstueck("Fireflies", "OWL City", "Pop", ".\\media//song_test.m4a" ),
-													 new Musikstueck("Deep Thoughts", "Neffex", "Rap", ".\\media//deep_thoughts_neffex.mp3"),
-													 new Musikstueck("friendship forever", "?", "?", ".\\media//musicfox_friendship_forever.mp3")
+													 new Musikstueck("Fireflies", "OWL City", "Pop", new File(".\\media//song_test.m4a")),
+													 new Musikstueck("Deep Thoughts", "Neffex", "Rap", new File(".\\media//deep_thoughts_neffex.mp3")),
+													 new Musikstueck("friendship forever", "?", "?", new File(".\\media//musicfox_friendship_forever.mp3"))
 		);
 
 		songName = "noch kein Title";
@@ -71,7 +71,7 @@ public class SongView extends GenericView{
 
 		//was ist normal? variable mit 0 initilaisieren und dann einsetzen oder 0 einsetzen und später wenn variable einen nutzen hat diese einsetzen
 		//durch funktion ersetzen
-		File file = new File((playlist.get(0)).getpath());
+		File file = playlist.get(0).getPath();
 		currentSong = new Media(file.toURI().toString());
 		player = new MediaPlayer(currentSong);
 		player.setOnEndOfMedia(endOfSongAction);
@@ -80,15 +80,10 @@ public class SongView extends GenericView{
 
 		ProgressBar pbar = new ProgressBar();
 		pbar.prefHeightProperty().bind(stackPane.prefHeightProperty().divide(15));
-		pbar.prefWidthProperty().bind(stackPane.prefWidthProperty().subtract(stackPane.prefWidthProperty().divide(20)));;
+		pbar.prefWidthProperty().bind(stackPane.prefWidthProperty().subtract(stackPane.prefWidthProperty().divide(20)));
 		pbar.setProgress(0);
 
-		songLengthListener = new ChangeListener<Duration>() {
-			@Override
-			public void changed(ObservableValue<? extends Duration> arg0, Duration arg1, Duration duration) {
-				songLength = duration.toSeconds();
-			}
-		};
+		songLengthListener = (arg0, arg1, duration) -> songLength = duration.toSeconds();
 		pbarChanger = new ChangeListener<Duration>() {
 			@Override
 			public void changed(ObservableValue<? extends Duration> arg0, Duration arg1, Duration duration) {
@@ -179,7 +174,7 @@ public class SongView extends GenericView{
 		Button mainViewButton = new Button("Musikverwaltung");
 		mainViewButton.setMinWidth(Control.USE_PREF_SIZE);
 		mainViewButton.setOnAction(e -> {
-			screenController.activate("musikverwaltung");
+			screenController.activate("Musikverwaltung");
 		});
 
 		HBox lowerHBox = new HBox(reset,skipbackward, startStop, skipforward, slider, mainViewButton);
@@ -202,11 +197,11 @@ public class SongView extends GenericView{
 		//upperVBox.setStyle("-fx-background-color: #00FA9F;");
 
 		stackPane.getChildren().add(lowerHBox);
-		stackPane.setAlignment(lowerHBox, Pos.BOTTOM_CENTER);
+		StackPane.setAlignment(lowerHBox, Pos.BOTTOM_CENTER);
 		stackPane.getChildren().add(middleHBox);
-		stackPane.setAlignment(middleHBox, Pos.CENTER);
+		StackPane.setAlignment(middleHBox, Pos.CENTER);
 		stackPane.getChildren().add(upperVBox);
-		stackPane.setAlignment(upperVBox, Pos.TOP_CENTER);
+		StackPane.setAlignment(upperVBox, Pos.TOP_CENTER);
 
 		return stackPane;
 	}
@@ -242,7 +237,7 @@ public class SongView extends GenericView{
 			player.dispose();
 		}
 
-		File file = new File((playlist.get(index)).getpath());
+		File file = playlist.get(index).getPath();
 		System.out.println(playlist.get(index).bekommeTitel());
 		currentSong = new Media(file.toURI().toString());
 		player = new MediaPlayer(currentSong);

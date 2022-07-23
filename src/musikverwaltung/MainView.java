@@ -1,8 +1,6 @@
 package musikverwaltung;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -20,10 +18,6 @@ import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 public class MainView extends GenericView {
-    private final ObservableList<Musikstueck> data
-            = FXCollections.observableArrayList(
-            new Musikstueck("Atemlos", "Helene Fischer", "Schlager","-")
-    );
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
@@ -33,7 +27,19 @@ public class MainView extends GenericView {
 
     // https://stackoverflow.com/a/47560767/8980073
     public StackPane get() {
-        FilteredList<Musikstueck> flMusikstueck = new FilteredList<>(data, p -> true);//Pass the data to a filtered list
+        TableView<Musikstueck> table = new TableView<>();
+
+        MediaManager mediaManager = new MediaManager();
+        mediaManager.clearAndLoadAll(table::refresh);
+
+        FilteredList<Musikstueck> flMusikstueck = new FilteredList<>(mediaManager.music, p -> true);//Pass the data to a filtered list
+
+        Button setting = new Button("Einstellungen");
+        setting.setOnAction(e -> screenController.activateWindow("Einstellungen", false, 350, 300));
+        screenController.addActionListener("Einstellungen", () -> mediaManager.clearAndLoadAll(table::refresh));
+
+        ToolBar toolBar = new ToolBar();
+        toolBar.getItems().add(setting);
 
         final Label welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.setFont(new Font("Arial", 20));
@@ -47,7 +53,10 @@ public class MainView extends GenericView {
         HBox.setHgrow(actionLabel, Priority.ALWAYS);
         Button saveButton = new Button("Speichern");
         saveButton.setMinWidth(Control.USE_PREF_SIZE);
-        saveButton.setOnAction(e -> actionLabel.setText("Save button pressed"));
+        saveButton.setOnAction(e -> {
+            actionLabel.setText("Save button pressed");
+            table.refresh();
+        });
 
         HBox menu = new HBox(deleteButton, actionLabel, saveButton);
         menu.setAlignment(Pos.CENTER);
@@ -68,7 +77,7 @@ public class MainView extends GenericView {
                 case "Überall" ->
                         flMusikstueck.setPredicate(p -> p.search_everywhere(newValue));
                 case "Titel" ->
-                        flMusikstueck.setPredicate(p -> p.bekommeTitel().toLowerCase().contains(newValue.toLowerCase().trim()));
+                        flMusikstueck.setPredicate(p -> p.bekommePrimaryKey().toLowerCase().contains(newValue.toLowerCase().trim()));
                 case "Interpret" ->
                         flMusikstueck.setPredicate(p -> p.bekommeInterpret().toLowerCase().contains(newValue.toLowerCase().trim()));
                 case "Genre" ->
@@ -77,7 +86,7 @@ public class MainView extends GenericView {
         });
 
         choiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            //reset table and textfield when new choice is selected
+            //reset table and text-field when new choice is selected
             if (newVal != null) {
                 textSearchField.setText("");
             }
@@ -87,14 +96,14 @@ public class MainView extends GenericView {
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
         musicPlayerButton.setOnAction(e -> {
             actionLabel.setText("Starte Player");
-            screenController.activateWindow("songseite", true, 200, 0);
+            screenController.activateWindow("Player", true, 200, 0);
         });
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton);//Add choiceBox and textField to hBox
         searchHBox.setAlignment(Pos.CENTER);//Center HBox
 
         TableColumn<Musikstueck, String> titleCol = new TableColumn<>("Titel");
         titleCol.setCellValueFactory(cellData -> new SimpleStringProperty(
-                cellData.getValue().bekommeHighlightedTitel(textSearchField.getText())
+                cellData.getValue().bekommeHighlightedPrimaryKey(textSearchField.getText())
         ));
         titleCol.setCellFactory(highlightedTableCell());
 
@@ -110,9 +119,7 @@ public class MainView extends GenericView {
         ));
         genreCol.setCellFactory(highlightedTableCell());
 
-        TableView<Musikstueck> table = new TableView<>();
-
-        titleCol.prefWidthProperty().bind(table.widthProperty().divide(3).subtract(3.5)); // Quick fix for not showing the horizontal scroll bar.
+        titleCol.prefWidthProperty().bind(table.widthProperty().divide(3).subtract(15)); // Quick fix for not showing the horizontal scroll bar.
         interpretCol.prefWidthProperty().bind(table.widthProperty().divide(3));
         genreCol.prefWidthProperty().bind(table.widthProperty().divide(3));
 
@@ -124,7 +131,7 @@ public class MainView extends GenericView {
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 10, 10, 10));
-        vbox.getChildren().addAll(welcomeLabel, menu, table, searchHBox);
+        vbox.getChildren().addAll(toolBar, welcomeLabel, menu, table, searchHBox);
 
         Rectangle rectangle = new Rectangle();
         rectangle.widthProperty().bind(stackPane.prefWidthProperty());
@@ -135,11 +142,6 @@ public class MainView extends GenericView {
                 new Stop(0, Color.web("#81c483")), //colors
                 new Stop(1, Color.web("#fcc200")))
         );
-
-        /*rectangle.widthProperty().addListener((obs, oldVal, newVal) -> {
-            System.out.println("rectangle");
-            System.out.println(newVal);
-        });*/
 
         StackPane.setAlignment(vbox, Pos.TOP_LEFT);
         StackPane.setAlignment(rectangle, Pos.TOP_LEFT);
@@ -157,7 +159,7 @@ public class MainView extends GenericView {
                     protected void updateItem(String text, boolean empty) {
                         super.updateItem(text, empty);
                         HBox hbox = new HBox();
-                        if (!empty && text.contains(HIGHLIGHT_START)) {
+                        if (!empty && text != null && text.contains(HIGHLIGHT_START)) {
                             // Something to highlight
                             while (text.contains(HIGHLIGHT_START)) {
                                 // First part
@@ -175,7 +177,7 @@ public class MainView extends GenericView {
                                     hbox.getChildren().add(label3);
                                 }
                             }
-                        } else if (!empty) {
+                        } else if (!empty && text != null) {
                             // show simple text
                             Label label1 = new Label(text);
                             hbox.getChildren().add(label1);

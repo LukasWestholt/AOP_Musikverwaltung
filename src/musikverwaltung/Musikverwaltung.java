@@ -14,17 +14,17 @@ public class Musikverwaltung extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
-        stage.setTitle("Musikverwaltung");
+    public void start(Stage stage) {
         Scene scene = new Scene(new Group(), 650, 450);
         stage.setScene(scene);
         stage.show();
 
         screenController = new ScreenController(stage);
-        screenController.addScreen("hello", new HelloView(screenController));
-        screenController.addScreen("musikverwaltung", new MainView(screenController));
-        screenController.addScreen("songseite", new SongView(screenController));
-        screenController.activate("hello");
-        screenController.activate("musikverwaltung", true, 1);
+        screenController.addScreen("Hello", new HelloView(screenController));
+        screenController.addScreen("Musikverwaltung", new MainView(screenController));
+        screenController.addScreen("Player", new SongView(screenController));
+        screenController.addScreen("Einstellungen", new SettingsView(screenController));
+        screenController.activate("Hello");
+        screenController.activate("Musikverwaltung", true, 1);
     }
 }

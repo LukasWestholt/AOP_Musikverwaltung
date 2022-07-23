@@ -2,6 +2,8 @@ package musikverwaltung;
 
 import javafx.beans.property.SimpleStringProperty;
 
+import java.io.File;
+
 import static musikverwaltung.MainView.HIGHLIGHT_START;
 import static musikverwaltung.MainView.HIGHLIGHT_END;
 
@@ -9,17 +11,24 @@ public class Musikstueck {
     private final SimpleStringProperty titel = new SimpleStringProperty();
     private final SimpleStringProperty interpret = new SimpleStringProperty();
     private final SimpleStringProperty genre = new SimpleStringProperty();
-    private final SimpleStringProperty path = new SimpleStringProperty();
+    private final File path;
 
-    public Musikstueck(String titel, String interpret, String genre, String path) {
+    public Musikstueck(String titel, String interpret, String genre, File path) {
         this.titel.setValue(titel);
         this.interpret.setValue(interpret);
         this.genre.setValue(genre);
-        this.path.setValue(path);
+        this.path = path;
+    }
+    public Musikstueck(File path) {
+        this.path = path;
+    }
+
+    public String bekommePrimaryKey() {
+        return titel.get() != null ? titel.get() : path.toString();
     }
 
     public String bekommeTitel() {
-        return titel.get();
+        return notNullString(titel.get());
     }
 
     public void setzeTitel(String titel) {
@@ -32,7 +41,7 @@ public class Musikstueck {
     }
 
     public String bekommeInterpret() {
-        return interpret.get();
+        return notNullString(interpret.get());
     }
 
     public void setzeInterpret(String interpret) {
@@ -45,32 +54,26 @@ public class Musikstueck {
     }
 
     public String bekommeGenre() {
-        return genre.get();
+        return notNullString(genre.get());
     }
 
     public void setzeGenre(String genre) {
         this.genre.set(genre);
     }
-    
-     public String getpath() {
-        return path.get();
-    }
-    
-    public void setpath(String path) {
-        this.path.set(path);
-    }
-    
-   
 
     public SimpleStringProperty bekommeGenreProperty()
     {
         return genre;
     }
 
+    public File getPath() {
+        return path;
+    }
+
     public boolean search_everywhere(String searchKey) {
-        return titel.get().toLowerCase().contains(searchKey.toLowerCase().trim())
-                || interpret.get().toLowerCase().contains(searchKey.toLowerCase().trim())
-                || genre.get().toLowerCase().contains(searchKey.toLowerCase().trim());
+        return bekommePrimaryKey().toLowerCase().contains(searchKey.toLowerCase().trim())
+                || bekommeInterpret().toLowerCase().contains(searchKey.toLowerCase().trim())
+                || bekommeGenre().toLowerCase().contains(searchKey.toLowerCase().trim());
     }
 
     /**
@@ -79,8 +82,8 @@ public class Musikstueck {
      * @param searchTitle Text like "Atem"
      * @return Highlighted title like "<HIGHLIGHT_START>Atem<HIGHLIGHT_END>los"
      */
-    public String bekommeHighlightedTitel(String searchTitle) {
-        return bekommeHighlighted(bekommeTitel(), searchTitle);
+    public String bekommeHighlightedPrimaryKey(String searchTitle) {
+        return bekommeHighlighted(bekommePrimaryKey(), searchTitle);
     }
     /**
      * This method adds to matching substrings of interpret a prefix and suffix.
@@ -122,5 +125,19 @@ public class Musikstueck {
             text = new_titel + text;
         }
         return text;
+    }
+
+    private String notNullString(String str) {
+        if (str == null) return "";
+        return str;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + this.getClass().getSimpleName() + "> " +
+                "Titel: " + bekommeTitel() + ", " +
+                "Interpret: " + bekommeInterpret() + ", " +
+                "Genre: " + bekommeGenre() + ", " +
+                "Path: " + path.toString();
     }
 }

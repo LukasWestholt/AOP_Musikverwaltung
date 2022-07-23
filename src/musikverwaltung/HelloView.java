@@ -1,6 +1,5 @@
 package musikverwaltung;
 
-import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 
