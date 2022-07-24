@@ -20,18 +20,12 @@ public class MediaManager {
             o.bekommeGenreProperty()
     });
 
-    //private final HashMap<ObservableMap<String, Object>, MapChangeListener<String, Object>> cached_listeners = new HashMap<>();
-
     final String[] types = {
-            "snd", "wav", "mp3", "ogg", "au", "m4a"
+            "wav", "mp3", "m4a", ".aif", ".aiff"
     };
     public void clearAndLoadAll(Runnable refreshCallback) {
         music.clear();
         mediaFiles.clear();
-        /*for (final Map.Entry<ObservableMap<String, Object>, MapChangeListener<String, Object>> listener : cached_listeners.entrySet()) {
-            listener.getKey().removeListener(listener.getValue());
-        }
-        cached_listeners.clear();*/
 
         List<String> list = SettingFile.load();
         for (final String folder_str : list) {
@@ -66,7 +60,6 @@ public class MediaManager {
                 refreshCallback.run();
             };
             metadata_for_listener.addListener(metadataListener);
-            //cached_listeners.put(metadata_for_listener, metadataListener);
         }
     }
 

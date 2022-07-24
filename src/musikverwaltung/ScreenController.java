@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 // https://stackoverflow.com/a/37276108/8980073
 public class ScreenController {
@@ -37,20 +38,19 @@ public class ScreenController {
         screenMap.put(name, view);
     }
 
-    protected void activate(String name) {
+    protected GenericView activate(String name) {
         GenericView view = screenMap.get(name);
         Stage mainStage = getMain();
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
         getMainChildren().clear();
         getMainChildren().add(view.get());
-        activate(mainStage, view, name);
+        return activate(mainStage, view, name);
     }
 
     // https://genuinecoder.com/javafx-scene-switch-change-animation/
-    protected void activate(String name, Boolean animated) {
+    protected GenericView activate(String name, Boolean animated) {
         if (!animated) {
-            activate(name);
-            return;
+            return activate(name);
         }
 
         GenericView view = screenMap.get(name);
@@ -72,7 +72,7 @@ public class ScreenController {
         //After completing animation, remove first scene
         timeline.setOnFinished(t -> getMainChildren().remove(0, getMainChildren().size() - 1));
         timeline.play();
-        activate(mainStage, view, name);
+        return activate(mainStage, view, name);
     }
 
     protected void activate(String name, Boolean animated, Integer seconds) {
@@ -84,12 +84,11 @@ public class ScreenController {
         timeline.play();
     }
 
-    protected void activateWindow(String name, boolean neighborToMain, double width, double height) {
+    protected GenericView activateWindow(String name, boolean neighborToMain, double width, double height) {
         Stage stage = stageMap.get(name);
         GenericView view = screenMap.get(name);
         if (stage != null) {
-            activate(stage, view, name, neighborToMain);
-            return;
+            return activate(stage, view, name, neighborToMain);
         }
         stage = new Stage();
         stageMap.put(name, stage);
@@ -97,13 +96,13 @@ public class ScreenController {
         stage.setScene(scene);
         view.bindSceneDimensions(scene.widthProperty(), scene.heightProperty());
         ((Group) scene.getRoot()).getChildren().add(view.get());
-        activate(stage, view, name, neighborToMain);
+        return activate(stage, view, name, neighborToMain);
     }
 
-    protected void activate(Stage stage, GenericView view, String name) {
-        activate(stage, view, name, false);
+    protected GenericView activate(Stage stage, GenericView view, String name) {
+        return activate(stage, view, name, false);
     }
-    protected void activate(Stage stage, GenericView view, String title, boolean neighborToMain) {
+    protected GenericView activate(Stage stage, GenericView view, String title, boolean neighborToMain) {
         if (neighborToMain) {
             Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
             Stage mainStage = getMain();
@@ -120,10 +119,7 @@ public class ScreenController {
         view.setStage(stage);
         stage.show();
         stage.toFront();
-    }
-
-    protected void addActionListener(String name, ActionListener listener) {
-        GenericView view = screenMap.get(name);
-        view.addListener(listener);
+        stage.getScene().getStylesheets().add(Objects.requireNonNull(this.getClass().getResource("style.css")).toExternalForm());
+        return view;
     }
 }

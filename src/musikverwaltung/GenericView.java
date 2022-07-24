@@ -17,8 +17,13 @@ public class GenericView {
 
     private final List<ActionListener> listeners = new ArrayList<>();
 
-    public void addListener(ActionListener toAdd) {
-        listeners.add(toAdd);
+    public void addActionListener(ActionListener toAdd) {
+        if (toAdd != null) listeners.add(toAdd);
+    }
+
+    public GenericView clearActionListener() {
+        listeners.clear();
+        return this;
     }
 
     public GenericView(ScreenController sc) {

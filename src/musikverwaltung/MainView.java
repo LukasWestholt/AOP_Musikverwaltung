@@ -17,12 +17,17 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
 
-public class MainView extends GenericView {
+import java.util.ArrayList;
+
+public class MainView extends MenuBarView {
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
+    Button setting = new Button("Einstellungen");
+
     public MainView(ScreenController sc) {
         super(sc);
+        menuToolBar.getItems().add(setting);
     }
 
     // https://stackoverflow.com/a/47560767/8980073
@@ -32,14 +37,10 @@ public class MainView extends GenericView {
         MediaManager mediaManager = new MediaManager();
         mediaManager.clearAndLoadAll(table::refresh);
 
-        FilteredList<Musikstueck> flMusikstueck = new FilteredList<>(mediaManager.music, p -> true);//Pass the data to a filtered list
+        FilteredList<Musikstueck> flMusikstueck = new FilteredList<>(mediaManager.music, p -> true); //Pass the data to a filtered list
 
-        Button setting = new Button("Einstellungen");
-        setting.setOnAction(e -> screenController.activateWindow("Einstellungen", false, 350, 300));
-        screenController.addActionListener("Einstellungen", () -> mediaManager.clearAndLoadAll(table::refresh));
-
-        ToolBar toolBar = new ToolBar();
-        toolBar.getItems().add(setting);
+        setting.setOnAction(e -> screenController.activateWindow("Einstellungen", false, 350, 300)
+                .clearActionListener().addActionListener(() -> mediaManager.clearAndLoadAll(table::refresh)));
 
         final Label welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.setFont(new Font("Arial", 20));
@@ -96,7 +97,7 @@ public class MainView extends GenericView {
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
         musicPlayerButton.setOnAction(e -> {
             actionLabel.setText("Starte Player");
-            screenController.activateWindow("Player", true, 200, 0);
+            screenController.activateWindow("Player", true, 220, 0);
         });
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton);//Add choiceBox and textField to hBox
         searchHBox.setAlignment(Pos.CENTER);//Center HBox
@@ -128,10 +129,26 @@ public class MainView extends GenericView {
         table.getColumns().add(interpretCol);
         table.getColumns().add(genreCol);
 
+        table.setRowFactory( tv -> {
+            TableRow<Musikstueck> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                    actionLabel.setText("Spiele ab...");
+                    ArrayList<Musikstueck> playlist = new ArrayList<>();
+                    playlist.add(row.getItem());
+                    GenericView view = screenController.activateWindow("Player", true, 220, 0);
+                    if (view instanceof SongView songView) {
+                        songView.setPlaylist(playlist);
+                    }
+                }
+            });
+            return row;
+        });
+
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 10, 10, 10));
-        vbox.getChildren().addAll(toolBar, welcomeLabel, menu, table, searchHBox);
+        vbox.getChildren().addAll(menuToolBar, welcomeLabel, menu, table, searchHBox);
 
         Rectangle rectangle = new Rectangle();
         rectangle.widthProperty().bind(stackPane.prefWidthProperty());
