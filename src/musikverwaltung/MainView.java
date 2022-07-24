@@ -23,11 +23,12 @@ public class MainView extends MenuBarView {
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
-    MediaManager mediaManager = new MediaManager();
-    TableView<Musikstueck> table = new TableView<>();
-
+    // https://stackoverflow.com/a/47560767/8980073
     public MainView(ScreenController sc) {
         super(sc);
+
+        MediaManager mediaManager = new MediaManager();
+        TableView<Musikstueck> table = new TableView<>();
 
         addActiveMenuButton(settingButton,
                 e -> screenController.activateWindow("Einstellungen", false, 350, 300)
@@ -37,10 +38,7 @@ public class MainView extends MenuBarView {
                 e -> screenController.activate("Playlist")
         );
         setActiveMenuItem(mainViewButton);
-    }
 
-    // https://stackoverflow.com/a/47560767/8980073
-    public void prepare() {
         mediaManager.clearAndLoadAll(table::refresh);
 
         FilteredList<Musikstueck> flMusikstueck = new FilteredList<>(mediaManager.music, p -> true); //Pass the data to a filtered list

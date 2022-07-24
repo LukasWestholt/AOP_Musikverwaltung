@@ -16,9 +16,9 @@ public class MenuBarView extends GenericView {
     private final ToolBar menuToolBar = new ToolBar();
     private final VBox wrapperVBox = new VBox();
 
-    Button mainViewButton = new Button("Musikverwaltung");
-    Button playlistButton = new Button("Playlist");
-    Button settingButton = new Button("Einstellungen");
+    final Button mainViewButton = new Button("Musikverwaltung");
+    final Button playlistButton = new Button("Playlist");
+    final Button settingButton = new Button("Einstellungen");
 
     public MenuBarView(ScreenController sc) {
         super(sc);
@@ -54,10 +54,7 @@ public class MenuBarView extends GenericView {
     public Node get() {
         super.get();
         // LW: Prevent the menu bar from always getting the focus and put the focus on the content.
-        System.out.println("prevent");
-        stackPane.requestFocus();
         Platform.runLater(stackPane::requestFocus);
-
         return wrapperVBox;
     }
 

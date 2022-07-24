@@ -17,9 +17,7 @@ public class PlaylistView extends MenuBarView {
                 e -> screenController.activate("Musikverwaltung")
         );
         setActiveMenuItem(playlistButton);
-    }
 
-    public void prepare() {
         TilePane tilePane = new TilePane();
 
         final Label welcomeLabel = new Label("Playlisten");

@@ -3,6 +3,7 @@ package musikverwaltung;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
@@ -12,18 +13,10 @@ import java.util.ArrayList;
 
 public class SettingsView extends GenericView implements Serializable {
     ObservableList<String> list = FXCollections.observableArrayList();
+    File directory;
 
     public SettingsView(ScreenController sc) {
         super(sc);
-    }
-
-    public void prepare() {
-        list = FXCollections.observableArrayList(SettingFile.load());
-
-        File directory = new File(System.getProperty("user.home"));
-        if (!directory.exists()) {
-            directory = new File(".");
-        }
 
         DirectoryChooser directoryChooser = new DirectoryChooser();
 
@@ -51,6 +44,17 @@ public class SettingsView extends GenericView implements Serializable {
         HBox hBox = new HBox(button_save, button_cancel);
         VBox vBox = new VBox(select_directory, list_directory, hBox);
         showNodes(vBox);
+    }
+
+    @Override
+    public Node get() {
+        list = FXCollections.observableArrayList(SettingFile.load());
+
+        directory = new File(System.getProperty("user.home"));
+        if (!directory.exists()) {
+            directory = new File(".");
+        }
+        return super.get();
     }
 
     static class XCell extends ListCell<String> {

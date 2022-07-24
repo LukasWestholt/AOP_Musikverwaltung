@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GenericView {
-
     final StackPane stackPane = new StackPane();
 
     final ScreenController screenController;
@@ -32,10 +31,7 @@ public class GenericView {
         screenController = sc;
     }
 
-    public void prepare() {}
-
     public Node get() {
-        prepare();
         return stackPane;
     }
 
