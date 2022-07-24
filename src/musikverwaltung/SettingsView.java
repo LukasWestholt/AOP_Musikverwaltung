@@ -1,6 +1,6 @@
 package musikverwaltung;
 
-import javafx.beans.property.DoubleProperty;
+import javafx.beans.binding.DoubleBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
@@ -17,7 +17,7 @@ public class SettingsView extends GenericView implements Serializable {
         super(sc);
     }
 
-    public StackPane get() {
+    public void prepare() {
         list = FXCollections.observableArrayList(SettingFile.load());
 
         File directory = new File(System.getProperty("user.home"));
@@ -37,7 +37,7 @@ public class SettingsView extends GenericView implements Serializable {
             }
         });
         ListView<String> list_directory = new ListView<>(list);
-        list_directory.setCellFactory(param -> new XCell(stackPane.prefWidthProperty()));
+        list_directory.setCellFactory(param -> new XCell(getWidthProperty()));
         list_directory.setFocusTraversable(false);
 
         Button button_save = new Button("Save");
@@ -50,8 +50,7 @@ public class SettingsView extends GenericView implements Serializable {
         button_cancel.setOnAction(e -> stage.close());
         HBox hBox = new HBox(button_save, button_cancel);
         VBox vBox = new VBox(select_directory, list_directory, hBox);
-        stackPane.getChildren().add(vBox);
-        return stackPane;
+        showNodes(vBox);
     }
 
     static class XCell extends ListCell<String> {
@@ -60,12 +59,12 @@ public class SettingsView extends GenericView implements Serializable {
         final Pane pane = new Pane();
         final Button button = new Button("(Del)");
 
-        public XCell(DoubleProperty stackPane_width) {
+        public XCell(DoubleBinding widthProperty) {
             super();
             HBox.setHgrow(pane, Priority.ALWAYS);
             button.setMinWidth(Control.USE_PREF_SIZE);
             button.setOnAction(event -> getListView().getItems().remove(getItem()));
-            label.prefWidthProperty().bind(stackPane_width.subtract(button.widthProperty()).subtract(25));
+            label.prefWidthProperty().bind(widthProperty.subtract(button.widthProperty()).subtract(25));
             label.setWrapText(true);
             hbox.setSpacing(4);
             hbox.getChildren().addAll(label, pane, button);

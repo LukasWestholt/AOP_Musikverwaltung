@@ -34,21 +34,22 @@ public class SongView extends MenuBarView {
 
 	private ChangeListener<Duration> playerSongLengthListener;
 
-	Button mainViewButton = new Button("Musikverwaltung");
-	Button resetButton = new Button("Reset");
-
 	public SongView(ScreenController sc) {
 		super(sc);
 
 		File imgFile = new File(".\\media\\default_img.JPG");
 		defaultImage = new Image(imgFile.toURI().toString());
 
-		mainViewButton.setOnAction(e -> screenController.activate("Musikverwaltung"));
-		resetButton.setOnAction(e -> reset(false));
-		menuToolBar.getItems().addAll(mainViewButton, resetButton);
+		addActiveMenuButton(mainViewButton,
+				e -> screenController.activate("Musikverwaltung")
+		);
+		addActiveMenuButton(new Button("Reset"),
+				e -> reset(false)
+		);
+		ignoreMenuItems(settingButton, playlistButton);
 	}
 
-	public StackPane get() {
+	public void prepare() {
 		/*  https://www.geeksforgeeks.org/javafx-progressbar/
 		*	https://stackoverflow.com/questions/26850828/how-to-make-a-javafx-button-with-circle-shape-of-3xp-diameter
 		*/
@@ -60,7 +61,7 @@ public class SongView extends MenuBarView {
 		img = new ImageView();
 		img.setPreserveRatio(true);
 		img.setSmooth(true);
-		img.fitWidthProperty().bind(stackPane.prefWidthProperty().subtract(30));
+		img.fitWidthProperty().bind(getWidthProperty().subtract(30));
 		VBox.setVgrow(img, Priority.SOMETIMES);
 		displayImage();
 
@@ -69,10 +70,10 @@ public class SongView extends MenuBarView {
 
 		final Slider songSlider = new Slider(0, 1, 0);
 		songSlider.getStyleClass().add("song");
-		songSlider.prefHeightProperty().bind(stackPane.prefHeightProperty().divide(20));
+		songSlider.prefHeightProperty().bind(getHeightProperty().divide(20));
 		final ProgressBar songProgressBar = new ProgressBar(0);
 		songProgressBar.getStyleClass().add("song");
-		songProgressBar.prefHeightProperty().bind(stackPane.prefHeightProperty().divide(20));
+		songProgressBar.prefHeightProperty().bind(getHeightProperty().divide(20));
 		songProgressBar.prefWidthProperty().bind(songSlider.widthProperty());
 
 		playerSongLengthListener = (o, oldPosition, newPosition) -> {
@@ -92,9 +93,9 @@ public class SongView extends MenuBarView {
 		songSliderProgressbar.getChildren().addAll(songProgressBar, songSlider);
 
 	    startStop = new Button("start");
-		System.out.println(stackPane.prefWidthProperty().divide(5).get());
-		startStop.setShape(new Circle(stackPane.prefWidthProperty().divide(5).get()));
-	    startStop.prefWidthProperty().bind(stackPane.prefWidthProperty().divide(3));
+		System.out.println(getWidthProperty().divide(5).get());
+		startStop.setShape(new Circle(getWidthProperty().divide(5).get()));
+	    startStop.prefWidthProperty().bind(getWidthProperty().divide(3));
 	    startStop.prefHeightProperty().bind(startStop.prefWidthProperty());
 	    startStop.setOnAction(e -> startStopSong());
 		setDynamicSize(startStop);
@@ -122,11 +123,10 @@ public class SongView extends MenuBarView {
 		buttonVBox.setBackground(new Background(new BackgroundFill(Color.BEIGE, null, null)));
 		VBox.setMargin(buttonVBox, new Insets(0, 15, 15, 15));
 
-		VBox vBox = new VBox(menuToolBar, labelSongName, img, spacePane, buttonVBox);
+		VBox vBox = new VBox(labelSongName, img, spacePane, buttonVBox);
 		vBox.setAlignment(Pos.CENTER);
 		vBox.setSpacing(10);
-		stackPane.getChildren().add(vBox);
-		return stackPane;
+		showNodes(vBox);
 	}
 
 	private void displayImage() {

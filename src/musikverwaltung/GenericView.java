@@ -1,6 +1,8 @@
 package musikverwaltung;
 
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -30,7 +32,10 @@ public class GenericView {
         screenController = sc;
     }
 
-    public StackPane get() {
+    public void prepare() {}
+
+    public Node get() {
+        prepare();
         return stackPane;
     }
 
@@ -42,6 +47,20 @@ public class GenericView {
         stackPane.prefWidthProperty().bind(width);
         stackPane.prefHeightProperty().bind(height);
     }
+
+    public DoubleBinding getWidthProperty() {
+        return stackPane.prefWidthProperty().subtract(0);
+    }
+
+    public DoubleBinding getHeightProperty() {
+        return stackPane.prefHeightProperty().subtract(0);
+    }
+
+
+    public void showNodes(Node... nodes) {
+        stackPane.getChildren().addAll(nodes);
+    }
+
 
     void triggerActionListener() {
         for (ActionListener hl : listeners)

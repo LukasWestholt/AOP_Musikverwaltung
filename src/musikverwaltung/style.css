@@ -1,3 +1,8 @@
+#active {
+    -fx-background-color: lightblue;
+    -fx-border-color: grey;
+}
+
 .song.slider {
     -fx-background-insets: 0;
     -fx-background-radius: 0;

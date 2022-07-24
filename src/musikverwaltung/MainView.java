@@ -23,24 +23,27 @@ public class MainView extends MenuBarView {
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
-    Button setting = new Button("Einstellungen");
+    MediaManager mediaManager = new MediaManager();
+    TableView<Musikstueck> table = new TableView<>();
 
     public MainView(ScreenController sc) {
         super(sc);
-        menuToolBar.getItems().add(setting);
+
+        addActiveMenuButton(settingButton,
+                e -> screenController.activateWindow("Einstellungen", false, 350, 300)
+                        .clearActionListener().addActionListener(() -> mediaManager.clearAndLoadAll(table::refresh))
+        );
+        addActiveMenuButton(playlistButton,
+                e -> screenController.activate("Playlist")
+        );
+        setActiveMenuItem(mainViewButton);
     }
 
     // https://stackoverflow.com/a/47560767/8980073
-    public StackPane get() {
-        TableView<Musikstueck> table = new TableView<>();
-
-        MediaManager mediaManager = new MediaManager();
+    public void prepare() {
         mediaManager.clearAndLoadAll(table::refresh);
 
         FilteredList<Musikstueck> flMusikstueck = new FilteredList<>(mediaManager.music, p -> true); //Pass the data to a filtered list
-
-        setting.setOnAction(e -> screenController.activateWindow("Einstellungen", false, 350, 300)
-                .clearActionListener().addActionListener(() -> mediaManager.clearAndLoadAll(table::refresh)));
 
         final Label welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.setFont(new Font("Arial", 20));
@@ -148,11 +151,11 @@ public class MainView extends MenuBarView {
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 10, 10, 10));
-        vbox.getChildren().addAll(menuToolBar, welcomeLabel, menu, table, searchHBox);
+        vbox.getChildren().addAll(welcomeLabel, menu, table, searchHBox);
 
         Rectangle rectangle = new Rectangle();
-        rectangle.widthProperty().bind(stackPane.prefWidthProperty());
-        rectangle.heightProperty().bind(stackPane.prefHeightProperty());
+        rectangle.widthProperty().bind(getWidthProperty());
+        rectangle.heightProperty().bind(getHeightProperty());
         rectangle.setFill(new LinearGradient(
                 0, 0, 1, 1, true, //sizing
                 CycleMethod.NO_CYCLE, //cycling
@@ -162,8 +165,7 @@ public class MainView extends MenuBarView {
 
         StackPane.setAlignment(vbox, Pos.TOP_LEFT);
         StackPane.setAlignment(rectangle, Pos.TOP_LEFT);
-        stackPane.getChildren().addAll(rectangle, vbox);
-        return stackPane;
+        showNodes(rectangle, vbox);
     }
 
     // https://stackoverflow.com/q/26906810/8980073

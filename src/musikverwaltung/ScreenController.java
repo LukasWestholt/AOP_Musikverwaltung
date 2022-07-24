@@ -6,8 +6,8 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -56,7 +56,7 @@ public class ScreenController {
         GenericView view = screenMap.get(name);
         Stage mainStage = getMain();
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
-        Pane root = view.get();
+        Node root = view.get();
 
         //Set Y of second scene to Height of window
         root.translateYProperty().set(getMainScene().getHeight());

@@ -16,6 +16,8 @@ public class Musikverwaltung extends Application {
     @Override
     public void start(Stage stage) {
         Scene scene = new Scene(new Group(), 650, 450);
+        scene.focusOwnerProperty().addListener(
+                (prop, oldNode, newNode) -> System.out.println(newNode));
         stage.setScene(scene);
         stage.show();
 
@@ -24,6 +26,7 @@ public class Musikverwaltung extends Application {
         screenController.addScreen("Musikverwaltung", new MainView(screenController));
         screenController.addScreen("Player", new SongView(screenController));
         screenController.addScreen("Einstellungen", new SettingsView(screenController));
+        screenController.addScreen("Playlist", new PlaylistView(screenController));
         screenController.activate("Hello");
         screenController.activate("Musikverwaltung", true, 1);
     }
