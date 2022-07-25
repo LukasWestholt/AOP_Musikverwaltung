@@ -40,6 +40,7 @@ public class SettingsView extends GenericView implements Serializable {
             triggerActionListener();
         });
         Button button_cancel = new Button("Cancel");
+        button_cancel.setCancelButton(true);
         button_cancel.setOnAction(e -> stage.close());
         HBox hBox = new HBox(button_save, button_cancel);
         VBox vBox = new VBox(select_directory, list_directory, hBox);
@@ -48,7 +49,7 @@ public class SettingsView extends GenericView implements Serializable {
 
     @Override
     public Node get() {
-        list = FXCollections.observableArrayList(SettingFile.load());
+        list.setAll(SettingFile.load());
 
         directory = new File(System.getProperty("user.home"));
         if (!directory.exists()) {
