@@ -1,4 +1,4 @@
-package musikverwaltung;
+package musikverwaltung.views;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,6 +17,9 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
+import musikverwaltung.MediaManager;
+import musikverwaltung.Musikstueck;
+import musikverwaltung.ScreenController;
 
 import java.util.ArrayList;
 

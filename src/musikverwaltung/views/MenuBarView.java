@@ -1,4 +1,4 @@
-package musikverwaltung;
+package musikverwaltung.views;
 
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import musikverwaltung.ScreenController;
 
 public class MenuBarView extends GenericView {
 

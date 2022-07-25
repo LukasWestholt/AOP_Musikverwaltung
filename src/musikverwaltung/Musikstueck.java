@@ -4,8 +4,8 @@ import javafx.beans.property.SimpleStringProperty;
 
 import java.io.File;
 
-import static musikverwaltung.MainView.HIGHLIGHT_START;
-import static musikverwaltung.MainView.HIGHLIGHT_END;
+import static musikverwaltung.views.MainView.HIGHLIGHT_START;
+import static musikverwaltung.views.MainView.HIGHLIGHT_END;
 
 public class Musikstueck {
     private final SimpleStringProperty titel = new SimpleStringProperty();

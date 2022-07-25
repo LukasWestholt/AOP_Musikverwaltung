@@ -1,4 +1,4 @@
-package musikverwaltung;
+package musikverwaltung.views;
 
 import java.io.File;
 import java.util.List;
@@ -17,6 +17,8 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import musikverwaltung.Musikstueck;
+import musikverwaltung.ScreenController;
 
 public class SongView extends MenuBarView {
     int currentIndex = 0;

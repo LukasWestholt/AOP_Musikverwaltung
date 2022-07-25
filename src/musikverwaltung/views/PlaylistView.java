@@ -1,10 +1,13 @@
-package musikverwaltung;
+package musikverwaltung.views;
 
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import musikverwaltung.MediaManager;
+import musikverwaltung.Musikstueck;
+import musikverwaltung.ScreenController;
 
 public class PlaylistView extends MenuBarView {
 

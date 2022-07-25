@@ -1,4 +1,4 @@
-package musikverwaltung;
+package musikverwaltung.views;
 
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.FXCollections;
@@ -8,6 +8,8 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
+import musikverwaltung.ScreenController;
+import musikverwaltung.SettingFile;
 
 import java.io.*;
 import java.util.ArrayList;

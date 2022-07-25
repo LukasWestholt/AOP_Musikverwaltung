@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import musikverwaltung.views.GenericView;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -38,7 +39,7 @@ public class ScreenController {
         screenMap.put(view.getClass(), view);
     }
 
-    protected GenericView activate(Class<? extends GenericView> id) {
+    public GenericView activate(Class<? extends GenericView> id) {
         GenericView view = screenMap.get(id);
         Stage mainStage = getMain();
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
@@ -48,7 +49,7 @@ public class ScreenController {
     }
 
     // https://genuinecoder.com/javafx-scene-switch-change-animation/
-    protected GenericView activate(Class<? extends GenericView> id, Boolean animated) {
+    public GenericView activate(Class<? extends GenericView> id, Boolean animated) {
         if (!animated) {
             return activate(id);
         }
@@ -75,7 +76,7 @@ public class ScreenController {
         return activate(mainStage, view, id.getName());
     }
 
-    protected void activate(Class<? extends GenericView> id, Boolean animated, Integer seconds) {
+    public void activate(Class<? extends GenericView> id, Boolean animated, Integer seconds) {
         Timeline timeline = new Timeline(
                 new KeyFrame(Duration.seconds(seconds),
                         event -> activate(id, animated)
@@ -84,7 +85,7 @@ public class ScreenController {
         timeline.play();
     }
 
-    protected GenericView activateWindow(Class<? extends GenericView> id, boolean neighborToMain) {
+    public GenericView activateWindow(Class<? extends GenericView> id, boolean neighborToMain) {
         Stage stage = stageMap.get(id);
         GenericView view = screenMap.get(id);
         if (stage != null) {
@@ -99,10 +100,10 @@ public class ScreenController {
         return activate(stage, view, id.getName(), neighborToMain);
     }
 
-    protected GenericView activate(Stage stage, GenericView view, String title) {
+    public GenericView activate(Stage stage, GenericView view, String title) {
         return activate(stage, view, title, false);
     }
-    protected GenericView activate(Stage stage, GenericView view, String title, boolean neighborToMain) {
+    public GenericView activate(Stage stage, GenericView view, String title, boolean neighborToMain) {
         if (neighborToMain) {
             Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
             Stage mainStage = getMain();

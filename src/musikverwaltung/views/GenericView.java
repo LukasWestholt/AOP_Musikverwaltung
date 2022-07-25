@@ -1,10 +1,12 @@
-package musikverwaltung;
+package musikverwaltung.views;
 
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import musikverwaltung.ActionListener;
+import musikverwaltung.ScreenController;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,11 +1,11 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Musikverwaltung" type="Application" factoryName="Application" singleton="true" nameIsGenerated="true">
+  <configuration default="false" name="musikverwaltung.Musikverwaltung" type="Application" factoryName="Application" singleton="true" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="musikverwaltung.Musikverwaltung" />
     <module name="AOP_Musikverwaltung" />
     <option name="VM_PARAMETERS" value="--module-path lib/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media -ea" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="musikverwaltung.*" />
+        <option name="PATTERN" value="musikverwaltung.views.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

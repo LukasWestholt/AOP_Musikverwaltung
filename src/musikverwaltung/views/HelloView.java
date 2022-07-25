@@ -1,6 +1,7 @@
-package musikverwaltung;
+package musikverwaltung.views;
 
 import javafx.scene.control.Label;
+import musikverwaltung.ScreenController;
 
 public class HelloView extends GenericView {
 
