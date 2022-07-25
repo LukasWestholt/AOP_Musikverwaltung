@@ -13,13 +13,13 @@ import javafx.scene.layout.VBox;
 import musikverwaltung.ScreenController;
 
 public class MenuBarView extends GenericView {
+    final Button mainViewButton = new Button("Musikverwaltung");
+    final Button playlistButton = new Button("Playlist");
+    final Button settingButton = new Button("Einstellungen");
 
     private final ToolBar menuToolBar = new ToolBar();
     private final VBox wrapperVBox = new VBox();
 
-    final Button mainViewButton = new Button("Musikverwaltung");
-    final Button playlistButton = new Button("Playlist");
-    final Button settingButton = new Button("Einstellungen");
 
     public MenuBarView(ScreenController sc, double prefWidth, double prefHeight) {
         super(sc, prefWidth, prefHeight);

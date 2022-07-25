@@ -13,20 +13,19 @@ import javafx.collections.transformation.FilteredList;
 import javafx.scene.media.Media;
 
 public class MediaManager {
-    private final HashSet<File> mediaFiles = new HashSet<>();
-    private final HashMap<Integer, String> genres = loadGenres();
-
+    private static final String genreFilename = "genres.txt";
     public final ObservableList<Musikstueck> music = FXCollections.observableArrayList(o -> new Observable[]{
             o.bekommeTitelProperty(),
             o.bekommeInterpretProperty(),
             o.bekommeGenreProperty()
     });
 
+    private final HashSet<File> mediaFiles = new HashSet<>();
+    private final HashMap<Integer, String> genres = loadGenres();
+
     private final String[] types = {
             "wav", "mp3", "m4a", ".aif", ".aiff"
     };
-
-    private static final String genreFilename = "genres.txt";
 
     public void clearAndLoadAll(Runnable refreshCallback) {
         music.clear();

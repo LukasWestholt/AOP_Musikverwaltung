@@ -67,7 +67,7 @@ public class SettingsView extends GenericView implements Serializable {
         final Label label = new Label("");
         final Button button = new Button("(Del)");
 
-        public XCell(DoubleBinding widthProperty) {
+        XCell(DoubleBinding widthProperty) {
             super();
             button.setMinWidth(Control.USE_PREF_SIZE);
             button.setOnAction(event -> getListView().getItems().remove(getItem()));

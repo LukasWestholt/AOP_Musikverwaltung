@@ -11,6 +11,9 @@ import musikverwaltung.ActionListener;
 import musikverwaltung.ScreenController;
 
 public abstract class GenericView {
+
+    public static final double DEFAULT_WIDTH = 650;
+    public static final double DEFAULT_HEIGHT = 560;
     final StackPane stackPane = new StackPane();
 
     final ScreenController screenController;
@@ -19,9 +22,6 @@ public abstract class GenericView {
 
     private final double prefWidth;
     private final double prefHeight;
-
-    public static final double DEFAULT_WIDTH = 650;
-    public static final double DEFAULT_HEIGHT = 560;
 
     private final List<ActionListener> listeners = new ArrayList<>();
 
