@@ -1,5 +1,8 @@
 package musikverwaltung.views;
 
+
+import java.io.*;
+import java.util.ArrayList;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,11 +14,8 @@ import javafx.stage.DirectoryChooser;
 import musikverwaltung.ScreenController;
 import musikverwaltung.SettingFile;
 
-import java.io.*;
-import java.util.ArrayList;
-
 public class SettingsView extends GenericView implements Serializable {
-    ObservableList<String> list = FXCollections.observableArrayList();
+    final ObservableList<String> list = FXCollections.observableArrayList();
     File directory;
 
     public SettingsView(ScreenController sc) {
@@ -25,30 +25,30 @@ public class SettingsView extends GenericView implements Serializable {
 
         directoryChooser.setInitialDirectory(directory);
 
-        Button select_directory = new Button("Select Directory");
-        select_directory.setOnAction(e -> {
+        Button selectDirectory = new Button("Select Directory");
+        selectDirectory.setOnAction(e -> {
             File selectedDirectory = directoryChooser.showDialog(stage);
             if (selectedDirectory != null) {
                 list.add(selectedDirectory.getAbsolutePath());
             }
         });
-        ListView<String> list_directory = new ListView<>(list);
-        list_directory.setCellFactory(param -> new XCell(getWidthProperty()));
-        list_directory.setFocusTraversable(false);
-        VBox.setVgrow(list_directory, Priority.ALWAYS);
+        ListView<String> listDirectory = new ListView<>(list);
+        listDirectory.setCellFactory(param -> new XCell(getWidthProperty()));
+        listDirectory.setFocusTraversable(false);
+        VBox.setVgrow(listDirectory, Priority.ALWAYS);
 
-        Button button_save = new Button("Save");
-        button_save.setOnAction(e -> {
+        Button buttonSave = new Button("Save");
+        buttonSave.setOnAction(e -> {
             SettingFile.save(new ArrayList<>(list));
             stage.close();
             triggerActionListener();
         });
-        Button button_cancel = new Button("Cancel");
-        button_cancel.setCancelButton(true);
-        button_cancel.setOnAction(e -> stage.close());
-        HBox hBox = new HBox(button_save, button_cancel);
-        VBox vBox = new VBox(select_directory, list_directory, hBox);
-        showNodes(vBox);
+        Button buttonCancel = new Button("Cancel");
+        buttonCancel.setCancelButton(true);
+        buttonCancel.setOnAction(e -> stage.close());
+        HBox buttonHBox = new HBox(buttonSave, buttonCancel);
+        VBox settingsVBox = new VBox(selectDirectory, listDirectory, buttonHBox);
+        showNodes(settingsVBox);
     }
 
     @Override

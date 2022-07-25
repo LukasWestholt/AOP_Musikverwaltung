@@ -1,5 +1,9 @@
 package musikverwaltung;
 
+import java.io.*;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
@@ -8,14 +12,9 @@ import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.media.Media;
 
-import java.io.*;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class MediaManager {
-    final HashSet<File> mediaFiles = new HashSet<>();
-    final HashMap<Integer, String> genres = loadGenres();
+    private final HashSet<File> mediaFiles = new HashSet<>();
+    private final HashMap<Integer, String> genres = loadGenres();
 
     public final ObservableList<Musikstueck> music = FXCollections.observableArrayList(o -> new Observable[]{
             o.bekommeTitelProperty(),
@@ -23,12 +22,11 @@ public class MediaManager {
             o.bekommeGenreProperty()
     });
 
-
-    final String[] types = {
+    private final String[] types = {
             "wav", "mp3", "m4a", ".aif", ".aiff"
     };
 
-    private static final String genre_filename = "genres.txt";
+    private static final String genreFilename = "genres.txt";
 
     public void clearAndLoadAll(Runnable refreshCallback) {
         music.clear();
@@ -42,7 +40,7 @@ public class MediaManager {
         for (final File mediaFile : mediaFiles) {
             music.add(new Musikstueck(mediaFile));
             Media media = new Media(mediaFile.toURI().toString());
-            ObservableMap<String, Object> metadata_for_listener = media.getMetadata();
+            ObservableMap<String, Object> metadataForListener = media.getMetadata();
             metadataListener = metadata -> {
                 //System.out.println(currentSong.getMetadata());
                 FilteredList<Musikstueck> fl = music.filtered(p -> p.getPath() == mediaFile);
@@ -62,22 +60,22 @@ public class MediaManager {
                 }
                 Object genre = metadata.getMap().get("genre");
                 if (genre != null && musikstueck.bekommeGenre().isEmpty()) {
-                    String genre_str = genre.toString();
+                    String genreStr = genre.toString();
 
                     // https://regex101.com/r/NYHAf3/1
                     Pattern pattern = Pattern.compile("^\\((\\d+)\\)$");
-                    Matcher matcher = pattern.matcher(genre_str);
+                    Matcher matcher = pattern.matcher(genreStr);
                     if (matcher.matches()) {
                         int id = Integer.parseInt(matcher.group(1));
                         if (genres.containsKey(id)) {
-                            genre_str = genres.get(id);
+                            genreStr = genres.get(id);
                         }
                     }
-                    musikstueck.setzeGenre(genre_str);
+                    musikstueck.setzeGenre(genreStr);
                 }
                 refreshCallback.run();
             };
-            metadata_for_listener.addListener(metadataListener);
+            metadataForListener.addListener(metadataListener);
         }
     }
 
@@ -92,7 +90,7 @@ public class MediaManager {
                 int p = Math.max(fileName.lastIndexOf('/'), fileName.lastIndexOf('\\'));
 
                 if (i > p) {
-                    extension = fileName.substring(i+1);
+                    extension = fileName.substring(i + 1);
                     for (final String type : types) {
                         if (extension.equals(type)) {
                             mediaFiles.add(fileEntry);
@@ -105,14 +103,14 @@ public class MediaManager {
 
     /**
      * There is a list for genre ids:
-     * <a href="https://en.wikipedia.org/wiki/List_of_ID3v1_Genres">Genre ids</a>
+     * <a href="https://en.wikipedia.org/wiki/List_of_ID3v1_Genres">Genre ids</a>.
      *
      */
     public static HashMap<Integer, String> loadGenres() {
         HashMap<Integer, String> genresMap = new HashMap<>();
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(genre_filename));
+            BufferedReader br = new BufferedReader(new FileReader(genreFilename));
             String line = br.readLine();
             while (line != null) {
                 String[] array = line.split(" - ", 2);

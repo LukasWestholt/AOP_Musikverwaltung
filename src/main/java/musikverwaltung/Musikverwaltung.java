@@ -8,7 +8,7 @@ import musikverwaltung.views.*;
 
 public class Musikverwaltung extends Application {
     ScreenController screenController;
-    MediaManager mediaManager = new MediaManager();
+    final MediaManager mediaManager = new MediaManager();
 
     public static void main(String[] args) {
         System.out.println("Programm Startpunkt");

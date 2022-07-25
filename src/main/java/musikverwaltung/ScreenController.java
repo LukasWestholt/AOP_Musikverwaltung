@@ -1,5 +1,7 @@
 package musikverwaltung;
 
+import java.util.HashMap;
+import java.util.Objects;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -13,9 +15,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import musikverwaltung.views.GenericView;
 
-import java.util.HashMap;
-import java.util.Objects;
-
 // https://stackoverflow.com/a/37276108/8980073
 public class ScreenController {
     private final HashMap<Class<? extends GenericView>, GenericView> screenMap = new HashMap<>();
@@ -28,9 +27,11 @@ public class ScreenController {
     public Stage getMain() {
         return stageMap.get(GenericView.class);
     }
+
     public Scene getMainScene() {
         return getMain().getScene();
     }
+
     public javafx.collections.ObservableList<javafx.scene.Node> getMainChildren() {
         return ((Group) getMainScene().getRoot()).getChildren();
     }
@@ -41,11 +42,10 @@ public class ScreenController {
 
     public GenericView activate(Class<? extends GenericView> id) {
         GenericView view = screenMap.get(id);
-        Stage mainStage = getMain();
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
         getMainChildren().clear();
         getMainChildren().add(view.get());
-        return activate(mainStage, view, id.getName()); // TODO (LW) class.getName() or better: String in GenericView
+        return activate(getMain(), view, id.getName()); // TODO (LW) class.getName() or better: String in GenericView
     }
 
     // https://genuinecoder.com/javafx-scene-switch-change-animation/
@@ -55,7 +55,6 @@ public class ScreenController {
         }
 
         GenericView view = screenMap.get(id);
-        Stage mainStage = getMain();
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
         Node root = view.get();
 
@@ -73,7 +72,7 @@ public class ScreenController {
         //After completing animation, remove first scene
         timeline.setOnFinished(t -> getMainChildren().remove(0, getMainChildren().size() - 1));
         timeline.play();
-        return activate(mainStage, view, id.getName());
+        return activate(getMain(), view, id.getName());
     }
 
     public void activate(Class<? extends GenericView> id, Boolean animated, Integer seconds) {
@@ -85,31 +84,18 @@ public class ScreenController {
         timeline.play();
     }
 
-    public GenericView activateWindow(Class<? extends GenericView> id, boolean neighborToMain) {
-        Stage stage = stageMap.get(id);
-        GenericView view = screenMap.get(id);
-        if (stage != null) {
-            return activate(stage, view, id.getName(), neighborToMain);
-        }
-        stage = new Stage();
-        stageMap.put(id, stage);
-        Scene scene = new Scene(new Group(), view.getPrefWidth(), (neighborToMain ? getMainScene().getHeight() : view.getPrefHeight()));
-        stage.setScene(scene);
-        view.bindSceneDimensions(scene.widthProperty(), scene.heightProperty());
-        ((Group) scene.getRoot()).getChildren().add(view.get());
-        return activate(stage, view, id.getName(), neighborToMain);
-    }
-
     public GenericView activate(Stage stage, GenericView view, String title) {
         return activate(stage, view, title, false);
     }
+
     public GenericView activate(Stage stage, GenericView view, String title, boolean neighborToMain) {
         if (neighborToMain) {
             Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
             Stage mainStage = getMain();
             double x = mainStage.getX() + mainStage.getWidth();
             double y = mainStage.getY();
-            if (bounds.getMinX() + bounds.getWidth() < x + stage.getWidth() || bounds.getMinY() + bounds.getHeight() < y + stage.getHeight()) {
+            if (bounds.getMinX() + bounds.getWidth() < x + stage.getWidth()
+                    || bounds.getMinY() + bounds.getHeight() < y + stage.getHeight()) {
                 System.out.println("out of bounds");
             } else {
                 stage.setX(x);
@@ -120,7 +106,25 @@ public class ScreenController {
         view.setStage(stage);
         stage.show();
         stage.toFront();
-        stage.getScene().getStylesheets().add(Objects.requireNonNull(this.getClass().getResource("style.css")).toExternalForm());
+        stage.getScene().getStylesheets().add(
+                Objects.requireNonNull(this.getClass().getResource("style.css")).toExternalForm()
+        );
         return view;
+    }
+
+    public GenericView activateWindow(Class<? extends GenericView> id, boolean neighborToMain) {
+        Stage stage = stageMap.get(id);
+        GenericView view = screenMap.get(id);
+        if (stage != null) {
+            return activate(stage, view, id.getName(), neighborToMain);
+        }
+        stage = new Stage();
+        stageMap.put(id, stage);
+        Scene scene = new Scene(new Group(), view.getPrefWidth(),
+                (neighborToMain ? getMainScene().getHeight() : view.getPrefHeight()));
+        stage.setScene(scene);
+        view.bindSceneDimensions(scene.widthProperty(), scene.heightProperty());
+        ((Group) scene.getRoot()).getChildren().add(view.get());
+        return activate(stage, view, id.getName(), neighborToMain);
     }
 }

@@ -1,5 +1,6 @@
 package musikverwaltung.views;
 
+import java.util.ArrayList;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.FilteredList;
@@ -21,15 +22,14 @@ import musikverwaltung.MediaManager;
 import musikverwaltung.Musikstueck;
 import musikverwaltung.ScreenController;
 
-import java.util.ArrayList;
 
 public class MainView extends MenuBarView {
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
-    TableView<Musikstueck> table = new TableView<>();
+    final TableView<Musikstueck> table = new TableView<>();
 
-    MediaManager mediaManager;
+    final MediaManager mediaManager;
 
     // https://stackoverflow.com/a/47560767/8980073
     public MainView(ScreenController sc, MediaManager mediaManager) {
@@ -48,7 +48,8 @@ public class MainView extends MenuBarView {
 
         mediaManager.clearAndLoadAll(table::refresh);
 
-        FilteredList<Musikstueck> flMusikstueck = new FilteredList<>(mediaManager.music, p -> true); //Pass the data to a filtered list
+        //Pass the data to a filtered list
+        final FilteredList<Musikstueck> flMusikstueck = new FilteredList<>(mediaManager.music, p -> true);
 
         final Label welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.getStyleClass().add("header");
@@ -80,17 +81,24 @@ public class MainView extends MenuBarView {
         TextField textSearchField = new TextField();
         textSearchField.setPromptText("Search here!");
         textSearchField.textProperty().addListener((obs, oldValue, newValue) -> {
-            switch (choiceBox.getValue())
-            {
+            switch (choiceBox.getValue()) {
                 //filter table by one key
                 case "Überall" ->
-                        flMusikstueck.setPredicate(p -> p.search_everywhere(newValue));
+                        flMusikstueck.setPredicate(p ->
+                                p.search_everywhere(newValue));
                 case "Titel" ->
-                        flMusikstueck.setPredicate(p -> p.bekommePrimaryKey().toLowerCase().contains(newValue.toLowerCase().trim()));
+                        flMusikstueck.setPredicate(p ->
+                                p.bekommePrimaryKey().toLowerCase().contains(newValue.toLowerCase().trim())
+                        );
                 case "Interpret" ->
-                        flMusikstueck.setPredicate(p -> p.bekommeInterpret().toLowerCase().contains(newValue.toLowerCase().trim()));
+                        flMusikstueck.setPredicate(p ->
+                                p.bekommeInterpret().toLowerCase().contains(newValue.toLowerCase().trim())
+                        );
                 case "Genre" ->
-                        flMusikstueck.setPredicate(p -> p.bekommeGenre().toLowerCase().contains(newValue.toLowerCase().trim()));
+                        flMusikstueck.setPredicate(p ->
+                                p.bekommeGenre().toLowerCase().contains(newValue.toLowerCase().trim())
+                        );
+                default -> System.out.println("komisch");
             }
         });
 
@@ -107,8 +115,8 @@ public class MainView extends MenuBarView {
             actionLabel.setText("Starte Player");
             screenController.activateWindow(SongView.class, true);
         });
-        HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton);//Add choiceBox and textField to hBox
-        searchHBox.setAlignment(Pos.CENTER);//Center HBox
+        HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton); //Add choiceBox and textField to hBox
+        searchHBox.setAlignment(Pos.CENTER); //Center HBox
 
         TableColumn<Musikstueck, String> titleCol = new TableColumn<>("Titel");
         titleCol.setCellValueFactory(cellData -> new SimpleStringProperty(
@@ -128,7 +136,8 @@ public class MainView extends MenuBarView {
         ));
         genreCol.setCellFactory(highlightedTableCell());
 
-        titleCol.prefWidthProperty().bind(table.widthProperty().divide(3).subtract(15)); // Quick fix for not showing the horizontal scroll bar.
+        // Quick fix for not showing the horizontal scroll bar.
+        titleCol.prefWidthProperty().bind(table.widthProperty().divide(3).subtract(15));
         interpretCol.prefWidthProperty().bind(table.widthProperty().divide(3));
         genreCol.prefWidthProperty().bind(table.widthProperty().divide(3));
 
@@ -137,10 +146,10 @@ public class MainView extends MenuBarView {
         table.getColumns().add(interpretCol);
         table.getColumns().add(genreCol);
 
-        table.setRowFactory( tv -> {
+        table.setRowFactory(tv -> {
             TableRow<Musikstueck> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
+                if (event.getClickCount() == 2 && (! row.isEmpty())) {
                     actionLabel.setText("Spiele ab...");
                     ArrayList<Musikstueck> playlist = new ArrayList<>();
                     playlist.add(row.getItem());

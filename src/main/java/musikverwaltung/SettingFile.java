@@ -20,8 +20,10 @@ public class SettingFile {
     }
 
     public static void save(ArrayList<String> list) {
-        try (FileOutputStream f = new FileOutputStream(filename);
-             ObjectOutputStream s = new ObjectOutputStream(f)) {
+        try (
+                FileOutputStream f = new FileOutputStream(filename);
+                ObjectOutputStream s = new ObjectOutputStream(f)
+        ) {
             s.writeObject(list);
         } catch (IOException err) {
             err.printStackTrace();

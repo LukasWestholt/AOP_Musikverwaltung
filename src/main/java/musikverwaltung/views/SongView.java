@@ -2,7 +2,6 @@ package musikverwaltung.views;
 
 import java.io.File;
 import java.util.List;
-
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
@@ -31,12 +30,15 @@ public class SongView extends MenuBarView {
     Media currentSong;
     MediaPlayer player;
     private final ObservableList<Musikstueck> playlist = FXCollections.observableArrayList();
+    /*
 
+     */
     private final ChangeListener<Duration> playerSongLengthListener;
 
     public SongView(ScreenController sc) {
-        /*  https://www.geeksforgeeks.org/javafx-progressbar/
-         *	https://stackoverflow.com/questions/26850828/how-to-make-a-javafx-button-with-circle-shape-of-3xp-diameter
+        /*
+        https://www.geeksforgeeks.org/javafx-progressbar/
+        https://stackoverflow.com/questions/26850828/how-to-make-a-javafx-button-with-circle-shape-of-3xp-diameter
          */
         super(sc, 320, 560);
 
@@ -77,10 +79,11 @@ public class SongView extends MenuBarView {
         songSlider.valueChangingProperty().addListener((observableValue, wasChanging, changing) -> {
             if (!changing) {
                 System.out.println("slider change finished");
-                if (player != null) player.seek(Duration.seconds(songLength * songSlider.getValue()));
+                if (player != null) {
+                    player.seek(Duration.seconds(songLength * songSlider.getValue()));
+                }
             }
         });
-        StackPane songSliderProgressbar = new StackPane(songProgressBar, songSlider);
 
         startStop = new Button("start");
         startStop.setShape(new Circle(1));
@@ -112,7 +115,9 @@ public class SongView extends MenuBarView {
         slider.setShowTickLabels(true);
         slider.valueProperty().addListener((useless1, useless2, sliderValue) -> {
             volume = sliderValue.doubleValue();
-            if (player != null) player.setVolume(volume);
+            if (player != null) {
+                player.setVolume(volume);
+            }
         });
 
         HBox sliderHBox = new HBox(slider);
@@ -122,21 +127,22 @@ public class SongView extends MenuBarView {
         HBox.setHgrow(slider, Priority.ALWAYS);
 
         VBox.setVgrow(buttonHBox, Priority.ALWAYS);
-        VBox mediaControllVBox = new VBox(songSliderProgressbar, buttonHBox, sliderHBox);
-        mediaControllVBox.setAlignment(Pos.CENTER);
-        mediaControllVBox.setSpacing(10);
-        mediaControllVBox.setStyle("-fx-background-color: beige;");
-        VBox.setMargin(mediaControllVBox, new Insets(0, 15, 15, 15));
+        StackPane songSliderProgressbar = new StackPane(songProgressBar, songSlider);
+        VBox mediaControlVBox = new VBox(songSliderProgressbar, buttonHBox, sliderHBox);
+        mediaControlVBox.setAlignment(Pos.CENTER);
+        mediaControlVBox.setSpacing(10);
+        mediaControlVBox.setStyle("-fx-background-color: beige;");
+        VBox.setMargin(mediaControlVBox, new Insets(0, 15, 15, 15));
 
         StackPane imgContainer = new StackPane();
         imgContainer.getChildren().add(img);
         imgContainer.setAlignment(Pos.CENTER);
         VBox.setVgrow(imgContainer, Priority.ALWAYS);
 
-        VBox vBox = new VBox(labelSongName, imgContainer, mediaControllVBox);
-        vBox.setAlignment(Pos.CENTER);
-        vBox.setSpacing(10);
-        showNodes(vBox);
+        VBox playerVBox = new VBox(labelSongName, imgContainer, mediaControlVBox);
+        playerVBox.setAlignment(Pos.CENTER);
+        playerVBox.setSpacing(10);
+        showNodes(playerVBox);
     }
 
     private void displayImage() {

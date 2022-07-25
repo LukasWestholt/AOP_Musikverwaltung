@@ -51,6 +51,7 @@ public class MenuBarView extends GenericView {
             }
         }
     }
+
     public void ignoreMenuItems(Region... regions) {
         menuToolBar.getItems().removeAll(regions);
     }

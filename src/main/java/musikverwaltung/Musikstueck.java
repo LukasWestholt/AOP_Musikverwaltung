@@ -1,11 +1,10 @@
 package musikverwaltung;
 
-import javafx.beans.property.SimpleStringProperty;
+import static musikverwaltung.views.MainView.HIGHLIGHT_END;
+import static musikverwaltung.views.MainView.HIGHLIGHT_START;
 
 import java.io.File;
-
-import static musikverwaltung.views.MainView.HIGHLIGHT_START;
-import static musikverwaltung.views.MainView.HIGHLIGHT_END;
+import javafx.beans.property.SimpleStringProperty;
 
 public class Musikstueck {
     private final SimpleStringProperty titel = new SimpleStringProperty();
@@ -20,6 +19,7 @@ public class Musikstueck {
         this.genre.setValue(genre);
         this.path = path;
     }
+
     public Musikstueck(File path) {
         this.path = path;
     }
@@ -36,8 +36,7 @@ public class Musikstueck {
         this.titel.set(titel);
     }
 
-    public SimpleStringProperty bekommeTitelProperty()
-    {
+    public SimpleStringProperty bekommeTitelProperty() {
         return titel;
     }
 
@@ -49,8 +48,7 @@ public class Musikstueck {
         this.interpret.set(interpret);
     }
 
-    public SimpleStringProperty bekommeInterpretProperty()
-    {
+    public SimpleStringProperty bekommeInterpretProperty() {
         return interpret;
     }
 
@@ -62,8 +60,7 @@ public class Musikstueck {
         this.genre.set(genre);
     }
 
-    public SimpleStringProperty bekommeGenreProperty()
-    {
+    public SimpleStringProperty bekommeGenreProperty() {
         return genre;
     }
 
@@ -80,17 +77,20 @@ public class Musikstueck {
     /**
      * This method adds to matching substrings of title a prefix and suffix.
      * If no match is found the title is returned without modification.
+     *
      * @param searchTitle Text like "Atem"
-     * @return Highlighted title like "<HIGHLIGHT_START>Atem<HIGHLIGHT_END>los"
+     * @return Highlighted title like {@code <HIGHLIGHT_START>Atem<HIGHLIGHT_END>los}
      */
     public String bekommeHighlightedPrimaryKey(String searchTitle) {
         return bekommeHighlighted(bekommePrimaryKey(), searchTitle);
     }
+
     /**
      * This method adds to matching substrings of interpret a prefix and suffix.
      * If no match is found the interpret is returned without modification.
+     *
      * @param searchInterpret Text like "Helene"
-     * @return Highlighted interpret like "<HIGHLIGHT_START>Helene<HIGHLIGHT_END> Fischer"
+     * @return Highlighted interpret like {@code <HIGHLIGHT_START>Helene<HIGHLIGHT_END> Fischer}
      */
     public String bekommeHighlightedInterpret(String searchInterpret) {
         return bekommeHighlighted(bekommeInterpret(), searchInterpret);
@@ -98,9 +98,11 @@ public class Musikstueck {
     /**
      * This method adds to matching substrings of genre a prefix and suffix.
      * If no match is found the genre is returned without modification.
+     *
      * @param searchText Text like "ager"
-     * @return Highlighted genre like "Schl<HIGHLIGHT_START>ager<HIGHLIGHT_END>"
+     * @return Highlighted genre like {@code Schl<HIGHLIGHT_START>ager<HIGHLIGHT_END>}
      */
+
     public String bekommeHighlightedGenre(String searchText) {
         return bekommeHighlighted(bekommeGenre(), searchText);
     }
@@ -109,36 +111,40 @@ public class Musikstueck {
     /**
      * This method adds to matching substrings a prefix and suffix.
      * If no match is found the text is returned without modification.
+     *
      * @param text Text like "Helene Fischer"
      * @param searchText Text like "Helene"
-     * @return Highlighted text like "<HIGHLIGHT_START>Helene<HIGHLIGHT_END> Fischer"
+     * @return Highlighted text like {@code <HIGHLIGHT_START>Helene<HIGHLIGHT_END> Fischer}
      */
     private static String bekommeHighlighted(String text, String searchText) {
         if (searchText.length() > 3) {
             searchText = searchText.toLowerCase();
-            StringBuilder new_titel = new StringBuilder();
+            StringBuilder newTitle = new StringBuilder();
             while (text.toLowerCase().contains(searchText)) {
-                int match_pre_index = text.toLowerCase().indexOf(searchText);
-                int match_post_index = match_pre_index + searchText.length();
-                new_titel.append(text, 0, match_pre_index).append(HIGHLIGHT_START).append(text, match_pre_index, match_post_index).append(HIGHLIGHT_END);
-                text = text.substring(match_post_index);
+                int matchPreIndex = text.toLowerCase().indexOf(searchText);
+                int matchPostIndex = matchPreIndex + searchText.length();
+                newTitle.append(text, 0, matchPreIndex).append(HIGHLIGHT_START)
+                        .append(text, matchPreIndex, matchPostIndex).append(HIGHLIGHT_END);
+                text = text.substring(matchPostIndex);
             }
-            text = new_titel + text;
+            text = newTitle + text;
         }
         return text;
     }
 
     private String notNullString(String str) {
-        if (str == null) return "";
+        if (str == null) {
+            return "";
+        }
         return str;
     }
 
     @Override
     public String toString() {
-        return "<" + this.getClass().getSimpleName() + "> " +
-                "Titel: " + bekommeTitel() + ", " +
-                "Interpret: " + bekommeInterpret() + ", " +
-                "Genre: " + bekommeGenre() + ", " +
-                "Path: " + path.toString();
+        return "<" + this.getClass().getSimpleName() + "> "
+                + "Titel: " + bekommeTitel() + ", "
+                + "Interpret: " + bekommeInterpret() + ", "
+                + "Genre: " + bekommeGenre() + ", "
+                + "Path: " + path.toString();
     }
 }
