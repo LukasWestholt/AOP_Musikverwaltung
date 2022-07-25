@@ -13,7 +13,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: 'github-pr-check'
-          checkstyle_config: 'src/main/resources/checkstyle.xml'
+          checkstyle_config: src/main/resources/checkstyle.xml
           checkstyle_version: '10.3.1'
           tool_name: 'checkstyle'
           level: 'error'
