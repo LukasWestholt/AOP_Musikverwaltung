@@ -25,7 +25,7 @@ public class Musikstueck {
     }
 
     public String bekommePrimaryKey() {
-        return titel.get() != null ? titel.get() : path.toString();
+        return titel.get() != null ? titel.get() : path.getName();
     }
 
     public String bekommeTitel() {
