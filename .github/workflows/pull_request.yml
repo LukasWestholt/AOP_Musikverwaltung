@@ -5,7 +5,7 @@ on: pull_request
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Checkstyle and compile
+    name: Checkstyle
     steps:
       - name: Run check style
         uses: nikitasavinov/checkstyle-action@0.6.0

@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Checkstyle and compile
+    name: compile
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v3
