@@ -1,38 +1,40 @@
 package musikverwaltung;
 
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
 
 public class PlaylistView extends MenuBarView {
 
-    public PlaylistView(ScreenController sc) {
+    public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
 
         addActiveMenuButton(settingButton,
-                e -> screenController.activateWindow(SC.Einstellungen, false, 350, 300)
+                e -> screenController.activateWindow(SettingsView.class, false)
         );
         addActiveMenuButton(mainViewButton,
-                e -> screenController.activate(SC.Musikverwaltung)
+                e -> screenController.activate(MainView.class)
         );
         setActiveMenuItem(playlistButton);
 
         final Label welcomeLabel = new Label("Playlisten");
-        welcomeLabel.setFont(new Font("Arial", 20));
+        welcomeLabel.getStyleClass().add("header");
 
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
-        vbox.setPadding(new Insets(10, 10, 10, 10));
+        vbox.setPadding(new Insets(10));
 
         TilePane tilePane = new TilePane();
         tilePane.setId("playlists");
         tilePane.setHgap(5);
         tilePane.setVgap(5);
-        tilePane.setPadding(new Insets(5));
+        tilePane.setPadding(new Insets(5, 5, 0, 5));
+        tilePane.setPrefColumns(1);
+        tilePane.setMaxHeight(Region.USE_PREF_SIZE);
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 12; i++) {
             Button button = new Button(Integer.toString(i));
             if (i == 0) {
                 button.setText("Lalala das ist ein richtig langer langer langer langer langer langer Name");
@@ -47,6 +49,11 @@ public class PlaylistView extends MenuBarView {
                 }
             });
             button.setOnAction((e) -> {
+                ObservableList<Musikstueck> playlist = mediaManager.music;
+                GenericView view = screenController.activateWindow(SongView.class, true);
+                if (view instanceof SongView songView) {
+                    songView.setPlaylist(playlist);
+                }
             });
             button.setAlignment(Pos.BASELINE_CENTER);
             button.setStyle("-fx-font-size:20");
@@ -61,8 +68,13 @@ public class PlaylistView extends MenuBarView {
         sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         sp.setFitToWidth(true);
         sp.setContent(tilePane);
+        sp.setMaxHeight(Control.USE_PREF_SIZE);
 
-        vbox.getChildren().addAll(welcomeLabel, sp);
+        Button musicPlayerButton = new Button("Player");
+        musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
+        musicPlayerButton.setOnAction(e -> screenController.activateWindow(SongView.class, true));
+
+        vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton);
         showNodes(vbox);
     }
 }

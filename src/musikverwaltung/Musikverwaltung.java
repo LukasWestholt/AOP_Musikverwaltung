@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 
 public class Musikverwaltung extends Application {
     ScreenController screenController;
+    MediaManager mediaManager = new MediaManager();
 
     public static void main(String[] args) {
         System.out.println("Programm Startpunkt");
@@ -15,17 +16,17 @@ public class Musikverwaltung extends Application {
 
     @Override
     public void start(Stage stage) {
-        Scene scene = new Scene(new Group(), 650, 450);
+        Scene scene = new Scene(new Group(), GenericView.DEFAULT_WIDTH, GenericView.DEFAULT_HEIGHT);
         stage.setScene(scene);
         stage.show();
 
         screenController = new ScreenController(stage);
-        screenController.addScreen(SC.Hello, new HelloView(screenController));
-        screenController.addScreen(SC.Musikverwaltung, new MainView(screenController));
-        screenController.addScreen(SC.Player, new SongView(screenController));
-        screenController.addScreen(SC.Einstellungen, new SettingsView(screenController));
-        screenController.addScreen(SC.Playlist, new PlaylistView(screenController));
-        screenController.activate(SC.Hello);
-        screenController.activate(SC.Musikverwaltung, true, 1);
+        screenController.addScreen(new HelloView(screenController));
+        screenController.addScreen(new MainView(screenController, mediaManager));
+        screenController.addScreen(new SongView(screenController));
+        screenController.addScreen(new SettingsView(screenController));
+        screenController.addScreen(new PlaylistView(screenController, mediaManager));
+        screenController.activate(HelloView.class);
+        screenController.activate(MainView.class, true, 1);
     }
 }

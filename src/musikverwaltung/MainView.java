@@ -1,9 +1,11 @@
 package musikverwaltung;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -14,7 +16,6 @@ import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.util.Callback;
 
 import java.util.ArrayList;
@@ -23,19 +24,22 @@ public class MainView extends MenuBarView {
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
+    TableView<Musikstueck> table = new TableView<>();
+
+    MediaManager mediaManager;
+
     // https://stackoverflow.com/a/47560767/8980073
-    public MainView(ScreenController sc) {
+    public MainView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
 
-        MediaManager mediaManager = new MediaManager();
-        TableView<Musikstueck> table = new TableView<>();
+        this.mediaManager = mediaManager;
 
         addActiveMenuButton(settingButton,
-                e -> screenController.activateWindow(SC.Einstellungen, false, 350, 300)
+                e -> screenController.activateWindow(SettingsView.class, false)
                         .clearActionListener().addActionListener(() -> mediaManager.clearAndLoadAll(table::refresh))
         );
         addActiveMenuButton(playlistButton,
-                e -> screenController.activate(SC.Playlist)
+                e -> screenController.activate(PlaylistView.class)
         );
         setActiveMenuItem(mainViewButton);
 
@@ -44,7 +48,7 @@ public class MainView extends MenuBarView {
         FilteredList<Musikstueck> flMusikstueck = new FilteredList<>(mediaManager.music, p -> true); //Pass the data to a filtered list
 
         final Label welcomeLabel = new Label("Willkommen in der Musikverwaltung");
-        welcomeLabel.setFont(new Font("Arial", 20));
+        welcomeLabel.getStyleClass().add("header");
 
         Button deleteButton = new Button("Löschen");
         deleteButton.setMinWidth(Control.USE_PREF_SIZE);
@@ -98,7 +102,7 @@ public class MainView extends MenuBarView {
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
         musicPlayerButton.setOnAction(e -> {
             actionLabel.setText("Starte Player");
-            screenController.activateWindow(SC.Player, true, 220, 0);
+            screenController.activateWindow(SongView.class, true);
         });
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton);//Add choiceBox and textField to hBox
         searchHBox.setAlignment(Pos.CENTER);//Center HBox
@@ -137,7 +141,7 @@ public class MainView extends MenuBarView {
                     actionLabel.setText("Spiele ab...");
                     ArrayList<Musikstueck> playlist = new ArrayList<>();
                     playlist.add(row.getItem());
-                    GenericView view = screenController.activateWindow(SC.Player, true, 220, 0);
+                    GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView songView) {
                         songView.setPlaylist(playlist);
                     }
@@ -145,6 +149,7 @@ public class MainView extends MenuBarView {
             });
             return row;
         });
+        VBox.setVgrow(table, Priority.ALWAYS);
 
         final VBox vbox = new VBox();
         vbox.setSpacing(5);
@@ -164,6 +169,12 @@ public class MainView extends MenuBarView {
         StackPane.setAlignment(vbox, Pos.TOP_LEFT);
         StackPane.setAlignment(rectangle, Pos.TOP_LEFT);
         showNodes(rectangle, vbox);
+    }
+
+    @Override
+    public Node get() {
+        Platform.runLater(() -> mediaManager.clearAndLoadAll(table::refresh));
+        return super.get();
     }
 
     // https://stackoverflow.com/q/26906810/8980073

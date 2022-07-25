@@ -9,14 +9,36 @@ import javafx.stage.Stage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenericView {
+public abstract class GenericView {
     final StackPane stackPane = new StackPane();
 
     final ScreenController screenController;
 
     Stage stage;
 
+    private final double prefWidth;
+    private final double prefHeight;
+
+    public static final double DEFAULT_WIDTH = 650;
+    public static final double DEFAULT_HEIGHT = 560;
+
     private final List<ActionListener> listeners = new ArrayList<>();
+
+    public GenericView(ScreenController sc, double prefWidth, double prefHeight) {
+        screenController = sc;
+        this.prefWidth = prefWidth;
+        this.prefHeight = prefHeight;
+    }
+
+    public GenericView(ScreenController sc) {
+        screenController = sc;
+        this.prefWidth = DEFAULT_WIDTH;
+        this.prefHeight = DEFAULT_HEIGHT;
+    }
+
+    public Node get() {
+        return stackPane;
+    }
 
     public void addActionListener(ActionListener toAdd) {
         if (toAdd != null) listeners.add(toAdd);
@@ -25,14 +47,6 @@ public class GenericView {
     public GenericView clearActionListener() {
         listeners.clear();
         return this;
-    }
-
-    public GenericView(ScreenController sc) {
-        screenController = sc;
-    }
-
-    public Node get() {
-        return stackPane;
     }
 
     public void setStage(Stage stage) {
@@ -53,6 +67,13 @@ public class GenericView {
         return stackPane.prefHeightProperty().subtract(0);
     }
 
+    public double getPrefHeight() {
+        return prefHeight;
+    }
+
+    public double getPrefWidth() {
+        return prefWidth;
+    }
 
     public void showNodes(Node... nodes) {
         stackPane.getChildren().addAll(nodes);

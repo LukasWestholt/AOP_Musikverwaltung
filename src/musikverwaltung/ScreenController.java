@@ -17,15 +17,15 @@ import java.util.Objects;
 
 // https://stackoverflow.com/a/37276108/8980073
 public class ScreenController {
-    private final HashMap<SC, GenericView> screenMap = new HashMap<>();
-    private final HashMap<SC, Stage> stageMap = new HashMap<>();
+    private final HashMap<Class<? extends GenericView>, GenericView> screenMap = new HashMap<>();
+    private final HashMap<Class<? extends GenericView>, Stage> stageMap = new HashMap<>();
 
     public ScreenController(Stage stage) {
-        stageMap.put(SC.ROOT, stage);
+        stageMap.put(GenericView.class, stage);
     }
 
     public Stage getMain() {
-        return stageMap.get(SC.ROOT);
+        return stageMap.get(GenericView.class);
     }
     public Scene getMainScene() {
         return getMain().getScene();
@@ -34,26 +34,26 @@ public class ScreenController {
         return ((Group) getMainScene().getRoot()).getChildren();
     }
 
-    protected void addScreen(SC sc, GenericView view) {
-        screenMap.put(sc, view);
+    protected void addScreen(GenericView view) {
+        screenMap.put(view.getClass(), view);
     }
 
-    protected GenericView activate(SC sc) {
-        GenericView view = screenMap.get(sc);
+    protected GenericView activate(Class<? extends GenericView> id) {
+        GenericView view = screenMap.get(id);
         Stage mainStage = getMain();
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
         getMainChildren().clear();
         getMainChildren().add(view.get());
-        return activate(mainStage, view, sc.name());
+        return activate(mainStage, view, id.getName()); // TODO (LW) class.getName() or better: String in GenericView
     }
 
     // https://genuinecoder.com/javafx-scene-switch-change-animation/
-    protected GenericView activate(SC sc, Boolean animated) {
+    protected GenericView activate(Class<? extends GenericView> id, Boolean animated) {
         if (!animated) {
-            return activate(sc);
+            return activate(id);
         }
 
-        GenericView view = screenMap.get(sc);
+        GenericView view = screenMap.get(id);
         Stage mainStage = getMain();
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
         Node root = view.get();
@@ -72,31 +72,31 @@ public class ScreenController {
         //After completing animation, remove first scene
         timeline.setOnFinished(t -> getMainChildren().remove(0, getMainChildren().size() - 1));
         timeline.play();
-        return activate(mainStage, view, sc.name());
+        return activate(mainStage, view, id.getName());
     }
 
-    protected void activate(SC sc, Boolean animated, Integer seconds) {
+    protected void activate(Class<? extends GenericView> id, Boolean animated, Integer seconds) {
         Timeline timeline = new Timeline(
                 new KeyFrame(Duration.seconds(seconds),
-                        event -> activate(sc, animated)
+                        event -> activate(id, animated)
                 )
         );
         timeline.play();
     }
 
-    protected GenericView activateWindow(SC sc, boolean neighborToMain, double width, double height) {
-        Stage stage = stageMap.get(sc);
-        GenericView view = screenMap.get(sc);
+    protected GenericView activateWindow(Class<? extends GenericView> id, boolean neighborToMain) {
+        Stage stage = stageMap.get(id);
+        GenericView view = screenMap.get(id);
         if (stage != null) {
-            return activate(stage, view, sc.name(), neighborToMain);
+            return activate(stage, view, id.getName(), neighborToMain);
         }
         stage = new Stage();
-        stageMap.put(sc, stage);
-        Scene scene = new Scene(new Group(), width, (neighborToMain ? getMainScene().getHeight() : height));
+        stageMap.put(id, stage);
+        Scene scene = new Scene(new Group(), view.getPrefWidth(), (neighborToMain ? getMainScene().getHeight() : view.getPrefHeight()));
         stage.setScene(scene);
         view.bindSceneDimensions(scene.widthProperty(), scene.heightProperty());
         ((Group) scene.getRoot()).getChildren().add(view.get());
-        return activate(stage, view, sc.name(), neighborToMain);
+        return activate(stage, view, id.getName(), neighborToMain);
     }
 
     protected GenericView activate(Stage stage, GenericView view, String title) {
@@ -122,13 +122,4 @@ public class ScreenController {
         stage.getScene().getStylesheets().add(Objects.requireNonNull(this.getClass().getResource("style.css")).toExternalForm());
         return view;
     }
-}
-
-enum SC {
-    ROOT,
-    Hello,
-    Musikverwaltung,
-    Player,
-    Einstellungen,
-    Playlist
 }

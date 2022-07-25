@@ -3,6 +3,7 @@ package musikverwaltung;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -16,7 +17,7 @@ public class SettingsView extends GenericView implements Serializable {
     File directory;
 
     public SettingsView(ScreenController sc) {
-        super(sc);
+        super(sc, 350, 300);
 
         DirectoryChooser directoryChooser = new DirectoryChooser();
 
@@ -32,6 +33,7 @@ public class SettingsView extends GenericView implements Serializable {
         ListView<String> list_directory = new ListView<>(list);
         list_directory.setCellFactory(param -> new XCell(getWidthProperty()));
         list_directory.setFocusTraversable(false);
+        VBox.setVgrow(list_directory, Priority.ALWAYS);
 
         Button button_save = new Button("Save");
         button_save.setOnAction(e -> {
@@ -61,18 +63,17 @@ public class SettingsView extends GenericView implements Serializable {
     static class XCell extends ListCell<String> {
         final HBox hbox = new HBox();
         final Label label = new Label("");
-        final Pane pane = new Pane();
         final Button button = new Button("(Del)");
 
         public XCell(DoubleBinding widthProperty) {
             super();
-            HBox.setHgrow(pane, Priority.ALWAYS);
             button.setMinWidth(Control.USE_PREF_SIZE);
             button.setOnAction(event -> getListView().getItems().remove(getItem()));
+            HBox.setMargin(button, new Insets(0, 5, 0, 0));
             label.prefWidthProperty().bind(widthProperty.subtract(button.widthProperty()).subtract(25));
             label.setWrapText(true);
             hbox.setSpacing(4);
-            hbox.getChildren().addAll(label, pane, button);
+            hbox.getChildren().addAll(label, button);
         }
 
         @Override

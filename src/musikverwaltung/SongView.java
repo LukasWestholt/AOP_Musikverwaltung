@@ -3,9 +3,9 @@ package musikverwaltung;
 import java.io.File;
 import java.util.List;
 
+import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -15,15 +15,13 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Font;
 import javafx.util.Duration;
 
 public class SongView extends MenuBarView {
     int currentIndex = 0;
     double songLength;
-    double volume = 0;
+    double volume = 0.5;
     final Image defaultImage;
     final ImageView img;
     final Button startStop;
@@ -38,32 +36,28 @@ public class SongView extends MenuBarView {
         /*  https://www.geeksforgeeks.org/javafx-progressbar/
          *	https://stackoverflow.com/questions/26850828/how-to-make-a-javafx-button-with-circle-shape-of-3xp-diameter
          */
-        super(sc);
+        super(sc, 320, 560);
 
         File imgFile = new File(".\\media\\default_img.JPG");
         defaultImage = new Image(imgFile.toURI().toString());
 
         addActiveMenuButton(mainViewButton,
-                e -> screenController.activate(SC.Musikverwaltung)
+                e -> screenController.activate(MainView.class)
         );
         addActiveMenuButton(new Button("Reset"),
                 e -> reset(false)
         );
         ignoreMenuItems(settingButton, playlistButton);
 
-        labelSongName = new Label("noch kein Title");
-        labelSongName.setFont(Font.font(35));
-        //labelSongName.setStyle("-fx-background-color: #001A91;");
+        labelSongName = new Label("Unbekannt");
+        labelSongName.getStyleClass().add("header");
 
         img = new ImageView();
         img.setPreserveRatio(true);
         img.setSmooth(true);
         img.fitWidthProperty().bind(getWidthProperty().subtract(30));
-        VBox.setVgrow(img, Priority.SOMETIMES);
+        img.fitHeightProperty().bind(getHeightProperty().divide(2));
         displayImage();
-
-        Pane spacePane = new Pane();
-        VBox.setVgrow(spacePane, Priority.ALWAYS);
 
         final Slider songSlider = new Slider(0, 1, 0);
         songSlider.getStyleClass().add("song");
@@ -72,7 +66,6 @@ public class SongView extends MenuBarView {
         songProgressBar.getStyleClass().add("song");
         songProgressBar.prefHeightProperty().bind(getHeightProperty().divide(20));
         songProgressBar.prefWidthProperty().bind(songSlider.widthProperty());
-
         playerSongLengthListener = (o, oldPosition, newPosition) -> {
             songProgressBar.setProgress(newPosition.toSeconds() / songLength);
             if (!songSlider.isValueChanging()) {
@@ -85,43 +78,60 @@ public class SongView extends MenuBarView {
                 if (player != null) player.seek(Duration.seconds(songLength * songSlider.getValue()));
             }
         });
-
-        StackPane songSliderProgressbar = new StackPane();
-        songSliderProgressbar.getChildren().addAll(songProgressBar, songSlider);
+        StackPane songSliderProgressbar = new StackPane(songProgressBar, songSlider);
 
         startStop = new Button("start");
-        Circle circle = new Circle();
-        circle.radiusProperty().bind(getWidthProperty().divide(5));
-        startStop.setShape(circle);
-        startStop.prefWidthProperty().bind(getWidthProperty().divide(3));
-        startStop.prefHeightProperty().bind(startStop.prefWidthProperty());
+        startStop.setShape(new Circle(1));
         startStop.setOnAction(e -> startStopSong());
+        startStop.prefHeightProperty().bind(startStop.widthProperty());
         setDynamicSize(startStop);
+        startStop.maxHeightProperty().bind(startStop.widthProperty());
 
-        Button skipforward = new Button("skip +");
-        skipforward.setOnAction(e -> skipforwards());
-        setDynamicSize(skipforward);
+        Button skipForward = new Button("skip +");
+        skipForward.setOnAction(e -> skipforwards());
+        setDynamicSize(skipForward);
+        skipForward.maxHeightProperty().bind(startStop.widthProperty().multiply(0.7));
 
-        Button skipbackward = new Button("skip -");
-        skipbackward.setOnAction(e -> skipbackwards());
-        setDynamicSize(skipbackward);
+        Button skipBackward = new Button("skip -");
+        skipBackward.setOnAction(e -> skipbackwards());
+        setDynamicSize(skipBackward);
+        skipBackward.maxHeightProperty().bind(startStop.widthProperty().multiply(0.7));
+
+        HBox buttonHBox = new HBox(skipBackward, startStop, skipForward);
+        buttonHBox.setAlignment(Pos.CENTER);
+        buttonHBox.setSpacing(10);
+        buttonHBox.maxWidthProperty().bind(getHeightProperty().divide(2));
 
         Slider slider = new Slider(0, 1, 0);
+        slider.setValue(volume);
+        slider.setMinorTickCount(10);
+        slider.setMajorTickUnit(10.0);
+        slider.setShowTickMarks(true);
+        slider.setShowTickLabels(true);
         slider.valueProperty().addListener((useless1, useless2, sliderValue) -> {
             volume = sliderValue.doubleValue();
             if (player != null) player.setVolume(volume);
         });
 
-        HBox buttonHBox = new HBox(skipbackward, startStop, skipforward);
-        buttonHBox.setAlignment(Pos.CENTER);
-        buttonHBox.setSpacing(10);
-        VBox buttonVBox = new VBox(songSliderProgressbar, buttonHBox, slider);
-        buttonVBox.setAlignment(Pos.CENTER);
-        buttonVBox.setSpacing(10);
-        buttonVBox.setBackground(new Background(new BackgroundFill(Color.BEIGE, null, null)));
-        VBox.setMargin(buttonVBox, new Insets(0, 15, 15, 15));
+        HBox sliderHBox = new HBox(slider);
+        sliderHBox.maxWidthProperty().bind(new When(startStop.widthProperty().lessThan(120))
+                .then(120).otherwise(startStop.widthProperty()));
+        sliderHBox.setAlignment(Pos.CENTER);
+        HBox.setHgrow(slider, Priority.ALWAYS);
 
-        VBox vBox = new VBox(labelSongName, img, spacePane, buttonVBox);
+        VBox.setVgrow(buttonHBox, Priority.ALWAYS);
+        VBox mediaControllVBox = new VBox(songSliderProgressbar, buttonHBox, sliderHBox);
+        mediaControllVBox.setAlignment(Pos.CENTER);
+        mediaControllVBox.setSpacing(10);
+        mediaControllVBox.setStyle("-fx-background-color: beige;");
+        VBox.setMargin(mediaControllVBox, new Insets(0, 15, 15, 15));
+
+        StackPane imgContainer = new StackPane();
+        imgContainer.getChildren().add(img);
+        imgContainer.setAlignment(Pos.CENTER);
+        VBox.setVgrow(imgContainer, Priority.ALWAYS);
+
+        VBox vBox = new VBox(labelSongName, imgContainer, mediaControllVBox);
         vBox.setAlignment(Pos.CENTER);
         vBox.setSpacing(10);
         showNodes(vBox);
@@ -195,15 +205,6 @@ public class SongView extends MenuBarView {
 
     private void activateListeners() {
         currentSong.durationProperty().addListener((arg0, arg1, duration) -> songLength = duration.toSeconds());
-        currentSong.getMetadata().addListener((MapChangeListener<String, Object>) metadata -> {
-            System.out.println(currentSong.getMetadata());
-            Object titel = metadata.getMap().get("title");
-            if (titel != null) {
-                System.out.println(titel);
-                labelSongName.setText(titel.toString());
-            }
-
-        });
         player.currentTimeProperty().addListener(playerSongLengthListener);
     }
 

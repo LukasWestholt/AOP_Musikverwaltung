@@ -20,10 +20,14 @@ public class MenuBarView extends GenericView {
     final Button playlistButton = new Button("Playlist");
     final Button settingButton = new Button("Einstellungen");
 
-    public MenuBarView(ScreenController sc) {
-        super(sc);
+    public MenuBarView(ScreenController sc, double prefWidth, double prefHeight) {
+        super(sc, prefWidth, prefHeight);
         addMenuItems(true, mainViewButton, playlistButton, settingButton);
         wrapperVBox.getChildren().addAll(menuToolBar, stackPane);
+    }
+
+    public MenuBarView(ScreenController sc) {
+        this(sc, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     public void addActiveMenuButton(Button button, EventHandler<ActionEvent> eventHandler) {
@@ -62,6 +66,8 @@ public class MenuBarView extends GenericView {
     public void bindSceneDimensions(ReadOnlyDoubleProperty width, ReadOnlyDoubleProperty height) {
         wrapperVBox.prefWidthProperty().bind(width);
         wrapperVBox.prefHeightProperty().bind(height);
+        stackPane.prefWidthProperty().bind(getWidthProperty());
+        stackPane.prefHeightProperty().bind(getHeightProperty());
     }
 
     @Override
