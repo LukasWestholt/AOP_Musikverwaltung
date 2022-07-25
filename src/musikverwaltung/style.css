@@ -1,3 +1,22 @@
+#scroll-playlists.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+#scroll-playlists.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+#playlists > * {
+    -fx-background-color: lightblue;
+    -fx-text-fill: white;
+    -fx-text-overrun: clip;
+}
+
+#playlists > *:hover {
+    -fx-background-color: yellow;
+    -fx-text-fill: black;
+}
+
 #active {
     -fx-background-color: lightblue;
     -fx-border-color: grey;
