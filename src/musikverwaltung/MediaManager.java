@@ -8,11 +8,14 @@ import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.media.Media;
 
-import java.io.File;
+import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MediaManager {
     final HashSet<File> mediaFiles = new HashSet<>();
+    final HashMap<Integer, String> genres = loadGenres();
 
     public final ObservableList<Musikstueck> music = FXCollections.observableArrayList(o -> new Observable[]{
             o.bekommeTitelProperty(),
@@ -20,9 +23,13 @@ public class MediaManager {
             o.bekommeGenreProperty()
     });
 
+
     final String[] types = {
             "wav", "mp3", "m4a", ".aif", ".aiff"
     };
+
+    private static final String genre_filename = "genres.txt";
+
     public void clearAndLoadAll(Runnable refreshCallback) {
         music.clear();
         mediaFiles.clear();
@@ -55,7 +62,18 @@ public class MediaManager {
                 }
                 Object genre = metadata.getMap().get("genre");
                 if (genre != null && musikstueck.bekommeGenre().isEmpty()) {
-                    musikstueck.setzeGenre(genre.toString());
+                    String genre_str = genre.toString();
+
+                    // https://regex101.com/r/NYHAf3/1
+                    Pattern pattern = Pattern.compile("^\\((\\d+)\\)$");
+                    Matcher matcher = pattern.matcher(genre_str);
+                    if (matcher.matches()) {
+                        int id = Integer.parseInt(matcher.group(1));
+                        if (genres.containsKey(id)) {
+                            genre_str = genres.get(id);
+                        }
+                    }
+                    musikstueck.setzeGenre(genre_str);
                 }
                 refreshCallback.run();
             };
@@ -83,5 +101,28 @@ public class MediaManager {
                 }
             }
         }
+    }
+
+    /**
+     * There is a list for genre ids:
+     * <a href="https://en.wikipedia.org/wiki/List_of_ID3v1_Genres">Genre ids</a>
+     *
+     */
+    public static HashMap<Integer, String> loadGenres() {
+        HashMap<Integer, String> genresMap = new HashMap<>();
+
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(genre_filename));
+            String line = br.readLine();
+            while (line != null) {
+                String[] array = line.split(" - ", 2);
+                genresMap.put(Integer.valueOf(array[0]), array[1]);
+                line = br.readLine();
+            }
+            br.close();
+        } catch (IOException ignored) {
+            return new HashMap<>();
+        }
+        return genresMap;
     }
 }
