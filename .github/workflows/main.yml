@@ -2,13 +2,12 @@ name: CI Java Test
 
 on:
   push:
-  pull_request:
   workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Checkstyle and compile
+    name: compile
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v3
@@ -24,15 +23,7 @@ jobs:
         distribution: 'temurin' # See 'Supported distributions' for available options
         java-version: '17'
     - run: |
-        find -name "*.java" > sources.txt
+        find ./src/ -name "*.java" > sources.txt
         mkdir -p bin
         javac -d bin --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media -encoding utf8 @sources.txt
     # java --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media -classpath "bin" -Dfile.encoding=UTF-8 -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
-    - name: Run check style
-      uses: nikitasavinov/checkstyle-action@0.6.0
-      # https://github.com/nikitasavinov/checkstyle-action
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        reporter: 'github-pr-check'
-        tool_name: 'checkstyle'
-        level: 'error'
