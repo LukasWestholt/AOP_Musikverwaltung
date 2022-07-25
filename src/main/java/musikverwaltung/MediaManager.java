@@ -106,20 +106,25 @@ public class MediaManager {
      * <a href="https://en.wikipedia.org/wiki/List_of_ID3v1_Genres">Genre ids</a>.
      *
      */
-    public static HashMap<Integer, String> loadGenres() {
+    public HashMap<Integer, String> loadGenres() {
         HashMap<Integer, String> genresMap = new HashMap<>();
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(genreFilename));
+        try (
+                InputStream inputStream = this.getClass().getResourceAsStream("/" + genreFilename);
+                InputStreamReader inputStreamReader = new InputStreamReader(Objects.requireNonNull(inputStream));
+                BufferedReader br = new BufferedReader(inputStreamReader)
+        ) {
             String line = br.readLine();
             while (line != null) {
                 String[] array = line.split(" - ", 2);
                 genresMap.put(Integer.valueOf(array[0]), array[1]);
                 line = br.readLine();
             }
-            br.close();
         } catch (IOException ignored) {
             return new HashMap<>();
+        } catch (NullPointerException ignored) {
+            System.out.println("Resource not found. Aborting.");
+            System.exit(-1);
         }
         return genresMap;
     }

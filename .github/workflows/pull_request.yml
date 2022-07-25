@@ -17,4 +17,4 @@ jobs:
           checkstyle_version: '10.3.1'
           tool_name: 'checkstyle'
           level: 'error'
-          fail_on_error: 'true'
+          # fail_on_error: 'true'

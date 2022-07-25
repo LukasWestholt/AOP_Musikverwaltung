@@ -1,7 +1,7 @@
 package musikverwaltung;
 
+import java.net.URL;
 import java.util.HashMap;
-import java.util.Objects;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -106,9 +106,13 @@ public class ScreenController {
         view.setStage(stage);
         stage.show();
         stage.toFront();
-        stage.getScene().getStylesheets().add(
-                Objects.requireNonNull(this.getClass().getResource("style.css")).toExternalForm()
-        );
+
+        URL url = this.getClass().getResource("/style.css");
+        if (url == null) {
+            System.out.println("Resource not found. Aborting.");
+            System.exit(-1);
+        }
+        stage.getScene().getStylesheets().add(url.toExternalForm());
         return view;
     }
 
