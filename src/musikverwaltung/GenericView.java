@@ -48,6 +48,7 @@ public class GenericView {
         return stackPane.prefWidthProperty().subtract(0);
     }
 
+    @SuppressWarnings("unused")
     public DoubleBinding getHeightProperty() {
         return stackPane.prefHeightProperty().subtract(0);
     }

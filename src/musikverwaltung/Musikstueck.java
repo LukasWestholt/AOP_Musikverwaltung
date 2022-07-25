@@ -13,6 +13,7 @@ public class Musikstueck {
     private final SimpleStringProperty genre = new SimpleStringProperty();
     private final File path;
 
+    @SuppressWarnings("unused")
     public Musikstueck(String titel, String interpret, String genre, File path) {
         this.titel.setValue(titel);
         this.interpret.setValue(interpret);

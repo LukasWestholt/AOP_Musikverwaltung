@@ -31,11 +31,11 @@ public class MainView extends MenuBarView {
         TableView<Musikstueck> table = new TableView<>();
 
         addActiveMenuButton(settingButton,
-                e -> screenController.activateWindow("Einstellungen", false, 350, 300)
+                e -> screenController.activateWindow(SC.Einstellungen, false, 350, 300)
                         .clearActionListener().addActionListener(() -> mediaManager.clearAndLoadAll(table::refresh))
         );
         addActiveMenuButton(playlistButton,
-                e -> screenController.activate("Playlist")
+                e -> screenController.activate(SC.Playlist)
         );
         setActiveMenuItem(mainViewButton);
 
@@ -98,7 +98,7 @@ public class MainView extends MenuBarView {
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
         musicPlayerButton.setOnAction(e -> {
             actionLabel.setText("Starte Player");
-            screenController.activateWindow("Player", true, 220, 0);
+            screenController.activateWindow(SC.Player, true, 220, 0);
         });
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton);//Add choiceBox and textField to hBox
         searchHBox.setAlignment(Pos.CENTER);//Center HBox
@@ -137,7 +137,7 @@ public class MainView extends MenuBarView {
                     actionLabel.setText("Spiele ab...");
                     ArrayList<Musikstueck> playlist = new ArrayList<>();
                     playlist.add(row.getItem());
-                    GenericView view = screenController.activateWindow("Player", true, 220, 0);
+                    GenericView view = screenController.activateWindow(SC.Player, true, 220, 0);
                     if (view instanceof SongView songView) {
                         songView.setPlaylist(playlist);
                     }

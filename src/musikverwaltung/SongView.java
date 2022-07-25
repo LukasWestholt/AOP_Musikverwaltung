@@ -25,9 +25,9 @@ public class SongView extends MenuBarView {
     double songLength;
     double volume = 0;
     final Image defaultImage;
-    ImageView img;
-    Button startStop;
-    Label labelSongName;
+    final ImageView img;
+    final Button startStop;
+    final Label labelSongName;
     Media currentSong;
     MediaPlayer player;
     private final ObservableList<Musikstueck> playlist = FXCollections.observableArrayList();
@@ -44,7 +44,7 @@ public class SongView extends MenuBarView {
         defaultImage = new Image(imgFile.toURI().toString());
 
         addActiveMenuButton(mainViewButton,
-                e -> screenController.activate("Musikverwaltung")
+                e -> screenController.activate(SC.Musikverwaltung)
         );
         addActiveMenuButton(new Button("Reset"),
                 e -> reset(false)
