@@ -31,10 +31,8 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tool_name: 'checkstyle'
+          workdir: 'src/'
           level: 'error'
-
-# checkstyle_config: src/main/resources/checkstyle.xml
-# checkstyle_version: '10.3.1'
-# fail_on_error: 'true'
-# level: 'error'
-# workdir: 'src/'
+          checkstyle_config: 'src/main/resources/checkstyle.xml'
+          checkstyle_version: '10.3.1'
+          fail_on_error: 'true'
