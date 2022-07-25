@@ -142,7 +142,7 @@ public class Musikstueck {
     @Override
     public String toString() {
         return "<" + this.getClass().getSimpleName() + "> "
-                + "Titel: " + bekommeTitel() + ", "
+                + "Test: " + bekommeTitel() + ", "
                 + "Interpret: " + bekommeInterpret() + ", "
                 + "Genre: " + bekommeGenre() + ", "
                 + "Path: " + path.toString();
