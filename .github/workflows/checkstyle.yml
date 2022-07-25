@@ -1,7 +1,9 @@
-name: CI Java Test
+name: CI Java Checkstyle
 
 on:
-  pull_request
+  push:
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
