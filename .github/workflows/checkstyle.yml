@@ -1,13 +1,11 @@
-name: CI Java Test
+name: CI Java Checkstyle
 
-on:
-  push:
-  workflow_dispatch:
+on: pull_request
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: compile
+    name: checkstyle
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
@@ -26,4 +24,17 @@ jobs:
           find ./src/ -name "*.java" > sources.txt
           mkdir -p bin
           javac -d bin --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media -encoding utf8 @sources.txt
-    # java --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media -classpath "bin" -Dfile.encoding=UTF-8 -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
+      # java --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media -classpath "bin" -Dfile.encoding=UTF-8 -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
+      - name: Run check style
+        uses: nikitasavinov/checkstyle-action@0.6.0
+        # https://github.com/nikitasavinov/checkstyle-action
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tool_name: 'checkstyle'
+          level: 'error'
+
+# checkstyle_config: src/main/resources/checkstyle.xml
+# checkstyle_version: '10.3.1'
+# fail_on_error: 'true'
+# level: 'error'
+# workdir: 'src/'
