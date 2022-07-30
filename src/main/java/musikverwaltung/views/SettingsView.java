@@ -1,7 +1,7 @@
 package musikverwaltung.views;
 
 
-import java.io.*;
+import java.io.File;
 import java.util.ArrayList;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.FXCollections;
@@ -9,12 +9,15 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import musikverwaltung.ScreenController;
 import musikverwaltung.SettingFile;
+import musikverwaltung.handler.ActionListenerManager;
 
-public class SettingsView extends GenericView implements Serializable {
+public class SettingsView extends GenericView implements ActionListenerManager {
     final ObservableList<String> list = FXCollections.observableArrayList();
     File directory;
 
@@ -41,7 +44,7 @@ public class SettingsView extends GenericView implements Serializable {
         buttonSave.setOnAction(e -> {
             SettingFile.save(new ArrayList<>(list));
             stage.close();
-            triggerActionListener();
+            triggerListener();
         });
         Button buttonCancel = new Button("Cancel");
         buttonCancel.setCancelButton(true);

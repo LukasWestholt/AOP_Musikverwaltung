@@ -1,13 +1,10 @@
 package musikverwaltung.views;
 
-import java.util.ArrayList;
-import java.util.List;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import musikverwaltung.ActionListener;
 import musikverwaltung.ScreenController;
 
 public abstract class GenericView {
@@ -23,8 +20,6 @@ public abstract class GenericView {
     public static final double DEFAULT_WIDTH = 650;
     public static final double DEFAULT_HEIGHT = 560;
 
-    private final List<ActionListener> listeners = new ArrayList<>();
-
     public GenericView(ScreenController sc, double prefWidth, double prefHeight) {
         screenController = sc;
         this.prefWidth = prefWidth;
@@ -39,17 +34,6 @@ public abstract class GenericView {
 
     public Node get() {
         return stackPane;
-    }
-
-    public void addActionListener(ActionListener toAdd) {
-        if (toAdd != null) {
-            listeners.add(toAdd);
-        }
-    }
-
-    public GenericView clearActionListener() {
-        listeners.clear();
-        return this;
     }
 
     public void setStage(Stage stage) {
@@ -80,12 +64,5 @@ public abstract class GenericView {
 
     public void showNodes(Node... nodes) {
         stackPane.getChildren().addAll(nodes);
-    }
-
-
-    void triggerActionListener() {
-        for (ActionListener hl : listeners) {
-            hl.settingChangeListener();
-        }
     }
 }

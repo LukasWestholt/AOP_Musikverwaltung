@@ -1,6 +1,9 @@
 package musikverwaltung.views;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
+import java.util.function.Consumer;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.FilteredList;
@@ -18,6 +21,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import musikverwaltung.MediaManager;
 import musikverwaltung.Musikstueck;
 import musikverwaltung.ScreenController;
@@ -37,16 +41,20 @@ public class MainView extends MenuBarView {
 
         this.mediaManager = mediaManager;
 
+        Runnable uniqueRefreshRunnable = refresh();
         addActiveMenuButton(settingButton,
-                e -> screenController.activateWindow(SettingsView.class, false)
-                        .clearActionListener().addActionListener(() -> mediaManager.clearAndLoadAll(table::refresh))
+                e -> {
+                    GenericView view = screenController.activateWindow(SettingsView.class, false);
+                    if (view instanceof SettingsView settingsView) {
+                        settingsView.addListenerIfNotContains(uniqueRefreshRunnable);
+                    }
+                }
         );
         addActiveMenuButton(playlistButton,
                 e -> screenController.activate(PlaylistView.class)
         );
         setActiveMenuItem(mainViewButton);
-
-        mediaManager.clearAndLoadAll(table::refresh);
+        uniqueRefreshRunnable.run();
 
         //Pass the data to a filtered list
         final FilteredList<Musikstueck> flMusikstueck = new FilteredList<>(mediaManager.music, p -> true);
@@ -60,6 +68,16 @@ public class MainView extends MenuBarView {
         Label actionLabel = new Label();
         actionLabel.setAlignment(Pos.CENTER);
         actionLabel.setMaxWidth(Double.MAX_VALUE);
+        PauseTransition pause = new PauseTransition(Duration.seconds(20));
+        pause.setOnFinished(e -> {
+            System.out.println("clear");
+            actionLabel.setText("");
+        });
+        actionLabel.textProperty().addListener((obs, oldValue, newValue) -> {
+            if (!newValue.isEmpty()) {
+                pause.playFromStart();
+            }
+        });
         HBox.setHgrow(actionLabel, Priority.ALWAYS);
         Button saveButton = new Button("Speichern");
         saveButton.setMinWidth(Control.USE_PREF_SIZE);
@@ -83,22 +101,18 @@ public class MainView extends MenuBarView {
         textSearchField.textProperty().addListener((obs, oldValue, newValue) -> {
             switch (choiceBox.getValue()) {
                 //filter table by one key
-                case "Überall" ->
-                        flMusikstueck.setPredicate(p ->
-                                p.search_everywhere(newValue));
-                case "Titel" ->
-                        flMusikstueck.setPredicate(p ->
-                                p.bekommePrimaryKey().toLowerCase().contains(newValue.toLowerCase().trim())
-                        );
-                case "Interpret" ->
-                        flMusikstueck.setPredicate(p ->
-                                p.bekommeInterpret().toLowerCase().contains(newValue.toLowerCase().trim())
-                        );
-                case "Genre" ->
-                        flMusikstueck.setPredicate(p ->
-                                p.bekommeGenre().toLowerCase().contains(newValue.toLowerCase().trim())
-                        );
-                default -> System.out.println("komisch");
+                case "Überall" -> flMusikstueck.setPredicate(p ->
+                        p.search_everywhere(newValue));
+                case "Titel" -> flMusikstueck.setPredicate(p ->
+                        p.bekommePrimaryKey().toLowerCase().contains(newValue.toLowerCase().trim())
+                );
+                case "Interpret" -> flMusikstueck.setPredicate(p ->
+                        p.bekommeInterpret().toLowerCase().contains(newValue.toLowerCase().trim())
+                );
+                case "Genre" -> flMusikstueck.setPredicate(p ->
+                        p.bekommeGenre().toLowerCase().contains(newValue.toLowerCase().trim())
+                );
+                default -> throw new InputMismatchException("");
             }
         });
 
@@ -108,12 +122,15 @@ public class MainView extends MenuBarView {
                 textSearchField.setText("");
             }
         });
-
+        Consumer<String> setActionText = actionLabel::setText;
         Button musicPlayerButton = new Button("Player");
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
         musicPlayerButton.setOnAction(e -> {
             actionLabel.setText("Starte Player");
-            screenController.activateWindow(SongView.class, true);
+            GenericView view = screenController.activateWindow(SongView.class, true);
+            if (view instanceof SongView songView) {
+                songView.addListenerIfNotContains(setActionText);
+            }
         });
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton); //Add choiceBox and textField to hBox
         searchHBox.setAlignment(Pos.CENTER); //Center HBox
@@ -149,12 +166,12 @@ public class MainView extends MenuBarView {
         table.setRowFactory(tv -> {
             TableRow<Musikstueck> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2 && (! row.isEmpty())) {
-                    actionLabel.setText("Spiele ab...");
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
                     ArrayList<Musikstueck> playlist = new ArrayList<>();
                     playlist.add(row.getItem());
                     GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView songView) {
+                        songView.addListenerIfNotContains(setActionText);
                         songView.setPlaylist(playlist);
                     }
                 }
@@ -183,9 +200,13 @@ public class MainView extends MenuBarView {
         showNodes(rectangle, vbox);
     }
 
+    public Runnable refresh() {
+        return () -> mediaManager.clearAndLoadAll(table::refresh);
+    }
+
     @Override
     public Node get() {
-        Platform.runLater(() -> mediaManager.clearAndLoadAll(table::refresh));
+        Platform.runLater(refresh());
         return super.get();
     }
 

@@ -18,8 +18,9 @@ import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import musikverwaltung.Musikstueck;
 import musikverwaltung.ScreenController;
+import musikverwaltung.handler.StringListenerManager;
 
-public class SongView extends MenuBarView {
+public class SongView extends MenuBarView implements StringListenerManager {
     int currentIndex = 0;
     double songLength;
     double volume = 0.5;
@@ -156,9 +157,11 @@ public class SongView extends MenuBarView {
         if (isPlaying()) {
             player.pause();
             startStop.setText("Start");
+            triggerListener("Stoppe Musik");
         } else {
             player.play();
             startStop.setText("Stop");
+            triggerListener("Spiele: " + labelSongName.getText());
         }
     }
 
@@ -191,6 +194,7 @@ public class SongView extends MenuBarView {
         //next song starts immediately or stops before
         startStopSong();
         activateListeners();
+        triggerListener("Spiele: " + labelSongName.getText());
     }
 
     private void skipforwards() {
