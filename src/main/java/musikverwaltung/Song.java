@@ -6,61 +6,61 @@ import static musikverwaltung.views.MainView.HIGHLIGHT_START;
 import java.io.File;
 import javafx.beans.property.SimpleStringProperty;
 
-public class Musikstueck {
-    private final SimpleStringProperty titel = new SimpleStringProperty();
-    private final SimpleStringProperty interpret = new SimpleStringProperty();
+public class Song {
+    private final SimpleStringProperty title = new SimpleStringProperty();
+    private final SimpleStringProperty artist = new SimpleStringProperty();
     private final SimpleStringProperty genre = new SimpleStringProperty();
     private final File path;
 
     @SuppressWarnings("unused")
-    public Musikstueck(String titel, String interpret, String genre, File path) {
-        this.titel.setValue(titel);
-        this.interpret.setValue(interpret);
+    public Song(String titel, String artist, String genre, File path) {
+        this.title.setValue(titel);
+        this.artist.setValue(artist);
         this.genre.setValue(genre);
         this.path = path;
     }
 
-    public Musikstueck(File path) {
+    public Song(File path) {
         this.path = path;
     }
 
-    public String bekommePrimaryKey() {
-        return titel.get() != null ? titel.get() : path.getName();
+    public String getPrimaryKey() {
+        return title.get() != null ? title.get() : path.getName();
     }
 
-    public String bekommeTitel() {
-        return notNullString(titel.get());
+    public String getTitle() {
+        return notNullString(title.get());
     }
 
-    public void setzeTitel(String titel) {
-        this.titel.set(titel);
+    public void getTitle(String titel) {
+        this.title.set(titel);
     }
 
-    public SimpleStringProperty bekommeTitelProperty() {
-        return titel;
+    public SimpleStringProperty getTitleProperty() {
+        return title;
     }
 
-    public String bekommeInterpret() {
-        return notNullString(interpret.get());
+    public String getArtist() {
+        return notNullString(artist.get());
     }
 
-    public void setzeInterpret(String interpret) {
-        this.interpret.set(interpret);
+    public void setArtist(String artist) {
+        this.artist.set(artist);
     }
 
-    public SimpleStringProperty bekommeInterpretProperty() {
-        return interpret;
+    public SimpleStringProperty getArtistProperty() {
+        return artist;
     }
 
-    public String bekommeGenre() {
+    public String getGenre() {
         return notNullString(genre.get());
     }
 
-    public void setzeGenre(String genre) {
+    public void setGenre(String genre) {
         this.genre.set(genre);
     }
 
-    public SimpleStringProperty bekommeGenreProperty() {
+    public SimpleStringProperty getGenreProperty() {
         return genre;
     }
 
@@ -69,9 +69,9 @@ public class Musikstueck {
     }
 
     public boolean search_everywhere(String searchKey) {
-        return bekommePrimaryKey().toLowerCase().contains(searchKey.toLowerCase().trim())
-                || bekommeInterpret().toLowerCase().contains(searchKey.toLowerCase().trim())
-                || bekommeGenre().toLowerCase().contains(searchKey.toLowerCase().trim());
+        return getPrimaryKey().toLowerCase().contains(searchKey.toLowerCase().trim())
+                || getArtist().toLowerCase().contains(searchKey.toLowerCase().trim())
+                || getGenre().toLowerCase().contains(searchKey.toLowerCase().trim());
     }
 
     /**
@@ -81,19 +81,19 @@ public class Musikstueck {
      * @param searchTitle Text like "Atem"
      * @return Highlighted title like {@code <HIGHLIGHT_START>Atem<HIGHLIGHT_END>los}
      */
-    public String bekommeHighlightedPrimaryKey(String searchTitle) {
-        return bekommeHighlighted(bekommePrimaryKey(), searchTitle);
+    public String getHighlightedPrimaryKey(String searchTitle) {
+        return getHighlighted(getPrimaryKey(), searchTitle);
     }
 
     /**
-     * This method adds to matching substrings of interpret a prefix and suffix.
-     * If no match is found the interpret is returned without modification.
+     * This method adds to matching substrings of artist a prefix and suffix.
+     * If no match is found the artist is returned without modification.
      *
      * @param searchInterpret Text like "Helene"
-     * @return Highlighted interpret like {@code <HIGHLIGHT_START>Helene<HIGHLIGHT_END> Fischer}
+     * @return Highlighted artist like {@code <HIGHLIGHT_START>Helene<HIGHLIGHT_END> Fischer}
      */
-    public String bekommeHighlightedInterpret(String searchInterpret) {
-        return bekommeHighlighted(bekommeInterpret(), searchInterpret);
+    public String getHighlightedArtist(String searchInterpret) {
+        return getHighlighted(getArtist(), searchInterpret);
     }
     /**
      * This method adds to matching substrings of genre a prefix and suffix.
@@ -103,8 +103,8 @@ public class Musikstueck {
      * @return Highlighted genre like {@code Schl<HIGHLIGHT_START>ager<HIGHLIGHT_END>}
      */
 
-    public String bekommeHighlightedGenre(String searchText) {
-        return bekommeHighlighted(bekommeGenre(), searchText);
+    public String getHighlightedGenre(String searchText) {
+        return getHighlighted(getGenre(), searchText);
     }
 
 
@@ -116,7 +116,7 @@ public class Musikstueck {
      * @param searchText Text like "Helene"
      * @return Highlighted text like {@code <HIGHLIGHT_START>Helene<HIGHLIGHT_END> Fischer}
      */
-    private static String bekommeHighlighted(String text, String searchText) {
+    private static String getHighlighted(String text, String searchText) {
         if (searchText.length() > 3) {
             searchText = searchText.toLowerCase();
             StringBuilder newTitle = new StringBuilder();
@@ -142,9 +142,9 @@ public class Musikstueck {
     @Override
     public String toString() {
         return "<" + this.getClass().getSimpleName() + "> "
-                + "Titel: " + bekommeTitel() + ", "
-                + "Interpret: " + bekommeInterpret() + ", "
-                + "Genre: " + bekommeGenre() + ", "
+                + "Titel: " + getTitle() + ", "
+                + "Interpret: " + getArtist() + ", "
+                + "Genre: " + getGenre() + ", "
                 + "Path: " + path.toString();
     }
 }
