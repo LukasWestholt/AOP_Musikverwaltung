@@ -130,6 +130,13 @@ public class MainView extends MenuBarView {
             GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView songView) {
                 songView.addListenerIfNotContains(setActionText);
+                Musikstueck lastSong = mediaManager.getLastSong();
+                if (lastSong != null) {
+                    ArrayList<Musikstueck> playlist = new ArrayList<>();
+                    playlist.add(lastSong);
+                    songView.setPlaylist(playlist, false);
+                }
+
             }
         });
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton); //Add choiceBox and textField to hBox
@@ -172,7 +179,7 @@ public class MainView extends MenuBarView {
                     GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView songView) {
                         songView.addListenerIfNotContains(setActionText);
-                        songView.setPlaylist(playlist);
+                        songView.setPlaylist(playlist, true);
                     }
                 }
             });

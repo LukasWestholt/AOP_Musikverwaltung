@@ -19,6 +19,9 @@ and save it in settings file or in metadata.
 - Credits field for "Musik: https://www.musicfox.com/"
 - Delete media files with copyright problems and download some new without
 - auto-Playlists
+- add everywhere javadoc messages (like checkstyle suggests)
+- setting checkbox show unplayable songs
+- Credits: <a href="https://www.flaticon.com/free-icons/speaker" title="speaker icons">Speaker icons created by Freepik - Flaticon</a>
 
 ## How to use in IDE
 

@@ -1,10 +1,16 @@
 package musikverwaltung.views;
 
+import java.util.ArrayList;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import musikverwaltung.MediaManager;
 import musikverwaltung.Musikstueck;
 import musikverwaltung.ScreenController;
@@ -55,7 +61,7 @@ public class PlaylistView extends MenuBarView {
                 ObservableList<Musikstueck> playlist = mediaManager.music;
                 GenericView view = screenController.activateWindow(SongView.class, true);
                 if (view instanceof SongView songView) {
-                    songView.setPlaylist(playlist);
+                    songView.setPlaylist(playlist, true);
                 }
             });
             button.setAlignment(Pos.BASELINE_CENTER);
@@ -75,7 +81,17 @@ public class PlaylistView extends MenuBarView {
 
         Button musicPlayerButton = new Button("Player");
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
-        musicPlayerButton.setOnAction(e -> screenController.activateWindow(SongView.class, true));
+        musicPlayerButton.setOnAction(e -> {
+            GenericView view = screenController.activateWindow(SongView.class, true);
+            if (view instanceof SongView songView) {
+                Musikstueck lastSong = mediaManager.getLastSong();
+                if (lastSong != null) {
+                    ArrayList<Musikstueck> playlist = new ArrayList<>();
+                    playlist.add(lastSong);
+                    songView.setPlaylist(playlist, false);
+                }
+            }
+        });
 
         vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton);
         showNodes(vbox);

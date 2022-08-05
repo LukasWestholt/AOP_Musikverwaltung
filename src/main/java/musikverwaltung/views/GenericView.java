@@ -6,8 +6,9 @@ import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import musikverwaltung.ScreenController;
+import musikverwaltung.handler.DestroyListenerManager;
 
-public abstract class GenericView {
+public abstract class GenericView implements DestroyListenerManager {
     final StackPane stackPane = new StackPane();
 
     final ScreenController screenController;

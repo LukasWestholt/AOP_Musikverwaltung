@@ -131,4 +131,10 @@ public class ScreenController {
         ((Group) scene.getRoot()).getChildren().add(view.get());
         return activate(stage, view, id.getName(), neighborToMain);
     }
+
+    public void triggerDestroyListener() {
+        for (GenericView view : screenMap.values()) {
+            view.triggerDestroyListener();
+        }
+    }
 }

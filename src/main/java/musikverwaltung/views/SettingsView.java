@@ -42,7 +42,7 @@ public class SettingsView extends GenericView implements ActionListenerManager {
 
         Button buttonSave = new Button("Save");
         buttonSave.setOnAction(e -> {
-            SettingFile.save(new ArrayList<>(list));
+            SettingFile.setPath(new ArrayList<>(list));
             stage.close();
             triggerListener();
         });
@@ -56,7 +56,7 @@ public class SettingsView extends GenericView implements ActionListenerManager {
 
     @Override
     public Node get() {
-        list.setAll(SettingFile.load());
+        list.setAll(SettingFile.load().getPaths());
 
         directory = new File(System.getProperty("user.home"));
         if (!directory.exists()) {

@@ -1,7 +1,10 @@
 package musikverwaltung;
 
 import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.beans.Observable;
@@ -28,11 +31,13 @@ public class MediaManager {
 
     private static final String genreFilename = "genres.txt";
 
+    public File lastSong;
+
     public void clearAndLoadAll(Runnable refreshCallback) {
         music.clear();
         mediaFiles.clear();
 
-        List<String> list = SettingFile.load();
+        List<String> list = SettingFile.load().getPaths();
         for (final String folder_str : list) {
             listMediaFilesForFolder(new File(folder_str));
         }
@@ -127,5 +132,16 @@ public class MediaManager {
             System.exit(-1);
         }
         return genresMap;
+    }
+
+    public Musikstueck getLastSong() {
+        if (lastSong != null) {
+            for (final Musikstueck musikstueck : music) {
+                if (Objects.equals(musikstueck.getPath().toURI().toString(), lastSong.toURI().toString())) {
+                    return musikstueck;
+                }
+            }
+        }
+        return null;
     }
 }

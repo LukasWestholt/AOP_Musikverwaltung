@@ -17,6 +17,8 @@ public class Musikverwaltung extends Application {
 
     @Override
     public void start(Stage stage) {
+        mediaManager.lastSong = SettingFile.load().getLastSong();
+
         Scene scene = new Scene(new Group(), GenericView.DEFAULT_WIDTH, GenericView.DEFAULT_HEIGHT);
         stage.setScene(scene);
         stage.show();
@@ -29,5 +31,10 @@ public class Musikverwaltung extends Application {
         screenController.addScreen(new PlaylistView(screenController, mediaManager));
         screenController.activate(HelloView.class);
         screenController.activate(MainView.class, true, 1);
+    }
+
+    @Override
+    public void stop() {
+        screenController.triggerDestroyListener();
     }
 }

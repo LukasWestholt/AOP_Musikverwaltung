@@ -18,6 +18,7 @@ import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import musikverwaltung.Musikstueck;
 import musikverwaltung.ScreenController;
+import musikverwaltung.SettingFile;
 import musikverwaltung.handler.StringListenerManager;
 
 public class SongView extends MenuBarView implements StringListenerManager {
@@ -176,7 +177,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         startStop.setText("Start");
     }
 
-    private void updateSong() {
+    private void updateSong(boolean startPlaying) {
         if (currentIndex + 1 > playlist.size()) {
             currentIndex = 0;
         }
@@ -187,12 +188,15 @@ public class SongView extends MenuBarView implements StringListenerManager {
 
         File file = playlist.get(currentIndex).getPath();
         labelSongName.setText(playlist.get(currentIndex).bekommeTitel());
+        setDestroyListener(() -> SettingFile.setLastSong(file));
         currentSong = new Media(file.toURI().toString());
         player = new MediaPlayer(currentSong);
         player.setOnEndOfMedia(this::skipforwards);
         player.setVolume(volume);
         //next song starts immediately or stops before
-        startStopSong();
+        if (startPlaying) {
+            startStopSong();
+        }
         activateListeners();
         triggerListener("Spiele: " + labelSongName.getText());
     }
@@ -203,7 +207,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         } else {
             currentIndex = 0;
         }
-        updateSong();
+        updateSong(true);
     }
 
     private void skipbackwards() {
@@ -212,7 +216,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         } else if (playlist.size() != 0) {
             currentIndex = playlist.size() - 1;
         }
-        updateSong();
+        updateSong(true);
     }
 
     private void activateListeners() {
@@ -224,10 +228,10 @@ public class SongView extends MenuBarView implements StringListenerManager {
         return player != null && player.getStatus() == MediaPlayer.Status.PLAYING;
     }
 
-    void setPlaylist(List<Musikstueck> playlist) {
+    void setPlaylist(List<Musikstueck> playlist, boolean startPlaying) {
         this.playlist.clear();
         this.playlist.addAll(playlist);
-        updateSong();
+        updateSong(startPlaying);
     }
 
     void setDynamicSize(Region region) {
