@@ -19,10 +19,10 @@ public class MediaManager {
     private final HashSet<File> mediaFiles = new HashSet<>();
     private final HashMap<Integer, String> genres = loadGenres();
 
-    public final ObservableList<Musikstueck> music = FXCollections.observableArrayList(o -> new Observable[]{
-            o.bekommeTitelProperty(),
-            o.bekommeInterpretProperty(),
-            o.bekommeGenreProperty()
+    public final ObservableList<Song> music = FXCollections.observableArrayList(o -> new Observable[]{
+            o.getTitleProperty(),
+            o.getArtistProperty(),
+            o.getGenreProperty()
     });
 
     private final String[] types = {
@@ -43,28 +43,28 @@ public class MediaManager {
         }
         MapChangeListener<String, Object> metadataListener;
         for (final File mediaFile : mediaFiles) {
-            music.add(new Musikstueck(mediaFile));
+            music.add(new Song(mediaFile));
             Media media = new Media(mediaFile.toURI().toString());
             ObservableMap<String, Object> metadataForListener = media.getMetadata();
             metadataListener = metadata -> {
                 //System.out.println(currentSong.getMetadata());
-                FilteredList<Musikstueck> fl = music.filtered(p -> p.getPath() == mediaFile);
+                FilteredList<Song> fl = music.filtered(p -> p.getPath() == mediaFile);
                 if (fl.size() != 1) {
                     System.out.println("es gibt ein problem");
                     return;
                 }
-                Musikstueck musikstueck = fl.get(0);
+                Song song = fl.get(0);
 
                 Object titel = metadata.getMap().get("title");
-                if (titel != null && musikstueck.bekommeTitel().isEmpty()) {
-                    musikstueck.setzeTitel(titel.toString());
+                if (titel != null && song.getTitle().isEmpty()) {
+                    song.getTitle(titel.toString());
                 }
                 Object interpret = metadata.getMap().get("artist");
-                if (interpret != null && musikstueck.bekommeInterpret().isEmpty()) {
-                    musikstueck.setzeInterpret(interpret.toString());
+                if (interpret != null && song.getArtist().isEmpty()) {
+                    song.setArtist(interpret.toString());
                 }
                 Object genre = metadata.getMap().get("genre");
-                if (genre != null && musikstueck.bekommeGenre().isEmpty()) {
+                if (genre != null && song.getGenre().isEmpty()) {
                     String genreStr = genre.toString();
 
                     // https://regex101.com/r/NYHAf3/1
@@ -76,7 +76,7 @@ public class MediaManager {
                             genreStr = genres.get(id);
                         }
                     }
-                    musikstueck.setzeGenre(genreStr);
+                    song.setGenre(genreStr);
                 }
                 refreshCallback.run();
             };

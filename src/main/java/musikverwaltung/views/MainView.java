@@ -5,7 +5,13 @@ import java.util.InputMismatchException;
 import java.util.function.Consumer;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,7 +29,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import musikverwaltung.MediaManager;
-import musikverwaltung.Musikstueck;
+import musikverwaltung.Song;
+import musikverwaltung.Playlist;
 import musikverwaltung.ScreenController;
 
 
@@ -31,8 +38,9 @@ public class MainView extends MenuBarView {
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
-    final TableView<Musikstueck> table = new TableView<>();
-
+    final TableView<Song> table = new TableView<>();
+    private final ObservableList<CheckBox>  checkList;
+    private final Playlist playList = new Playlist();
     final MediaManager mediaManager;
 
     // https://stackoverflow.com/a/47560767/8980073
@@ -57,7 +65,10 @@ public class MainView extends MenuBarView {
         uniqueRefreshRunnable.run();
 
         //Pass the data to a filtered list
-        final FilteredList<Musikstueck> flMusikstueck = new FilteredList<>(mediaManager.music, p -> true);
+        final FilteredList<Song> flSong = new FilteredList<>(mediaManager.music, p -> true);
+        System.out.println(flSong);
+        System.out.println();
+        System.out.println();
 
         final Label welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.getStyleClass().add("header");
@@ -101,16 +112,16 @@ public class MainView extends MenuBarView {
         textSearchField.textProperty().addListener((obs, oldValue, newValue) -> {
             switch (choiceBox.getValue()) {
                 //filter table by one key
-                case "Überall" -> flMusikstueck.setPredicate(p ->
+                case "Überall" -> flSong.setPredicate(p ->
                         p.search_everywhere(newValue));
-                case "Titel" -> flMusikstueck.setPredicate(p ->
-                        p.bekommePrimaryKey().toLowerCase().contains(newValue.toLowerCase().trim())
+                case "Titel" -> flSong.setPredicate(p ->
+                        p.getPrimaryKey().toLowerCase().contains(newValue.toLowerCase().trim())
                 );
-                case "Interpret" -> flMusikstueck.setPredicate(p ->
-                        p.bekommeInterpret().toLowerCase().contains(newValue.toLowerCase().trim())
+                case "Interpret" -> flSong.setPredicate(p ->
+                        p.getArtist().toLowerCase().contains(newValue.toLowerCase().trim())
                 );
-                case "Genre" -> flMusikstueck.setPredicate(p ->
-                        p.bekommeGenre().toLowerCase().contains(newValue.toLowerCase().trim())
+                case "Genre" -> flSong.setPredicate(p ->
+                        p.getGenre().toLowerCase().contains(newValue.toLowerCase().trim())
                 );
                 default -> throw new InputMismatchException("");
             }
@@ -142,44 +153,101 @@ public class MainView extends MenuBarView {
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton); //Add choiceBox and textField to hBox
         searchHBox.setAlignment(Pos.CENTER); //Center HBox
 
-        TableColumn<Musikstueck, String> titleCol = new TableColumn<>("Titel");
+        TableColumn<Song, CheckBox> checkCol = new TableColumn<>("   ");
+        //checkCol.setCellValueFactory( f -> f.getValue().getCompleted());
+        //checkCol.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue()));
+       // checkCol.setCellFactory(ft -> new CheckBoxTableCell<>());
+        /*checkCol.setCellFactory(new Callback<TableColumn<Musikstueck, Boolean>, TableCell<Musikstueck, Boolean>>() {
+            @Override
+            public TableCell<Musikstueck, Boolean> call(TableColumn<Musikstueck, Boolean> musikstueckBooleanTableColumn) {
+                return new CheckBoxTableCell<>();
+            }
+        });
+       // checkCol.setCellFactory(new CheckBoxTableCell(Callback<Integer,ObservableValue<Boolean>> getSelectedProperty));*/
+
+        checkList = FXCollections.observableArrayList();
+        checkCol.setCellValueFactory(new Callback<>() {
+
+            @Override
+            public ObservableValue<CheckBox> call(TableColumn.CellDataFeatures<Song, CheckBox> arg0) {
+
+                //Song value = arg0.getValue();
+                //arg0.getTableView().getColumns().get(0).
+                //System.out.println(arg0.getTableView().getItems());
+                //System.out.println(arg0.getClass());
+                //System.out.println(arg0.getTableColumn());
+                //System.out.println(value);
+                CheckBox checkBox = new CheckBox();
+                checkList.add(checkBox);
+                //es kommen beim öffnen von neuen Fenstern neue Dinge in die Liste dazu?
+                //System.out.println((checkList.size()));
+                //TODO select prozess überarbeiten nicht mit magic number 40!
+
+                checkBox.selectedProperty().addListener(new ChangeListener<>() {
+                    public void changed(ObservableValue<? extends Boolean> ov,Boolean old_val, Boolean new_val) {
+                        System.out.println("selected " + checkList.indexOf(checkBox));
+                        System.out.println(ov);
+                        System.out.println("length " + checkList.size());
+                        Song song = flSong.get(checkList.indexOf(checkBox) - 40);
+
+                        if (new_val) {
+                            playList.add(song);
+                        } else {
+                            if (playList.contains(song)) {
+                                playList.remove(song);
+                            }
+                        }
+                        System.out.println(playList.getSongs());
+                    }
+                });
+                return new SimpleObjectProperty<>(checkBox);
+
+            }
+
+        });
+
+        TableColumn<Song, String> titleCol = new TableColumn<>("Titel");
         titleCol.setCellValueFactory(cellData -> new SimpleStringProperty(
-                cellData.getValue().bekommeHighlightedPrimaryKey(textSearchField.getText())
+                cellData.getValue().getHighlightedPrimaryKey(textSearchField.getText())
         ));
         titleCol.setCellFactory(highlightedTableCell());
 
-        TableColumn<Musikstueck, String> interpretCol = new TableColumn<>("Interpret");
+        TableColumn<Song, String> interpretCol = new TableColumn<>("Interpret");
         interpretCol.setCellValueFactory(cellData -> new SimpleStringProperty(
-                cellData.getValue().bekommeHighlightedInterpret(textSearchField.getText())
+                cellData.getValue().getHighlightedArtist(textSearchField.getText())
         ));
         interpretCol.setCellFactory(highlightedTableCell());
 
-        TableColumn<Musikstueck, String> genreCol = new TableColumn<>("Genre");
+        TableColumn<Song, String> genreCol = new TableColumn<>("Genre");
         genreCol.setCellValueFactory(cellData -> new SimpleStringProperty(
-                cellData.getValue().bekommeHighlightedGenre(textSearchField.getText())
+                cellData.getValue().getHighlightedGenre(textSearchField.getText())
         ));
         genreCol.setCellFactory(highlightedTableCell());
 
         // Quick fix for not showing the horizontal scroll bar.
+        checkCol.prefWidthProperty().bind(table.widthProperty().divide(10));
         titleCol.prefWidthProperty().bind(table.widthProperty().divide(3).subtract(15));
         interpretCol.prefWidthProperty().bind(table.widthProperty().divide(3));
         genreCol.prefWidthProperty().bind(table.widthProperty().divide(3));
 
-        table.setItems(flMusikstueck); //Set the table's items using the filtered list
+        table.setItems(flSong); //Set the table's items using the filtered list
+        table.getColumns().add(checkCol);
         table.getColumns().add(titleCol);
         table.getColumns().add(interpretCol);
         table.getColumns().add(genreCol);
 
+
         table.setRowFactory(tv -> {
-            TableRow<Musikstueck> row = new TableRow<>();
+            TableRow<Song> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                    ArrayList<Musikstueck> playlist = new ArrayList<>();
-                    playlist.add(row.getItem());
+                    Playlist singleSongPlaylist = new Playlist();
+                    singleSongPlaylist.add(row.getItem());
+                    singleSongPlaylist.setName(row.getItem().getTitle());
                     GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView songView) {
                         songView.addListenerIfNotContains(setActionText);
-                        songView.setPlaylist(playlist, true);
+                        songView.setPlaylist(singleSongPlaylist, true);
                     }
                 }
             });
@@ -202,6 +270,52 @@ public class MainView extends MenuBarView {
                 new Stop(1, Color.web("#fcc200")))
         );
 
+
+        Button makePlaylistButton = new Button("Playlist erstellen");
+        makePlaylistButton.setOnAction(action -> {
+            GenericView view = screenController.activateWindow(PlaylistView.class, true);
+            if (view instanceof PlaylistView playlistView) {
+                System.out.println(playList.getSongs());
+                if (!playList.isEmpty()) {
+                    playlistView.addPlaylist(playList);
+                    System.out.println("moved playlist to next page");
+                }
+            }
+
+        });
+
+        TextField playlistNameEntry = new TextField("Playlist 1");
+        playlistNameEntry.textProperty().addListener((useless, oldValue, newValue) -> {
+            System.out.println(playlistNameEntry.getText());
+            playList.setName(playlistNameEntry.getText());
+        });
+
+        final HBox hbox = new HBox(makePlaylistButton, playlistNameEntry);
+        /*playlist.addListener(new ListChangeListener<Musikstueck>() {
+            @Override
+            public void onChanged(Change<? extends Musikstueck> change) {
+                System.out.println(change);
+                if (!playlist.isEmpty() && !vbox.getChildren().contains(hbox)) {
+                   // vbox.getChildren().add(makePlaylistButton);
+                    vbox.getChildren().add(hbox);
+                }
+                if (playlist.isEmpty()) {
+                    vbox.getChildren().remove(hbox);
+                }
+            }
+        });*/
+
+        //Gibt einem bei Auswahl von Songs die Möglichkeit Playlists zu erstellen und zu benennen
+        playList.getSongs().addListener((ListChangeListener<Song>) change -> {
+            System.out.println(change);
+            if (!playList.isEmpty() && !vbox.getChildren().contains(hbox)) {
+                vbox.getChildren().add(hbox);
+            }
+            if (playList.isEmpty()) {
+                vbox.getChildren().remove(hbox);
+            }
+        });
+
         StackPane.setAlignment(vbox, Pos.TOP_LEFT);
         StackPane.setAlignment(rectangle, Pos.TOP_LEFT);
         showNodes(rectangle, vbox);
@@ -218,10 +332,10 @@ public class MainView extends MenuBarView {
     }
 
     // https://stackoverflow.com/q/26906810/8980073
-    private Callback<TableColumn<Musikstueck, String>, TableCell<Musikstueck, String>> highlightedTableCell() {
+    private Callback<TableColumn<Song, String>, TableCell<Song, String>> highlightedTableCell() {
         return new Callback<>() {
             @Override
-            public TableCell<Musikstueck, String> call(TableColumn param) {
+            public TableCell<Song, String> call(TableColumn param) {
                 return new TableCell<>() {
                     @Override
                     protected void updateItem(String text, boolean empty) {

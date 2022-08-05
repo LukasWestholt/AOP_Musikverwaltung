@@ -1,11 +1,8 @@
 package musikverwaltung.views;
 
 import java.io.File;
-import java.util.List;
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -16,7 +13,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
-import musikverwaltung.Musikstueck;
+import musikverwaltung.Playlist;
 import musikverwaltung.ScreenController;
 import musikverwaltung.SettingFile;
 import musikverwaltung.handler.StringListenerManager;
@@ -31,10 +28,8 @@ public class SongView extends MenuBarView implements StringListenerManager {
     final Label labelSongName;
     Media currentSong;
     MediaPlayer player;
-    private final ObservableList<Musikstueck> playlist = FXCollections.observableArrayList();
-    /*
-
-     */
+    //private final ObservableList<Song> playlist = FXCollections.observableArrayList();
+    private Playlist playlist = new Playlist();
     private final ChangeListener<Duration> playerSongLengthListener;
 
     public SongView(ScreenController sc) {
@@ -162,6 +157,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
             triggerListener("Stoppe Musik");
         } else {
             player.play();
+            //stop button verändert Größe aufgrund von text?
             startStop.setText("Stop");
             triggerListener("Spiele: " + labelSongName.getText());
         }
@@ -187,8 +183,8 @@ public class SongView extends MenuBarView implements StringListenerManager {
         }
         reset(true);
 
-        File file = playlist.get(currentIndex).getPath();
-        labelSongName.setText(playlist.get(currentIndex).bekommeTitel());
+        File file = playlist.getSong(currentIndex).getPath();
+        labelSongName.setText(playlist.getSong(currentIndex).getTitle());
         setDestroyListener(() -> SettingFile.setLastSong(file));
         currentSong = new Media(file.toURI().toString());
         player = new MediaPlayer(currentSong);
@@ -228,10 +224,16 @@ public class SongView extends MenuBarView implements StringListenerManager {
     private boolean isPlaying() {
         return player != null && player.getStatus() == MediaPlayer.Status.PLAYING;
     }
-
-    void setPlaylist(List<Musikstueck> playlist, boolean startPlaying) {
+    /*
+    void setPlaylist(PlayList playlist, boolean startPlaying) {
+        //warum ist playlist final und wird gecleared und geadded statt ersetzt?
         this.playlist.clear();
-        this.playlist.addAll(playlist);
+        this.playlist.addAll(playlist.getSongs());
+        updateSong(startPlaying);
+    }
+    */
+    void setPlaylist(Playlist newPlaylist, boolean startPlaying) {
+        this.playlist = newPlaylist;
         updateSong(startPlaying);
     }
 
