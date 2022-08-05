@@ -115,6 +115,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         slider.setMajorTickUnit(10.0);
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
+        slider.getStyleClass().add("volume");
         slider.valueProperty().addListener((useless1, useless2, sliderValue) -> {
             volume = sliderValue.doubleValue();
             if (player != null) {

@@ -89,3 +89,12 @@
     -fx-background-insets: 0;
     -fx-background-radius: 0;
 }
+
+.volume.slider .thumb {
+    -fx-background-image :url("/icons/speaker.png");
+    -fx-background-size: 15, 15;
+    -fx-pref-width: 20;
+    -fx-pref-height: 20;
+    -fx-background-position: center, center;
+    -fx-background-repeat: no-repeat;
+}
