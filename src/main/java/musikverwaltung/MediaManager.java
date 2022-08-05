@@ -134,11 +134,11 @@ public class MediaManager {
         return genresMap;
     }
 
-    public Musikstueck getLastSong() {
+    public Song getLastSong() {
         if (lastSong != null) {
-            for (final Musikstueck musikstueck : music) {
-                if (Objects.equals(musikstueck.getPath().toURI().toString(), lastSong.toURI().toString())) {
-                    return musikstueck;
+            for (final Song song : music) {
+                if (Objects.equals(song.getPath().toURI().toString(), lastSong.toURI().toString())) {
+                    return song;
                 }
             }
         }

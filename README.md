@@ -10,11 +10,11 @@
 - Lukas
 
 ## TODO
-- Add and delete Musikstueck in playlist.
+- Add and delete Song in playlist.
 - "Verwaltungsmodus" and "Usermodus"
 - Musicvideo play? or open yt link?
 - Projekt in der 106/107 (PC-Pool) lauffähig? (Java Version?)
-- Edit Musikstueck (with setupEditableStringColumn) in adminMode
+- Edit Song (with setupEditableStringColumn) in adminMode
 and save it in settings file or in metadata.
 - Credits field for "Musik: https://www.musicfox.com/"
 - Delete media files with copyright problems and download some new without

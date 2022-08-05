@@ -1,18 +1,22 @@
 package musikverwaltung.views;
 
-import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import musikverwaltung.MediaManager;
-import musikverwaltung.Song;
 import musikverwaltung.Playlist;
 import musikverwaltung.ScreenController;
+import musikverwaltung.Song;
 
 
 public class PlaylistView extends MenuBarView {
@@ -54,7 +58,7 @@ public class PlaylistView extends MenuBarView {
             public void onChanged(Change change) {
                 tilePane.getChildren().clear();
                 System.out.println(mediaLibrary);
-                for (Playlist playlist: mediaLibrary) {
+                for (Playlist playlist : mediaLibrary) {
                     System.out.println(playlist.getName());
                     System.out.println();
                     Button playlistButton = new Button(playlist.getName());
@@ -97,11 +101,12 @@ public class PlaylistView extends MenuBarView {
         musicPlayerButton.setOnAction(e -> {
             GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView songView) {
-                Musikstueck lastSong = mediaManager.getLastSong();
+                Song lastSong = mediaManager.getLastSong();
                 if (lastSong != null) {
-                    ArrayList<Musikstueck> playlist = new ArrayList<>();
-                    playlist.add(lastSong);
-                    songView.setPlaylist(playlist, false);
+                    Playlist singleSongPlaylist = new Playlist();
+                    singleSongPlaylist.add(lastSong);
+                    singleSongPlaylist.setName(lastSong.getTitle());
+                    songView.setPlaylist(singleSongPlaylist, false);
                 }
             }
         });
@@ -120,8 +125,9 @@ public class PlaylistView extends MenuBarView {
 
     public boolean addPlaylist(Playlist createdPlaylist) {
         //damit nicht mehrere Playlisten selben inhalts erstellt werden
-        if (mediaLibrary.contains(createdPlaylist))
+        if (mediaLibrary.contains(createdPlaylist)) {
             return false;
+        }
         //for cloning playlist in mainView can change without interacting with the saved playlists in the media library
         System.out.println("added a new playlist " + createdPlaylist.getName());
         Playlist newPlaylist = createdPlaylist.copy();
@@ -134,7 +140,7 @@ public class PlaylistView extends MenuBarView {
         //wenn wir uns für filter entschieden haben kann diese niemals erreichte definition gelöscht werden
         String filterCriteria = " ";
         String[] filter = new String[] {"genre", "artist"};
-        for (String filterCategory:filter) {
+        for (String filterCategory : filter) {
             for (int i = 0; i < allSongs.size(); i++) {
                 if (filterCategory.equals("genre")) {
                     //aufgrund der lamda expression von predicate muss variabel jedes mal neu definiert werden
@@ -156,7 +162,7 @@ public class PlaylistView extends MenuBarView {
                 if (allSongs.size() >= threshold && !filterCriteria.equals("")) {
                     Playlist automaticPlaylist = new Playlist();
                     automaticPlaylist.setName(filterCategory + ": " + filterCriteria);
-                    for (Song song:allSongs) {
+                    for (Song song : allSongs) {
                         automaticPlaylist.add(song);
                     }
                     addPlaylist(automaticPlaylist);

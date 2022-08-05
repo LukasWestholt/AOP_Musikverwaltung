@@ -14,6 +14,7 @@ public class Playlist {
     public Playlist() {
         this.name.setValue("Playlist 1");
     }
+
     public Playlist(String name, ObservableList<Song> playlist) {
         this.name.setValue(name);
         this.songs = playlist;
@@ -82,7 +83,7 @@ public class Playlist {
     public Playlist copy() {
         Playlist copyPlaylist = new Playlist();
         copyPlaylist.setName(this.getName());
-        for (Song song:this.getSongs()) {
+        for (Song song : this.getSongs()) {
             copyPlaylist.add(song);
         }
         return copyPlaylist;
@@ -90,21 +91,28 @@ public class Playlist {
 
     @Override
     public String toString() {
-        return "PlayList{" + "name=" + getName()+ ", songs=" + songs + '}';
+        return "PlayList{" + "name=" + getName() + ", songs=" + songs + '}';
     }
     //TODO equals method ausgiebig testen
+
     @Override
     public boolean equals(Object other) {
-        if (this == other) return true;
-        if (!(other instanceof Playlist otherPlaylist)) return false;
-        if (this.size() != otherPlaylist.size()) return false;
-        for (Song otherSong: otherPlaylist.songs) {
-            if (!this.songs.contains(otherSong))
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof Playlist otherPlaylist)) {
+            return false;
+        }
+        if (this.size() != otherPlaylist.size()) {
+            return false;
+        }
+        for (Song otherSong : otherPlaylist.songs) {
+            if (!this.songs.contains(otherSong)) {
                 return false;
+            }
         }
         //ist der auch Name einer Playlist wichtig oder nur der Inhalt?
-        if (!this.getName().equals(otherPlaylist.getName())) return false;
-        return true;
+        return this.getName().equals(otherPlaylist.getName());
     }
 
 

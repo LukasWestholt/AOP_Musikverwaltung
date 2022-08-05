@@ -1,6 +1,5 @@
 package musikverwaltung.views;
 
-import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.function.Consumer;
 import javafx.animation.PauseTransition;
@@ -29,9 +28,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import musikverwaltung.MediaManager;
-import musikverwaltung.Song;
 import musikverwaltung.Playlist;
 import musikverwaltung.ScreenController;
+import musikverwaltung.Song;
 
 
 public class MainView extends MenuBarView {
@@ -141,11 +140,12 @@ public class MainView extends MenuBarView {
             GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView songView) {
                 songView.addListenerIfNotContains(setActionText);
-                Musikstueck lastSong = mediaManager.getLastSong();
+                Song lastSong = mediaManager.getLastSong();
                 if (lastSong != null) {
-                    ArrayList<Musikstueck> playlist = new ArrayList<>();
-                    playlist.add(lastSong);
-                    songView.setPlaylist(playlist, false);
+                    Playlist singleSongPlaylist = new Playlist();
+                    singleSongPlaylist.add(lastSong);
+                    singleSongPlaylist.setName(lastSong.getTitle());
+                    songView.setPlaylist(singleSongPlaylist, false);
                 }
 
             }
@@ -156,14 +156,15 @@ public class MainView extends MenuBarView {
         TableColumn<Song, CheckBox> checkCol = new TableColumn<>("   ");
         //checkCol.setCellValueFactory( f -> f.getValue().getCompleted());
         //checkCol.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue()));
-       // checkCol.setCellFactory(ft -> new CheckBoxTableCell<>());
-        /*checkCol.setCellFactory(new Callback<TableColumn<Musikstueck, Boolean>, TableCell<Musikstueck, Boolean>>() {
+        // checkCol.setCellFactory(ft -> new CheckBoxTableCell<>());
+        /*checkCol.setCellFactory(new Callback<TableColumn<Song, Boolean>, TableCell<Song, Boolean>>() {
             @Override
-            public TableCell<Musikstueck, Boolean> call(TableColumn<Musikstueck, Boolean> musikstueckBooleanTableColumn) {
+            public TableCell<Song, Boolean> call(TableColumn<Song, Boolean> songBooleanTableColumn) {
                 return new CheckBoxTableCell<>();
             }
         });
-       // checkCol.setCellFactory(new CheckBoxTableCell(Callback<Integer,ObservableValue<Boolean>> getSelectedProperty));*/
+        checkCol.setCellFactory(new CheckBoxTableCell(Callback<Integer,ObservableValue<Boolean>> getSelectedProperty));
+        */
 
         checkList = FXCollections.observableArrayList();
         checkCol.setCellValueFactory(new Callback<>() {
@@ -184,13 +185,13 @@ public class MainView extends MenuBarView {
                 //TODO select prozess überarbeiten nicht mit magic number 40!
 
                 checkBox.selectedProperty().addListener(new ChangeListener<>() {
-                    public void changed(ObservableValue<? extends Boolean> ov,Boolean old_val, Boolean new_val) {
+                    public void changed(ObservableValue<? extends Boolean> ov, Boolean oldVal, Boolean newVal) {
                         System.out.println("selected " + checkList.indexOf(checkBox));
                         System.out.println(ov);
                         System.out.println("length " + checkList.size());
                         Song song = flSong.get(checkList.indexOf(checkBox) - 40);
 
-                        if (new_val) {
+                        if (newVal) {
                             playList.add(song);
                         } else {
                             if (playList.contains(song)) {
@@ -291,9 +292,9 @@ public class MainView extends MenuBarView {
         });
 
         final HBox hbox = new HBox(makePlaylistButton, playlistNameEntry);
-        /*playlist.addListener(new ListChangeListener<Musikstueck>() {
+        /*playlist.addListener(new ListChangeListener<Song>() {
             @Override
-            public void onChanged(Change<? extends Musikstueck> change) {
+            public void onChanged(Change<? extends Song> change) {
                 System.out.println(change);
                 if (!playlist.isEmpty() && !vbox.getChildren().contains(hbox)) {
                    // vbox.getChildren().add(makePlaylistButton);

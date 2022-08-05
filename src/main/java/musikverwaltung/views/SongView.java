@@ -232,6 +232,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         updateSong(startPlaying);
     }
     */
+
     void setPlaylist(Playlist newPlaylist, boolean startPlaying) {
         this.playlist = newPlaylist;
         updateSong(startPlaying);
