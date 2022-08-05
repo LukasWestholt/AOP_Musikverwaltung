@@ -13,7 +13,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
-import musikverwaltung.PlayList;
+import musikverwaltung.Playlist;
 import musikverwaltung.ScreenController;
 import musikverwaltung.handler.StringListenerManager;
 
@@ -28,7 +28,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
     Media currentSong;
     MediaPlayer player;
     //private final ObservableList<Song> playlist = FXCollections.observableArrayList();
-    private PlayList playlist = new PlayList();
+    private Playlist playlist = new Playlist();
     private final ChangeListener<Duration> playerSongLengthListener;
 
     public SongView(ScreenController sc) {
@@ -227,7 +227,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         updateSong();
     }
     */
-    void setPlaylist(PlayList newPlaylist) {
+    void setPlaylist(Playlist newPlaylist) {
         this.playlist = newPlaylist;
         updateSong();
     }

@@ -3,20 +3,27 @@ package musikverwaltung.views;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import musikverwaltung.MediaManager;
 import musikverwaltung.Song;
-import musikverwaltung.PlayList;
+import musikverwaltung.Playlist;
 import musikverwaltung.ScreenController;
+
 
 public class PlaylistView extends MenuBarView {
 
-    private final ObservableList<PlayList> mediaLibrary = FXCollections.observableArrayList();
+    private final ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
+
+    final FilteredList<Song> allSongs;
+
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
+
+        allSongs = new FilteredList<>(mediaManager.music, p -> true);
 
         addActiveMenuButton(settingButton,
                 e -> screenController.activateWindow(SettingsView.class, false)
@@ -45,9 +52,8 @@ public class PlaylistView extends MenuBarView {
             @Override
             public void onChanged(Change change) {
                 tilePane.getChildren().clear();
-                System.out.println("checking ...");
                 System.out.println(mediaLibrary);
-                for (PlayList playlist: mediaLibrary) {
+                for (Playlist playlist: mediaLibrary) {
                     System.out.println(playlist.getName());
                     System.out.println();
                     Button playlistButton = new Button(playlist.getName());
@@ -77,38 +83,6 @@ public class PlaylistView extends MenuBarView {
 
         mediaLibrary.addListener(mediaLibraryChangeListener);
 
-/*
-        for (int i = 0; i < 12; i++) {
-            Button button = new Button(Integer.toString(i));
-            if (i == 0) {
-                button.setText("Lalala das ist ein richtig langer langer langer langer langer langer Name");
-            }
-            button.setMinWidth(Region.USE_PREF_SIZE);
-            button.setWrapText(true);
-            button.hoverProperty().addListener((obs, oldValue, newValue) -> {
-                if (newValue) {
-                    button.setStyle("-fx-font-size:15");
-                } else {
-                    button.setStyle("-fx-font-size:20");
-                }
-            });
-
-            button.setOnAction((e) -> {
-                ObservableList<Musikstueck> playlist = mediaManager.music;
-                GenericView view = screenController.activateWindow(SongView.class, true);
-                if (view instanceof SongView songView) {
-                    songView.setPlaylist(playlist);
-                }
-            });
-            button.setAlignment(Pos.BASELINE_CENTER);
-            button.setStyle("-fx-font-size:20");
-            button.setPrefHeight(100);
-            button.setPrefWidth(175);
-            tilePane.getChildren().add(button);
-        }
-*/
-
-
         ScrollPane sp = new ScrollPane();
         sp.setId("scroll-playlists");
         sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -127,21 +101,57 @@ public class PlaylistView extends MenuBarView {
 
         Button automaticPlaylistButton = new Button("Playlist Vorschläge");
         automaticPlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
+        automaticPlaylistButton.setOnAction(e -> createAutomaticPlaylists());
 
-        vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton);
+        vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton, automaticPlaylistButton);
         showNodes(vbox);
     }
 
-    public void addPlaylist(PlayList createdPlaylist) {
+    public boolean addPlaylist(Playlist createdPlaylist) {
+        //damit nicht mehrere Playlisten selben inhalts erstellt werden
+        if (mediaLibrary.contains(createdPlaylist))
+            return false;
         //for cloning playlist in mainView can change without interacting with the saved playlists in the media library
         System.out.println("added a new playlist " + createdPlaylist.getName());
-        PlayList newPlaylist = new PlayList();
-        newPlaylist.setName(createdPlaylist.getName());
-        for (Song song:createdPlaylist.getSongs()) {
-            newPlaylist.add(song);
-        }
+        Playlist newPlaylist = createdPlaylist.copy();
         mediaLibrary.add(newPlaylist);
+        return true;
     }
 
-
+    private void createAutomaticPlaylists() {
+        int threshold = 10;
+        //wenn wir uns für filter entschieden haben kann diese niemals erreichte definition gelöscht werden
+        String filterCriteria = " ";
+        String[] filter = new String[] {"genre", "artist"};
+        for (String filterCategory:filter) {
+            for (int i = 0; i < allSongs.size(); i++) {
+                if (filterCategory.equals("genre")) {
+                    //aufgrund der lamda expression von predicate muss variabel jedes mal neu definiert werden
+                    String genreFilterCriteria = allSongs.get(i).getGenre();
+                    filterCriteria = genreFilterCriteria;
+                    if (!genreFilterCriteria.equals("")) {
+                        allSongs.setPredicate(p -> p.getGenre().contains(genreFilterCriteria));
+                    }
+                }
+                if (filterCategory.equals("artist")) {
+                    String artistFilterCriteria = allSongs.get(i).getArtist();
+                    filterCriteria = artistFilterCriteria;
+                    if (!artistFilterCriteria.equals("")) {
+                        allSongs.setPredicate(p -> p.getArtist().contains(artistFilterCriteria));
+                    }
+                }
+                //System.out.println(filterCriteria +"-" + "length: " + allSongs.size() + " " + allSongs);
+                //manche Songs haben keine eintragungen und liefern nach filtern alle Songs -> werden ignoriert
+                if (allSongs.size() >= threshold && !filterCriteria.equals("")) {
+                    Playlist automaticPlaylist = new Playlist();
+                    automaticPlaylist.setName(filterCategory + ": " + filterCriteria);
+                    for (Song song:allSongs) {
+                        automaticPlaylist.add(song);
+                    }
+                    addPlaylist(automaticPlaylist);
+                }
+                allSongs.setPredicate(null);
+            }
+        }
+    }
 }

@@ -4,6 +4,8 @@ import static musikverwaltung.views.MainView.HIGHLIGHT_END;
 import static musikverwaltung.views.MainView.HIGHLIGHT_START;
 
 import java.io.File;
+import java.util.Objects;
+
 import javafx.beans.property.SimpleStringProperty;
 
 public class Song {
@@ -142,9 +144,26 @@ public class Song {
     @Override
     public String toString() {
         return "<" + this.getClass().getSimpleName() + "> "
-                + "Titel: " + getTitle() + ", "
-                + "Interpret: " + getArtist() + ", "
-                + "Genre: " + getGenre() + ", "
-                + "Path: " + path.toString();
+                + "title: " + getTitle() + ", "
+                + "artist: " + getArtist() + ", "
+                + "genre: " + getGenre() + ", "
+                + "path: " + path.toString();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (!(other instanceof Song otherSong)) return false;
+        //Entscheiden ob path ein Teil des Vergleichs seihen soll
+        if (!this.getTitle().equals(otherSong.getTitle())) return false;
+        if (!this.getArtist().equals(otherSong.getArtist())) return false;
+        if (!this.getGenre().equals(otherSong.getGenre())) return false;
+        if (!this.getPath().equals(otherSong.getPath())) return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, artist, genre, path);
     }
 }

@@ -29,7 +29,7 @@ import javafx.util.Callback;
 import javafx.util.Duration;
 import musikverwaltung.MediaManager;
 import musikverwaltung.Song;
-import musikverwaltung.PlayList;
+import musikverwaltung.Playlist;
 import musikverwaltung.ScreenController;
 
 
@@ -39,7 +39,7 @@ public class MainView extends MenuBarView {
 
     final TableView<Song> table = new TableView<>();
     private final ObservableList<CheckBox>  checkList;
-    private final PlayList playList = new PlayList();
+    private final Playlist playList = new Playlist();
     final MediaManager mediaManager;
 
     // https://stackoverflow.com/a/47560767/8980073
@@ -65,6 +65,9 @@ public class MainView extends MenuBarView {
 
         //Pass the data to a filtered list
         final FilteredList<Song> flSong = new FilteredList<>(mediaManager.music, p -> true);
+        System.out.println(flSong);
+        System.out.println();
+        System.out.println();
 
         final Label welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.getStyleClass().add("header");
@@ -170,6 +173,7 @@ public class MainView extends MenuBarView {
                 checkList.add(checkBox);
                 //es kommen beim öffnen von neuen Fenstern neue Dinge in die Liste dazu?
                 //System.out.println((checkList.size()));
+                //TODO select prozess überarbeiten nicht mit magic number 40!
 
                 checkBox.selectedProperty().addListener(new ChangeListener<>() {
                     public void changed(ObservableValue<? extends Boolean> ov,Boolean old_val, Boolean new_val) {
@@ -229,7 +233,7 @@ public class MainView extends MenuBarView {
             TableRow<Song> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                    PlayList singleSongPlaylist = new PlayList();
+                    Playlist singleSongPlaylist = new Playlist();
                     singleSongPlaylist.add(row.getItem());
                     singleSongPlaylist.setName(row.getItem().getTitle());
                     GenericView view = screenController.activateWindow(SongView.class, true);
