@@ -32,7 +32,7 @@ public class SettingFile implements Serializable {
             FileInputStream in = new FileInputStream(filename);
             ObjectInputStream s = new ObjectInputStream(in);
             return (SettingFile) s.readObject();
-        } catch (IOException | ClassNotFoundException ignored) {
+        } catch (IOException | ClassNotFoundException | ClassCastException ignored) {
             return new SettingFile();
         }
     }
