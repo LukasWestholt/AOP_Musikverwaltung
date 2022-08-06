@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
@@ -69,6 +70,11 @@ public class PlaylistView extends MenuBarView {
                             playlistButton.setStyle("-fx-font-size:15");
                         } else {
                             playlistButton.setStyle("-fx-font-size:20");
+                        }
+                    });
+                    playlistButton.setOnMouseClicked(event ->
+                    {   if (event.getButton() == MouseButton.SECONDARY) {
+                            //TODO call für Optionsmenu
                         }
                     });
                     playlistButton.setOnAction((e) -> {

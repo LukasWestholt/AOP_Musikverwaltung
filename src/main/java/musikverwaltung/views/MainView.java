@@ -1,5 +1,6 @@
 package musikverwaltung.views;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.function.Consumer;
 import javafx.animation.PauseTransition;
@@ -38,7 +39,6 @@ public class MainView extends MenuBarView {
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
     final TableView<Song> table = new TableView<>();
-    private final ObservableList<CheckBox>  checkList;
     private final Playlist playList = new Playlist();
     final MediaManager mediaManager;
 
@@ -153,7 +153,7 @@ public class MainView extends MenuBarView {
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton); //Add choiceBox and textField to hBox
         searchHBox.setAlignment(Pos.CENTER); //Center HBox
 
-        TableColumn<Song, CheckBox> checkCol = new TableColumn<>("   ");
+        TableColumn<Song, Boolean> checkCol = new TableColumn<>("   ");
         //checkCol.setCellValueFactory( f -> f.getValue().getCompleted());
         //checkCol.setCellValueFactory(c -> new SimpleBooleanProperty(c.getValue()));
         // checkCol.setCellFactory(ft -> new CheckBoxTableCell<>());
@@ -166,30 +166,68 @@ public class MainView extends MenuBarView {
         checkCol.setCellFactory(new CheckBoxTableCell(Callback<Integer,ObservableValue<Boolean>> getSelectedProperty));
         */
 
-        checkList = FXCollections.observableArrayList();
+
+        //TODO !!!! WEG 1: besser aber es werden andere weiter noch random selected
+        checkCol.setCellFactory(
+                new Callback<TableColumn<Song, Boolean>, TableCell<Song, Boolean>>() {
+                    public TableCell<Song, Boolean> call(TableColumn p) {
+                        return new TableCell<Song, Boolean>() {
+                            private final CheckBox checkBox = new CheckBox();
+
+
+                            @Override
+                            public void updateItem(Boolean item, boolean empty) {
+                                super.updateItem(item, empty);
+
+                                if (empty) {
+                                    setGraphic(null);
+                                } else {
+                                    checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+                                        @Override
+                                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                                            //getTableView().requestFocus();
+                                            Song selectedSong = getTableView().getItems().get(getIndex());
+                                            if (newValue) {
+                                                playList.add(selectedSong);
+                                            } else {
+                                                getTableView().getSelectionModel().clearSelection(getIndex());
+                                                if (playList.contains(selectedSong)) {
+                                                    playList.remove(selectedSong);
+                                                }
+
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        };
+                    }
+                });
+        //TODO WEG 2: Liste hat nicht die erwartete Größe von 13 -> bugged
+        /*
+        ArrayList<CheckBox> C_LIST = new ArrayList<>();
+        ArrayList<Song> S_LIST = new ArrayList<>();
+        TableColumn<Song, CheckBox> checkCol = new TableColumn<>("   ");
         checkCol.setCellValueFactory(new Callback<>() {
 
             @Override
             public ObservableValue<CheckBox> call(TableColumn.CellDataFeatures<Song, CheckBox> arg0) {
 
-                //Song value = arg0.getValue();
-                //arg0.getTableView().getColumns().get(0).
-                //System.out.println(arg0.getTableView().getItems());
-                //System.out.println(arg0.getClass());
-                //System.out.println(arg0.getTableColumn());
-                //System.out.println(value);
                 CheckBox checkBox = new CheckBox();
-                checkList.add(checkBox);
-                //es kommen beim öffnen von neuen Fenstern neue Dinge in die Liste dazu?
-                //System.out.println((checkList.size()));
-                //TODO select prozess überarbeiten nicht mit magic number 40!
+                Song selectedSong = arg0.getValue();
+                if (S_LIST.contains(selectedSong)) {
+                    C_LIST.remove(S_LIST.indexOf(selectedSong));
+                    S_LIST.remove(selectedSong);
+                    C_LIST.add(checkBox);
+                    S_LIST.add(selectedSong);
+                } else {
+                    C_LIST.add(checkBox);
+                    S_LIST.add(selectedSong);
+                }
 
                 checkBox.selectedProperty().addListener(new ChangeListener<>() {
                     public void changed(ObservableValue<? extends Boolean> ov, Boolean oldVal, Boolean newVal) {
-                        System.out.println("selected " + checkList.indexOf(checkBox));
-                        System.out.println(ov);
-                        System.out.println("length " + checkList.size());
-                        Song song = flSong.get(checkList.indexOf(checkBox) - 40);
+                        Song song = S_LIST.get(C_LIST.indexOf(checkBox));
 
                         if (newVal) {
                             playList.add(song);
@@ -205,7 +243,7 @@ public class MainView extends MenuBarView {
 
             }
 
-        });
+        });*/
 
         TableColumn<Song, String> titleCol = new TableColumn<>("Titel");
         titleCol.setCellValueFactory(cellData -> new SimpleStringProperty(
