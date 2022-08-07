@@ -1,5 +1,6 @@
 package musikverwaltung.views;
 
+import java.io.File;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -20,8 +21,6 @@ import musikverwaltung.MediaManager;
 import musikverwaltung.Playlist;
 import musikverwaltung.ScreenController;
 import musikverwaltung.Song;
-
-import java.io.File;
 
 
 public class PlaylistView extends MenuBarView {
@@ -77,15 +76,15 @@ public class PlaylistView extends MenuBarView {
                         playlistButton.setStyle("-fx-font-size:18");
                     }
                 });
-                playlistButton.setOnMouseClicked(event ->
-                {   if (event.getButton() == MouseButton.SECONDARY) {
-                    //Runnable uniqueRefreshRunnable = refresh();
-                    GenericView view = screenController.activateWindow(QuickOptionsView.class, false);
-                    if (view instanceof QuickOptionsView quickOptionsView) {
-                        System.out.println("p in playlistview" + playlist);
-                        quickOptionsView.setAffectedPlaylist(playlist);
+                playlistButton.setOnMouseClicked(event -> {
+                    if (event.getButton() == MouseButton.SECONDARY) {
+                        //Runnable uniqueRefreshRunnable = refresh();
+                        GenericView view = screenController.activateWindow(QuickOptionsView.class, false);
+                        if (view instanceof QuickOptionsView quickOptionsView) {
+                            System.out.println("p in playlistview" + playlist);
+                            quickOptionsView.setAffectedPlaylist(playlist);
+                        }
                     }
-                }
                 });
                 playlistButton.setOnAction((e) -> {
                     GenericView view = screenController.activateWindow(SongView.class, true);
@@ -109,7 +108,8 @@ public class PlaylistView extends MenuBarView {
                     }
                 });
 
-                playlist.getNameProperty().addListener((observableValue, oldString, newString) -> playlistButton.setText(newString));
+                playlist.getNameProperty().addListener((observableValue, oldString, newString) ->
+                        playlistButton.setText(newString));
                 playlistButton.setAlignment(Pos.BASELINE_CENTER);
                 playlistButton.setStyle("-fx-font-size:20");
                 playlistButton.setPrefHeight(100);
