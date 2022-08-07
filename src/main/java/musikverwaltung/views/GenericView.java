@@ -28,9 +28,7 @@ public abstract class GenericView implements DestroyListenerManager {
     }
 
     public GenericView(ScreenController sc) {
-        screenController = sc;
-        this.prefWidth = DEFAULT_WIDTH;
-        this.prefHeight = DEFAULT_HEIGHT;
+        this(sc, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
     public Node get() {

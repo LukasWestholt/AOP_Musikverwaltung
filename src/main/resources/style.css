@@ -91,7 +91,7 @@
 }
 
 .volume.slider .thumb {
-    -fx-background-image :url("/icons/speaker.png");
+    -fx-background-image: url("/icons/speaker.png");
     -fx-background-size: 15, 15;
     -fx-pref-width: 20;
     -fx-pref-height: 20;
