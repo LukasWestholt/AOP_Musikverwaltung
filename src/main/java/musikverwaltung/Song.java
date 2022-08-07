@@ -5,12 +5,16 @@ import static musikverwaltung.views.MainView.HIGHLIGHT_START;
 
 import java.io.File;
 import java.util.Objects;
+
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.CheckBox;
 
 public class Song {
     private final SimpleStringProperty title = new SimpleStringProperty();
     private final SimpleStringProperty artist = new SimpleStringProperty();
     private final SimpleStringProperty genre = new SimpleStringProperty();
+    private CheckBox selector = new CheckBox();
     private final File path;
 
     @SuppressWarnings("unused")
@@ -63,6 +67,26 @@ public class Song {
 
     public SimpleStringProperty getGenreProperty() {
         return genre;
+    }
+
+    public CheckBox getSelector() {
+        return selector;
+    }
+
+    public void setSelector(CheckBox checkBox) {
+        selector = checkBox;
+    }
+
+    public boolean isSelected() {
+        return selector.isSelected();
+    }
+
+    public BooleanProperty isSelectedProperty() {
+        return selector.selectedProperty();
+    }
+
+    public void setSelected(boolean value) {
+        selector.setSelected(value);
     }
 
     public File getPath() {

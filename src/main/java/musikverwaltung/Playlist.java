@@ -4,11 +4,15 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import java.nio.file.Paths;
+
 
 public class Playlist {
     private final SimpleStringProperty name = new SimpleStringProperty();
     //TODO überlegen ob Playtime wichtig ist oder weglassen
     private final SimpleIntegerProperty playtime = new SimpleIntegerProperty();
+
+    private final SimpleStringProperty previewImagePath = new SimpleStringProperty();
     private ObservableList<Song> songs = FXCollections.observableArrayList();
 
     public Playlist() {
@@ -44,6 +48,31 @@ public class Playlist {
         this.playtime.set(playtime);
     }
 
+    public void setPreviewImage(String path) {
+        //TODO paths austesten
+        //https://stackoverflow.com/questions/1697303/is-there-a-java-utility-which-will-convert-a-string-path-to-use-the-correct-file
+        /*String correctSeperator = FileSystems.getDefault().getSeparator();
+        System.out.println("file sep = " + File.separatorChar);
+        if (path==null) return;
+        if (!path.contains(File.separator)) {
+                // From Windows to Linux/Mac
+                path = path.replace('/', File.separatorChar);
+                // From Linux/Mac to Windows
+                path = path.replace('\\', File.separatorChar);
+        }*/
+        //path = path.replace("\"", "\\"");
+        path = Paths.get(path).toString();
+        System.out.println(path);
+        previewImagePath.set(path);
+    }
+
+    public String getPreviewImage() {
+        return previewImagePath.get();
+    }
+
+    public SimpleStringProperty getPreviewImageProperty() {
+        return previewImagePath;
+    }
     public ObservableList<Song> getSongs() {
         return songs;
     }
