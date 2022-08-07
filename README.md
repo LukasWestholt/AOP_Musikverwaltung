@@ -21,7 +21,6 @@ and save it in settings file or in metadata.
 - auto-Playlists
 - add everywhere javadoc messages (like checkstyle suggests)
 - setting checkbox show unplayable songs
-- Credits: <a href="https://www.flaticon.com/free-icons/speaker" title="speaker icons">Speaker icons created by Freepik - Flaticon</a>
 
 ## How to use in IDE
 
@@ -36,13 +35,13 @@ Command for Windows:
 
     dir /s /B src\*.java > sources.txt
     mkdir bin
-    javac -d bin --module-path lib\openjfx-18.0.1_windows-x64_bin-sdk\javafx-sdk-18.0.1\lib --add-modules javafx.controls,javafx.media -encoding utf8 @sources.txt
+    javac -d bin --module-path lib\openjfx-18.0.1_windows-x64_bin-sdk\javafx-sdk-18.0.1\lib --add-modules javafx.controls,javafx.media,javafx.web -encoding utf8 @sources.txt
 
 Command for Linux:
 
     find ./src/ -name "*.java" > sources.txt
     mkdir bin
-    javac -d bin --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media -encoding utf8 @sources.txt
+    javac -d bin --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media,javafx.web -encoding utf8 @sources.txt
 
 ## Run
 
@@ -50,11 +49,11 @@ Run with Java VM Options:
 
 Command for Windows:
 
-    java --module-path lib/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media -classpath "bin;src/main/resources" -Dfile.encoding=UTF-8 -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
+    java --module-path lib/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media,javafx.web -classpath "bin;src/main/resources" -Dfile.encoding=UTF-8 -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
 
 Command for Linux:
 
-    java --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media -classpath "bin;src/main/resources" -Dfile.encoding=UTF-8 -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
+    java --module-path lib/openjfx-18.0.1_linux-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media,javafx.web -classpath "bin;src/main/resources" -Dfile.encoding=UTF-8 -XX:+ShowCodeDetailsInExceptionMessages musikverwaltung.Musikverwaltung
 
 
 ## Aufgabe

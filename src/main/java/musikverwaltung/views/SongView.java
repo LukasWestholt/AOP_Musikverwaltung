@@ -1,6 +1,7 @@
 package musikverwaltung.views;
 
 import java.io.File;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
@@ -11,8 +12,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import musikverwaltung.Helper;
 import musikverwaltung.Playlist;
 import musikverwaltung.ScreenController;
 import musikverwaltung.SettingFile;
@@ -25,10 +28,11 @@ public class SongView extends MenuBarView implements StringListenerManager {
     final Image defaultImage;
     final ImageView img;
     final Button startStop;
+    final Background playBackground;
+    final Background pauseBackground;
     final Label labelSongName;
     Media currentSong;
     MediaPlayer player;
-    //private final ObservableList<Song> playlist = FXCollections.observableArrayList();
     private Playlist playlist = new Playlist();
     private final ChangeListener<Duration> playerSongLengthListener;
 
@@ -38,8 +42,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         https://stackoverflow.com/questions/26850828/how-to-make-a-javafx-button-with-circle-shape-of-3xp-diameter
          */
         super(sc, 320, 560);
-
-        File imgFile = new File(".\\media\\default_img.JPG");
+        File imgFile = Helper.getResourceFile(this.getClass(), "/default_img.jpg", false);
         defaultImage = new Image(imgFile.toURI().toString());
 
         addActiveMenuButton(mainViewButton,
@@ -48,7 +51,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         addActiveMenuButton(new Button("Reset"),
                 e -> reset(false)
         );
-        ignoreMenuItems(settingButton, playlistButton);
+        ignoreMenuItems(settingButton, playlistButton, creditsButton);
 
         labelSongName = new Label("Unbekannt");
         labelSongName.getStyleClass().add("header");
@@ -82,12 +85,25 @@ public class SongView extends MenuBarView implements StringListenerManager {
             }
         });
 
-        startStop = new Button("start");
+        startStop = new Button();
+        Image playImage = new Image(
+                Helper.getResourceFile(this.getClass(), "/icons/play.png", false)
+                        .toURI().toString()
+        );
+        Image pauseImage = new Image(
+                Helper.getResourceFile(this.getClass(), "/icons/pause.png", false)
+                        .toURI().toString()
+        );
+        playBackground = new Background(new BackgroundFill(new ImagePattern(playImage), null, null));
+        pauseBackground = new Background(new BackgroundFill(new ImagePattern(pauseImage), null, null));
+        startStop.getStyleClass().clear();
+        startStop.setBackground(playBackground);
         startStop.setShape(new Circle(1));
         startStop.setOnAction(e -> startStopSong());
         startStop.prefHeightProperty().bind(startStop.widthProperty());
-        setDynamicSize(startStop);
+        startStop.setMaxWidth(Double.MAX_VALUE);
         startStop.maxHeightProperty().bind(startStop.widthProperty());
+        HBox.setHgrow(startStop, Priority.SOMETIMES);
 
         Button skipForward = new Button("skip +");
         skipForward.setOnAction(e -> skipforwards());
@@ -98,6 +114,10 @@ public class SongView extends MenuBarView implements StringListenerManager {
         skipBackward.setOnAction(e -> skipbackwards());
         setDynamicSize(skipBackward);
         skipBackward.maxHeightProperty().bind(startStop.widthProperty().multiply(0.7));
+
+        startStop.minWidthProperty().bind(
+                Bindings.max(skipBackward.heightProperty(), skipForward.heightProperty())
+        );
 
         HBox buttonHBox = new HBox(skipBackward, startStop, skipForward);
         buttonHBox.setAlignment(Pos.CENTER);
@@ -153,12 +173,11 @@ public class SongView extends MenuBarView implements StringListenerManager {
         }
         if (isPlaying()) {
             player.pause();
-            startStop.setText("Start");
+            startStop.setBackground(playBackground);
             triggerListener("Stoppe Musik");
         } else {
             player.play();
-            //stop button verändert Größe aufgrund von text?
-            startStop.setText("Stop");
+            startStop.setBackground(pauseBackground);
             triggerListener("Spiele: " + labelSongName.getText());
         }
     }
@@ -171,7 +190,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         if (andDispose) {
             player.dispose();
         }
-        startStop.setText("Start");
+        startStop.setBackground(playBackground);
     }
 
     private void updateSong(boolean startPlaying) {
@@ -224,14 +243,6 @@ public class SongView extends MenuBarView implements StringListenerManager {
     private boolean isPlaying() {
         return player != null && player.getStatus() == MediaPlayer.Status.PLAYING;
     }
-    /*
-    void setPlaylist(PlayList playlist, boolean startPlaying) {
-        //warum ist playlist final und wird gecleared und geadded statt ersetzt?
-        this.playlist.clear();
-        this.playlist.addAll(playlist.getSongs());
-        updateSong(startPlaying);
-    }
-    */
 
     void setPlaylist(Playlist newPlaylist, boolean startPlaying) {
         this.playlist = newPlaylist;

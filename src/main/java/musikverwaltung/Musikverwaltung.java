@@ -30,6 +30,7 @@ public class Musikverwaltung extends Application {
         screenController.addScreen(new SettingsView(screenController));
         screenController.addScreen(new QuickOptionsView(screenController));
         screenController.addScreen(new PlaylistView(screenController, mediaManager));
+        screenController.addScreen(new CreditsView(screenController));
         screenController.activate(HelloView.class);
         screenController.activate(MainView.class, true, 1);
     }
