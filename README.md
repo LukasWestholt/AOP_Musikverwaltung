@@ -22,6 +22,8 @@ and save it in settings file or in metadata.
 - add everywhere javadoc messages (like checkstyle suggests)
 - setting checkbox show unplayable songs
 - Credits: <a href="https://www.flaticon.com/free-icons/speaker" title="speaker icons">Speaker icons created by Freepik - Flaticon</a>
+- <a href="https://www.flaticon.com/de/kostenlose-icons/pause" title="pause Icons">Pause Icons erstellt von Freepik - Flaticon</a>
+- <a href="https://www.flaticon.com/de/kostenlose-icons/abspielen" title="abspielen Icons">Abspielen Icons erstellt von Freepik - Flaticon</a>
 
 ## How to use in IDE
 
