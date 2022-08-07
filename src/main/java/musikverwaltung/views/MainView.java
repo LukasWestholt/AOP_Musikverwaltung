@@ -4,16 +4,14 @@ import java.util.InputMismatchException;
 import java.util.function.Consumer;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -36,7 +34,6 @@ public class MainView extends MenuBarView {
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
     final TableView<Song> table = new TableView<>();
-    private final Playlist playList = new Playlist();
     final MediaManager mediaManager;
 
     // https://stackoverflow.com/a/47560767/8980073
@@ -50,7 +47,7 @@ public class MainView extends MenuBarView {
                 e -> {
                     GenericView view = screenController.activateWindow(SettingsView.class, false);
                     if (view instanceof SettingsView settingsView) {
-                        settingsView.addListenerIfNotContains(uniqueRefreshRunnable);
+                        settingsView.addActionListenerIfNotContains(uniqueRefreshRunnable);
                     }
                 }
         );
@@ -65,9 +62,7 @@ public class MainView extends MenuBarView {
 
         //Pass the data to a filtered list
         final FilteredList<Song> flSong = new FilteredList<>(mediaManager.music, p -> true);
-        System.out.println(flSong);
-        System.out.println();
-        System.out.println();
+        final SimpleBooleanProperty showPlaylistAdd = new SimpleBooleanProperty();
 
         final Label welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.getStyleClass().add("header");
@@ -79,10 +74,7 @@ public class MainView extends MenuBarView {
         actionLabel.setAlignment(Pos.CENTER);
         actionLabel.setMaxWidth(Double.MAX_VALUE);
         PauseTransition pause = new PauseTransition(Duration.seconds(20));
-        pause.setOnFinished(e -> {
-            System.out.println("clear");
-            actionLabel.setText("");
-        });
+        pause.setOnFinished(e -> actionLabel.setText(""));
         actionLabel.textProperty().addListener((obs, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
                 pause.playFromStart();
@@ -93,28 +85,31 @@ public class MainView extends MenuBarView {
         saveButton.setMinWidth(Control.USE_PREF_SIZE);
         saveButton.setOnAction(e -> {
             actionLabel.setText("Save button pressed");
-            System.out.println(flSong.get(0).isSelectedProperty());
             table.refresh();
         });
 
         Button selectAll = new Button("alle auswählen");
         selectAll.setMinWidth(Control.USE_PREF_SIZE);
         selectAll.setOnAction(e -> {
-            int wasUnselected = 0;
-            for (Song song: flSong) {
+            boolean allUnselect = true;
+            for (Song song : flSong) {
                 if (!song.isSelected()) {
                     song.setSelected(true);
-                    wasUnselected++;
+                    allUnselect = false;
                 }
             }
-            if (wasUnselected == 0) {
-                for (Song song: flSong) {
+            if (allUnselect) {
+                for (Song song : flSong) {
                     song.setSelected(false);
                 }
+                showPlaylistAdd.set(false);
+            } else {
+                showPlaylistAdd.set(true);
             }
+            //table.refresh(); // TODO not needed right?
         });
 
-        HBox menu = new HBox(deleteButton, actionLabel,selectAll, saveButton);
+        HBox menu = new HBox(deleteButton, actionLabel, selectAll, saveButton);
         menu.setAlignment(Pos.CENTER);
         menu.setSpacing(5);
 
@@ -157,7 +152,7 @@ public class MainView extends MenuBarView {
             actionLabel.setText("Starte Player");
             GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView songView) {
-                songView.addListenerIfNotContains(setActionText);
+                songView.addStringListenerIfNotContains(setActionText);
                 Song lastSong = mediaManager.getLastSong();
                 if (lastSong != null) {
                     Playlist singleSongPlaylist = new Playlist();
@@ -171,128 +166,17 @@ public class MainView extends MenuBarView {
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton); //Add choiceBox and textField to hBox
         searchHBox.setAlignment(Pos.CENTER); //Center HBox
 
-        TableColumn<Song, String> checkCol = new TableColumn<>("   ");
-        checkCol.setCellValueFactory(new PropertyValueFactory<>("selector"));
-
-        for (Song song: flSong) {
-            System.out.println(song);
-            // song.isSelectedProperty().addListener((observableValue, oldVal, newVal) -> {
-            System.out.println(song.getSelector());
-            song.getSelector().selectedProperty().addListener(new ChangeListener<Boolean>() {
-                @Override
-                public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                    if (newValue) {
-                        if (!playList.contains(song)) {
-                            playList.add(song);
-                            System.out.println("added " + song);
-                        } else {
-                            if (playList.contains(song)) {
-                                playList.remove(song);
-                            }
-                        }
-                    }
-                }
-            });
-        }
-            /*
-            song.getSelector().selectedProperty().addListener((observableValue, oldVal, newVal) -> {
-                System.out.println("HHHHHHHHHEEEEEEEEEEY");
-                System.out.println(song + ": " + newVal);
-                if (newVal) {
-                    playList.add(song);
-                } else {
-                    if (playList.contains(song)) {
-                        playList.remove(song);
-                    }
-                }
-            });
-        }
-        */
-        /*
-        //TODO !!!! WEG 1: besser aber es werden andere weiter noch random selected
-        checkCol.setCellFactory(
-                new Callback<TableColumn<Song, Boolean>, TableCell<Song, Boolean>>() {
-                    public TableCell<Song, Boolean> call(TableColumn p) {
-                        return new TableCell<Song, Boolean>() {
-                            private final CheckBox checkBox = new CheckBox();
-
-                            @Override
-                            public void updateItem(Boolean item, boolean empty) {
-                                super.updateItem(item, empty);
-
-                                if (empty) {
-                                    setGraphic(null);
-                                } else {
-                                    checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-                                        @Override
-                                        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                                            //getTableView().requestFocus();
-                                            Song selectedSong = getTableView().getItems().get(getIndex());
-                                            System.out.println(getIndex());
-                                            if (newValue) {
-                                                if (!playList.contains(selectedSong)) {
-                                                    playList.add(selectedSong);
-                                                    System.out.println("added " + selectedSong);
-                                                }
-
-                                            } else {
-                                                //getTableView().getSelectionModel().clearSelection(getIndex());
-                                                if (playList.contains(selectedSong)) {
-                                                    System.out.println("removed " + selectedSong);
-                                                    playList.remove(selectedSong);
-                                                }
-
-                                            }
-                                        }
-                                    });
-                                    setGraphic(checkBox);
-                                }
-                            }
-                        };
-                    }
-                });
-         */
-        //TODO WEG 2: Liste hat nicht die erwartete Größe von 13 -> bugged
-        /*
-        ArrayList<CheckBox> C_LIST = new ArrayList<>();
-        ArrayList<Song> S_LIST = new ArrayList<>();
         TableColumn<Song, CheckBox> checkCol = new TableColumn<>("   ");
-        checkCol.setCellValueFactory(new Callback<>() {
-
-            @Override
-            public ObservableValue<CheckBox> call(TableColumn.CellDataFeatures<Song, CheckBox> arg0) {
-
-                CheckBox checkBox = new CheckBox();
-                Song selectedSong = arg0.getValue();
-                if (S_LIST.contains(selectedSong)) {
-                    C_LIST.remove(S_LIST.indexOf(selectedSong));
-                    S_LIST.remove(selectedSong);
-                    C_LIST.add(checkBox);
-                    S_LIST.add(selectedSong);
-                } else {
-                    C_LIST.add(checkBox);
-                    S_LIST.add(selectedSong);
-                }
-
-                checkBox.selectedProperty().addListener(new ChangeListener<>() {
-                    public void changed(ObservableValue<? extends Boolean> ov, Boolean oldVal, Boolean newVal) {
-                        Song song = S_LIST.get(C_LIST.indexOf(checkBox));
-
-                        if (newVal) {
-                            playList.add(song);
-                        } else {
-                            if (playList.contains(song)) {
-                                playList.remove(song);
-                            }
-                        }
-                        System.out.println(playList.getSongs());
-                    }
-                });
-                return new SimpleObjectProperty<>(checkBox);
-
-            }
-
-        });*/
+        checkCol.setCellValueFactory(cellData -> {
+            CheckBox checkBox = new CheckBox();
+            Song song = cellData.getValue();
+            checkBox.setSelected(song.isSelected());
+            checkBox.setOnAction(action -> {
+                song.setSelected(!song.isSelected());
+                showPlaylistAdd.set(!new FilteredList<>(flSong, Song::isSelected).isEmpty());
+            });
+            return new SimpleObjectProperty<>(checkBox);
+        });
 
         TableColumn<Song, String> titleCol = new TableColumn<>("Titel");
         titleCol.setCellValueFactory(cellData -> new SimpleStringProperty(
@@ -324,9 +208,6 @@ public class MainView extends MenuBarView {
         table.getColumns().add(interpretCol);
         table.getColumns().add(genreCol);
 
-
-
-
         table.setRowFactory(tv -> {
             TableRow<Song> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -336,7 +217,7 @@ public class MainView extends MenuBarView {
                     singleSongPlaylist.setName(row.getItem().getTitle());
                     GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView songView) {
-                        songView.addListenerIfNotContains(setActionText);
+                        songView.addStringListenerIfNotContains(setActionText);
                         songView.setPlaylist(singleSongPlaylist, true);
                     }
                 }
@@ -360,35 +241,31 @@ public class MainView extends MenuBarView {
                 new Stop(1, Color.web("#fcc200")))
         );
 
+        TextField playlistNameEntry = new TextField("Playlist 1");
 
         Button makePlaylistButton = new Button("Playlist erstellen");
         makePlaylistButton.setOnAction(action -> {
-            GenericView view = screenController.activateWindow(PlaylistView.class, true);
+            // TODO save playlist to file and don't activate PlaylistView each
+            GenericView view = screenController.activate(PlaylistView.class);
             if (view instanceof PlaylistView playlistView) {
-                System.out.println(playList.getSongs());
-                if (!playList.isEmpty()) {
-                    playlistView.addPlaylist(playList);
-                    System.out.println("moved playlist to next page");
+                Playlist returnPlaylist = new Playlist();
+                returnPlaylist.setName(playlistNameEntry.getText());
+                returnPlaylist.setSongs(new FilteredList<>(flSong, Song::isSelected));
+                if (!returnPlaylist.isEmpty()) {
+                    playlistView.addPlaylist(returnPlaylist);
+                    System.out.println("playlist added: " + returnPlaylist.getSongs());
+                    actionLabel.setText("Playlist with " + returnPlaylist.size() + " items added");
                 }
             }
-
-        });
-
-        TextField playlistNameEntry = new TextField("Playlist 1");
-        playlistNameEntry.textProperty().addListener((useless, oldValue, newValue) -> {
-            System.out.println(playlistNameEntry.getText());
-            playList.setName(playlistNameEntry.getText());
         });
 
         final HBox hbox = new HBox(makePlaylistButton, playlistNameEntry);
 
         //Gibt einem bei Auswahl von Songs die Möglichkeit Playlists zu erstellen und zu benennen
-        playList.getSongs().addListener((ListChangeListener<Song>) change -> {
-            System.out.println(change);
-            if (!playList.isEmpty() && !vbox.getChildren().contains(hbox)) {
+        showPlaylistAdd.addListener((obs, oldValue, newValue) -> {
+            if (newValue) {
                 vbox.getChildren().add(hbox);
-            }
-            if (playList.isEmpty()) {
+            } else {
                 vbox.getChildren().remove(hbox);
             }
         });

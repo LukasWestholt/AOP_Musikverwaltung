@@ -44,7 +44,7 @@ public class SettingsView extends GenericView implements ActionListenerManager {
         buttonSave.setOnAction(e -> {
             SettingFile.setPath(new ArrayList<>(list));
             stage.close();
-            triggerListener();
+            triggerActionListener();
         });
         Button buttonCancel = new Button("Cancel");
         buttonCancel.setCancelButton(true);

@@ -22,7 +22,9 @@ public class MediaManager {
     public final ObservableList<Song> music = FXCollections.observableArrayList(o -> new Observable[]{
             o.getTitleProperty(),
             o.getArtistProperty(),
-            o.getGenreProperty()
+            o.getGenreProperty(),
+            o.isSelectedProperty()
+            // TODO is needed?
     });
 
     private final String[] types = {
@@ -57,7 +59,7 @@ public class MediaManager {
 
                 Object titel = metadata.getMap().get("title");
                 if (titel != null && song.getTitle().isEmpty()) {
-                    song.getTitle(titel.toString());
+                    song.setTitle(titel.toString());
                 }
                 Object interpret = metadata.getMap().get("artist");
                 if (interpret != null && song.getArtist().isEmpty()) {

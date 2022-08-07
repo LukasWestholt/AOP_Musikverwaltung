@@ -1,10 +1,10 @@
 package musikverwaltung;
 
+import java.nio.file.Paths;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import java.nio.file.Paths;
 
 
 public class Playlist {
@@ -73,6 +73,7 @@ public class Playlist {
     public SimpleStringProperty getPreviewImageProperty() {
         return previewImagePath;
     }
+
     public ObservableList<Song> getSongs() {
         return songs;
     }

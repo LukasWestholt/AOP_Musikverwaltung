@@ -5,16 +5,14 @@ import static musikverwaltung.views.MainView.HIGHLIGHT_START;
 
 import java.io.File;
 import java.util.Objects;
-
-import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.control.CheckBox;
 
 public class Song {
     private final SimpleStringProperty title = new SimpleStringProperty();
     private final SimpleStringProperty artist = new SimpleStringProperty();
     private final SimpleStringProperty genre = new SimpleStringProperty();
-    private CheckBox selector = new CheckBox();
+    private final SimpleBooleanProperty isSelected = new SimpleBooleanProperty();
     private final File path;
 
     @SuppressWarnings("unused")
@@ -37,7 +35,7 @@ public class Song {
         return notNullString(title.get());
     }
 
-    public void getTitle(String titel) {
+    public void setTitle(String titel) {
         this.title.set(titel);
     }
 
@@ -69,24 +67,16 @@ public class Song {
         return genre;
     }
 
-    public CheckBox getSelector() {
-        return selector;
-    }
-
-    public void setSelector(CheckBox checkBox) {
-        selector = checkBox;
-    }
-
     public boolean isSelected() {
-        return selector.isSelected();
+        return isSelected.get();
     }
 
-    public BooleanProperty isSelectedProperty() {
-        return selector.selectedProperty();
+    public SimpleBooleanProperty isSelectedProperty() {
+        return isSelected;
     }
 
     public void setSelected(boolean value) {
-        selector.setSelected(value);
+        isSelected.set(value);
     }
 
     public File getPath() {
@@ -170,7 +160,8 @@ public class Song {
                 + "title: " + getTitle() + ", "
                 + "artist: " + getArtist() + ", "
                 + "genre: " + getGenre() + ", "
-                + "path: " + path.toString();
+                + "path: " + path.toString() + ", "
+                + "isSelected: " + isSelected;
     }
 
     @Override

@@ -174,11 +174,11 @@ public class SongView extends MenuBarView implements StringListenerManager {
         if (isPlaying()) {
             player.pause();
             startStop.setBackground(playBackground);
-            triggerListener("Stoppe Musik");
+            triggerStringListener("Stoppe Musik");
         } else {
             player.play();
             startStop.setBackground(pauseBackground);
-            triggerListener("Spiele: " + labelSongName.getText());
+            triggerStringListener("Spiele: " + labelSongName.getText());
         }
     }
 
@@ -214,7 +214,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
             startStopSong();
         }
         activateListeners();
-        triggerListener("Spiele: " + labelSongName.getText());
+        triggerStringListener("Spiele: " + labelSongName.getText());
     }
 
     private void skipforwards() {
