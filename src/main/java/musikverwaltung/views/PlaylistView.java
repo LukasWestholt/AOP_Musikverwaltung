@@ -36,6 +36,9 @@ public class PlaylistView extends MenuBarView {
         addActiveMenuButton(mainViewButton,
                 e -> screenController.activate(MainView.class)
         );
+        addActiveMenuButton(creditsButton,
+                e -> screenController.activateWindow(CreditsView.class, false)
+        );
         setActiveMenuItem(playlistButton);
 
         final Label welcomeLabel = new Label("Playlisten");

@@ -60,6 +60,9 @@ public class MainView extends MenuBarView {
         addActiveMenuButton(playlistButton,
                 e -> screenController.activate(PlaylistView.class)
         );
+        addActiveMenuButton(creditsButton,
+                e -> screenController.activateWindow(CreditsView.class, false)
+        );
         setActiveMenuItem(mainViewButton);
         uniqueRefreshRunnable.run();
 

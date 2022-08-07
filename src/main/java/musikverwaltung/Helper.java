@@ -18,6 +18,9 @@ public class Helper {
      * @return File from URL.
      */
     public static File getResourceFile(Class<?> c, String resourcePath, boolean exitOnFailure) {
+        if (!resourcePath.startsWith("/")) {
+            System.out.println("resourcePath is not starting with a '/'. Are you sure this is correct?");
+        }
         URL url = c.getResource(resourcePath);
         if (url != null) {
             try {
