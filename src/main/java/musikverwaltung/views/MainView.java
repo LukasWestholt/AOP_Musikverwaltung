@@ -34,6 +34,7 @@ public class MainView extends MenuBarView {
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
     final TableView<Song> table = new TableView<>();
+    private final Playlist playList = new Playlist();
     final MediaManager mediaManager;
 
     // https://stackoverflow.com/a/47560767/8980073
@@ -106,7 +107,7 @@ public class MainView extends MenuBarView {
             } else {
                 showPlaylistAdd.set(true);
             }
-            //table.refresh(); // TODO not needed right?
+            table.refresh(); // TODO not needed right? Doch für das update der checkboxen visuals
         });
 
         HBox menu = new HBox(deleteButton, actionLabel, selectAll, saveButton);

@@ -1,16 +1,15 @@
 package musikverwaltung;
 
-import java.nio.file.Paths;
-import javafx.beans.property.SimpleIntegerProperty;
+import java.io.*;
+import java.util.ArrayList;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 
-public class Playlist {
+public class Playlist implements Externalizable {
     private final SimpleStringProperty name = new SimpleStringProperty();
-    //TODO überlegen ob Playtime wichtig ist oder weglassen
-    private final SimpleIntegerProperty playtime = new SimpleIntegerProperty();
 
     private final SimpleStringProperty previewImagePath = new SimpleStringProperty();
     private ObservableList<Song> songs = FXCollections.observableArrayList();
@@ -36,18 +35,6 @@ public class Playlist {
         this.name.set(name);
     }
 
-    public int getPlaytime() {
-        return playtime.get();
-    }
-
-    public SimpleIntegerProperty getPlaytimeProperty() {
-        return playtime;
-    }
-
-    public void setPlaytime(int playtime) {
-        this.playtime.set(playtime);
-    }
-
     public void setPreviewImage(String path) {
         //TODO paths austesten
         //https://stackoverflow.com/questions/1697303/is-there-a-java-utility-which-will-convert-a-string-path-to-use-the-correct-file
@@ -61,8 +48,8 @@ public class Playlist {
                 path = path.replace('\\', File.separatorChar);
         }*/
         //path = path.replace("\"", "\\"");
-        path = Paths.get(path).toString();
-        System.out.println(path);
+        //path = Paths.get(path).toString();
+        //System.out.println(path);
         previewImagePath.set(path);
     }
 
@@ -121,7 +108,7 @@ public class Playlist {
 
     @Override
     public String toString() {
-        return "PlayList{" + "name=" + getName() + ", songs=" + songs + '}';
+        return "PlayList{" + "name=" + getName() + ", songs=" + songs + " mediafile: " + getPreviewImage() + '}';
     }
     //TODO equals method ausgiebig testen
 
@@ -133,6 +120,9 @@ public class Playlist {
         if (!(other instanceof Playlist otherPlaylist)) {
             return false;
         }
+        if (!(this.getName().equals(otherPlaylist.getName()))) {
+            return false;
+        }
         if (this.size() != otherPlaylist.size()) {
             return false;
         }
@@ -142,8 +132,28 @@ public class Playlist {
             }
         }
         //ist der auch Name einer Playlist wichtig oder nur der Inhalt?
-        return this.getName().equals(otherPlaylist.getName());
+        return true;
     }
 
+    //https://www.geeksforgeeks.org/externalizable-interface-java/
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        ArrayList<Song> temp = new ArrayList<>(getSongs());
+        out.writeObject(getName());
+        out.writeObject(temp);
+        out.writeObject(getPreviewImage());
+    }
 
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        setName((String)in.readObject());
+        //System.out.println(getName());
+        ArrayList<Song> temp = (ArrayList<Song>)in.readObject();
+        ObservableList<Song> songs = FXCollections.observableArrayList();
+        songs.addAll(temp);
+        setSongs(songs);
+        //System.out.println(getSongs());
+        setPreviewImage((String)in.readObject());
+        //System.out.println(getPreviewImage());
+    }
 }

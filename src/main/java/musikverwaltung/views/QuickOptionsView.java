@@ -1,5 +1,6 @@
 package musikverwaltung.views;
 
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -9,6 +10,8 @@ import musikverwaltung.ScreenController;
 
 public class QuickOptionsView extends GenericView {
     private Playlist affectedPlaylist;
+
+    private ObservableList<Playlist> contextLibrary;
 
     private final TextField inputTextField = new TextField();
 
@@ -28,6 +31,11 @@ public class QuickOptionsView extends GenericView {
         showNodes(vbox);
     }
 
+    public void setAffectedPlaylistInContext(ObservableList<Playlist> mediaLibrary, Playlist playlist) {
+        contextLibrary = mediaLibrary;
+        affectedPlaylist = playlist;
+        System.out.println("affected playlist = " + affectedPlaylist);
+    }
     public void setAffectedPlaylist(Playlist playlist) {
         System.out.println("affected playlist = " + affectedPlaylist);
         affectedPlaylist = playlist;
@@ -47,16 +55,8 @@ public class QuickOptionsView extends GenericView {
     }
 
     private void deleteAffectedPlaylist() {
-        //TODO auf playlistview zugreifen ohne nochmaliges öffnen und playlist löschen oder decompose methode
-        // in playlist einbauen
-        GenericView view = screenController.activateWindow(PlaylistView.class, true);
-        System.out.println(screenController.getMain());
-        System.out.println(screenController.getMainScene());
-        System.out.println();
-        System.out.println(screenController.getMainScene().getClass());
-        System.out.println(view.getClass());
-        if (view instanceof PlaylistView playlistView) {
-            playlistView.deletePlaylist(affectedPlaylist);
+        if (contextLibrary!=null) {
+            contextLibrary.remove(affectedPlaylist);
         }
     }
 

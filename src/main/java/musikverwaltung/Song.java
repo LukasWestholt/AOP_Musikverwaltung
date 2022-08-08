@@ -3,17 +3,17 @@ package musikverwaltung;
 import static musikverwaltung.views.MainView.HIGHLIGHT_END;
 import static musikverwaltung.views.MainView.HIGHLIGHT_START;
 
-import java.io.File;
+import java.io.*;
 import java.util.Objects;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class Song {
+public class Song implements Externalizable {
     private final SimpleStringProperty title = new SimpleStringProperty();
     private final SimpleStringProperty artist = new SimpleStringProperty();
     private final SimpleStringProperty genre = new SimpleStringProperty();
     private final SimpleBooleanProperty isSelected = new SimpleBooleanProperty();
-    private final File path;
+    private File path;
 
     @SuppressWarnings("unused")
     public Song(String titel, String artist, String genre, File path) {
@@ -26,6 +26,8 @@ public class Song {
     public Song(File path) {
         this.path = path;
     }
+
+    public Song() {}
 
     public String getPrimaryKey() {
         return title.get() != null ? title.get() : path.getName();
@@ -81,6 +83,10 @@ public class Song {
 
     public File getPath() {
         return path;
+    }
+
+    public void setPath(File path) {
+        this.path = path;
     }
 
     public boolean search_everywhere(String searchKey) {
@@ -188,5 +194,22 @@ public class Song {
     @Override
     public int hashCode() {
         return Objects.hash(title, artist, genre, path);
+    }
+
+    //https://www.geeksforgeeks.org/externalizable-interface-java/
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(getTitle());
+        out.writeObject(getGenre());
+        out.writeObject(getArtist());
+        out.writeObject(getPath());
+    }
+    @Override
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        setTitle((String)in.readObject());
+        setGenre((String)in.readObject());
+        setArtist((String)in.readObject());
+        setPath((File)in.readObject());
+        isSelected.set(false);
     }
 }

@@ -1,26 +1,23 @@
 package musikverwaltung.views;
 
 import java.io.File;
+import java.util.ArrayList;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import musikverwaltung.MediaManager;
-import musikverwaltung.Playlist;
-import musikverwaltung.ScreenController;
-import musikverwaltung.Song;
+import javafx.stage.FileChooser;
+import musikverwaltung.*;
 
 
 public class PlaylistView extends MenuBarView {
@@ -28,6 +25,8 @@ public class PlaylistView extends MenuBarView {
     private final ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
 
     final FilteredList<Song> allSongs;
+
+    private Playlist contextPlaylist;
 
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
@@ -60,12 +59,35 @@ public class PlaylistView extends MenuBarView {
         tilePane.setPrefColumns(1);
         tilePane.setMaxHeight(Region.USE_PREF_SIZE);
 
+        ContextMenu quickOptions = new ContextMenu();
+        //TODO überlegen das öfter einzubauen mit radio und checkMenu sehr praktisch
+        MenuItem deleteMenu = new MenuItem("Löschen");
+        MenuItem renameMenu = new MenuItem("Umbenennen");
+        MenuItem selectMenu = new MenuItem("Bild auswählen");
+        TextField nameField = new TextField("");
+        CustomMenuItem textMenu = new CustomMenuItem(nameField);
+        textMenu.setHideOnClick(false);
+
+        deleteMenu.setOnAction(action -> mediaLibrary.remove(contextPlaylist));
+        renameMenu.setOnAction(action -> {
+            contextPlaylist.setName(nameField.getText());
+            nameField.clear();
+        });
+        //TODO chooser error free machen
+        selectMenu.setOnAction(action -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Suche dir ein Vorschaubild für die Playlist aus");
+            File imageFile = fileChooser.showOpenDialog(stage);
+            contextPlaylist.setPreviewImage(imageFile.getPath());
+        });
+        quickOptions.getItems().addAll(deleteMenu,renameMenu,selectMenu, textMenu);
+
         mediaLibrary.addListener((ListChangeListener<? super Playlist>) change -> {
             tilePane.getChildren().clear();
-            System.out.println(mediaLibrary);
+            //System.out.println(mediaLibrary);
             for (Playlist playlist : mediaLibrary) {
-                System.out.println(playlist.getName());
-                System.out.println();
+                //System.out.println(playlist.getName());
+                //System.out.println();
                 Button playlistButton = new Button(playlist.getName());
                 playlistButton.setMinWidth(Region.USE_PREF_SIZE);
                 playlistButton.setWrapText(true);
@@ -76,40 +98,26 @@ public class PlaylistView extends MenuBarView {
                         playlistButton.setStyle("-fx-font-size:18");
                     }
                 });
+                //genau position beim auftauchen setzen
                 playlistButton.setOnMouseClicked(event -> {
                     if (event.getButton() == MouseButton.SECONDARY) {
-                        //Runnable uniqueRefreshRunnable = refresh();
-                        GenericView view = screenController.activateWindow(QuickOptionsView.class, false);
-                        if (view instanceof QuickOptionsView quickOptionsView) {
-                            System.out.println("p in playlistview" + playlist);
-                            quickOptionsView.setAffectedPlaylist(playlist);
-                        }
+                        contextPlaylist = playlist;
+                        nameField.setText(contextPlaylist.getName());
                     }
                 });
+                playlistButton.setContextMenu(quickOptions);
+
                 playlistButton.setOnAction((e) -> {
                     GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView songView) {
                         songView.setPlaylist(playlist, true);
                     }
                 });
-                playlist.getPreviewImageProperty().addListener((observableValue, oldString, newString) -> {
-                    File imgFile = new File(newString);
-                    Image previewImage = new Image(imgFile.toURI().toString());
-                    System.out.println(previewImage.errorProperty());
-                    if (!previewImage.isError()) {
-                        ImageView previewView = new ImageView(previewImage);
-                        System.out.println("new image " + newString);
-                        //\media\AlbumCover.jpg zum Beispiel
-                        previewView.setFitWidth(80);
-                        previewView.setFitHeight(80);
-                        //TODO preserve ratio or not?
-                        previewView.setPreserveRatio(true);
-                        playlistButton.setGraphic(previewView);
-                    }
-                });
+                if (playlist.getPreviewImage() != null && playlistButton.graphicProperty().get() == null)
+                    showPlaylistImage(playlistButton, playlist.getPreviewImage());
+                playlist.getPreviewImageProperty().addListener((observableValue, oldString, newString) -> showPlaylistImage(playlistButton, newString));
 
-                playlist.getNameProperty().addListener((observableValue, oldString, newString) ->
-                        playlistButton.setText(newString));
+                playlist.getNameProperty().addListener((observableValue, oldString, newString) -> playlistButton.setText(newString));
                 playlistButton.setAlignment(Pos.BASELINE_CENTER);
                 playlistButton.setStyle("-fx-font-size:20");
                 playlistButton.setPrefHeight(100);
@@ -117,6 +125,12 @@ public class PlaylistView extends MenuBarView {
                 tilePane.getChildren().add(playlistButton);
             }
         });
+
+        ObservableList<Playlist> temp = FXCollections.observableArrayList();
+        temp.addAll(SettingFile.load().getMediaLibrary());
+        System.out.println("!!!!!!!!!: " + temp);
+        if (!temp.isEmpty())
+            mediaLibrary.addAll(temp);
 
         ScrollPane sp = new ScrollPane();
         sp.setId("scroll-playlists");
@@ -141,16 +155,15 @@ public class PlaylistView extends MenuBarView {
             }
         });
 
-        //TODO delete button ohne auswahl der zu löschenden Playlist ergibt keinen Sinn
-        //Button deletePlaylistButton = new Button("Löschen");
-        //deletePlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
-
+        //TODO verbuggt beim mehrmaligen aktivieren?
         Button automaticPlaylistButton = new Button("Playlist Vorschläge");
         automaticPlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
         automaticPlaylistButton.setOnAction(e -> createAutomaticPlaylists());
 
         vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton, automaticPlaylistButton);
         showNodes(vbox);
+
+        setDestroyListener(() -> SettingFile.setMediaLibrary(mediaLibrary));
     }
 
     public boolean addPlaylist(Playlist createdPlaylist) {
@@ -162,6 +175,7 @@ public class PlaylistView extends MenuBarView {
         System.out.println("added a new playlist " + createdPlaylist.getName());
         Playlist newPlaylist = createdPlaylist.copy();
         mediaLibrary.add(newPlaylist);
+        //SettingFile.setMediaLibrary(mediaLibrary);
         return true;
     }
 
@@ -175,38 +189,57 @@ public class PlaylistView extends MenuBarView {
 
     private void createAutomaticPlaylists() {
         int threshold = 10;
-        //wenn wir uns für filter entschieden haben kann diese niemals erreichte definition gelöscht werden
-        String filterCriteria = " ";
-        String[] filter = new String[] {"genre", "artist"};
-        for (String filterCategory : filter) {
-            for (int i = 0; i < allSongs.size(); i++) {
-                if (filterCategory.equals("genre")) {
-                    //aufgrund der lamda expression von predicate muss variabel jedes mal neu definiert werden
-                    String genreFilterCriteria = allSongs.get(i).getGenre();
-                    filterCriteria = genreFilterCriteria;
-                    if (!genreFilterCriteria.equals("")) {
-                        allSongs.setPredicate(p -> p.getGenre().contains(genreFilterCriteria));
-                    }
-                }
-                if (filterCategory.equals("artist")) {
-                    String artistFilterCriteria = allSongs.get(i).getArtist();
-                    filterCriteria = artistFilterCriteria;
-                    if (!artistFilterCriteria.equals("")) {
-                        allSongs.setPredicate(p -> p.getArtist().contains(artistFilterCriteria));
-                    }
-                }
-                //System.out.println(filterCriteria +"-" + "length: " + allSongs.size() + " " + allSongs);
-                //manche Songs haben keine eintragungen und liefern nach filtern alle Songs -> werden ignoriert
-                if (allSongs.size() >= threshold && !filterCriteria.equals("")) {
-                    Playlist automaticPlaylist = new Playlist();
-                    automaticPlaylist.setName(filterCategory + ": " + filterCriteria);
-                    for (Song song : allSongs) {
-                        automaticPlaylist.add(song);
-                    }
-                    addPlaylist(automaticPlaylist);
-                }
-                allSongs.setPredicate(null);
+        //Criteria: genre and artist
+        ArrayList<String> genreCriteria = new ArrayList<>();
+        ArrayList<String> artistCriteria = new ArrayList<>();
+        for (int i = 0; i < allSongs.size(); i++) {
+            if (!(genreCriteria.contains(allSongs.get(i).getGenre())) && !(allSongs.get(i).getGenre().equals(""))) {
+                genreCriteria.add(allSongs.get(i).getGenre());
+            } else if (!(artistCriteria.contains(allSongs.get(i).getArtist())) && !(allSongs.get(i).getArtist().equals(""))) {
+                artistCriteria.add(allSongs.get(i).getArtist());
             }
+        }
+        //System.out.println(genreCriteria + "\n" + artistCriteria);
+
+        for (String genre:genreCriteria) {
+            allSongs.setPredicate(p -> p.getGenre().contains(genre));
+            if (allSongs.size() >= threshold) {
+                Playlist automaticPlaylist = new Playlist();
+                automaticPlaylist.setName("Genre: " + genre);
+                for (Song song : allSongs) {
+                    automaticPlaylist.add(song);
+                }
+                addPlaylist(automaticPlaylist);
+            }
+        }
+        allSongs.setPredicate(null);
+        for (String artist:artistCriteria) {
+            allSongs.setPredicate(p -> p.getArtist().contains(artist));
+            if (allSongs.size() >= threshold) {
+                Playlist automaticPlaylist = new Playlist();
+                automaticPlaylist.setName("Artist: " + artist);
+                for (Song song : allSongs) {
+                    automaticPlaylist.add(song);
+                }
+                addPlaylist(automaticPlaylist);
+            }
+        }
+        allSongs.setPredicate(null);
+    }
+    //nicht ideal die methode aber muss einmal am anfang und im listener eingesetzt werden
+    private void showPlaylistImage(Button playlistButton, String path) {
+        File imgFile = new File(path);
+        Image previewImage = new Image(imgFile.toURI().toString());
+        System.out.println(previewImage.errorProperty());
+        if (!previewImage.isError()) {
+            ImageView previewView = new ImageView(previewImage);
+            System.out.println("new image " + path);
+            //\media\AlbumCover.jpg zum Beispiel
+            previewView.setFitWidth(80);
+            previewView.setFitHeight(80);
+            //TODO preserve ratio or not?
+            previewView.setPreserveRatio(true);
+            playlistButton.setGraphic(previewView);
         }
     }
 }
