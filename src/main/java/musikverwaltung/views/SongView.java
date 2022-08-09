@@ -1,7 +1,6 @@
 package musikverwaltung.views;
 
 import java.io.File;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
@@ -105,31 +104,68 @@ public class SongView extends MenuBarView implements StringListenerManager {
         startStop.maxHeightProperty().bind(startStop.widthProperty());
         HBox.setHgrow(startStop, Priority.SOMETIMES);
 
-        Button skipForward = new Button("skip +");
+        Button skipForward = new Button();
+        Image skipForwardImage = new Image(
+                Helper.getResourceFile(this.getClass(), "/icons/skip.png", false)
+                    .toURI().toString()
+        );
+        Background skipForwardBackground = new Background(new BackgroundFill(new ImagePattern(skipForwardImage), null, null));
+        skipForward.getStyleClass().clear();
+        skipForward.setBackground(skipForwardBackground);
         skipForward.setOnAction(e -> skipforwards());
         setDynamicSize(skipForward);
         skipForward.maxHeightProperty().bind(startStop.widthProperty().multiply(0.7));
 
-        Button skipBackward = new Button("skip -");
+        Button skipBackward = new Button();
+        Image skipBackwardImage = new Image(
+                Helper.getResourceFile(this.getClass(), "/icons/skipback.png", false)
+                        .toURI().toString()
+        );
+        Background skipBackwardBackground = new Background(new BackgroundFill(new ImagePattern(skipBackwardImage), null, null));
+        skipBackward.getStyleClass().clear();
+        skipBackward.setBackground(skipBackwardBackground);
         skipBackward.setOnAction(e -> skipbackwards());
         setDynamicSize(skipBackward);
         skipBackward.maxHeightProperty().bind(startStop.widthProperty().multiply(0.7));
 
-        startStop.minWidthProperty().bind(
-                Bindings.max(skipBackward.heightProperty(), skipForward.heightProperty())
+        //startStop.minWidthProperty().bind(
+        //        Bindings.max(skipBackward.heightProperty(), skipForward.heightProperty())
+        //);
+        Button skipAhead = new Button();
+        Image skipAheadImage= new Image(
+                Helper.getResourceFile(this.getClass(), "/icons/15sAhead.png", false)
+                        .toURI().toString()
         );
+        Background skipAheadBackground = new Background(new BackgroundFill(new ImagePattern(skipAheadImage), null, null));
+        skipAhead.getStyleClass().clear();
+        skipAhead.setBackground(skipAheadBackground);
+        skipAhead.setOnAction(e -> skipTimeAhead(15));
+        setDynamicSize(skipAhead);
 
-        HBox buttonHBox = new HBox(skipBackward, startStop, skipForward);
+        Button skipBehind = new Button();
+        Image skipBehindImage= new Image(
+                Helper.getResourceFile(this.getClass(), "/icons/15sBack.png", false)
+                        .toURI().toString()
+        );
+        Background skipBehindBackground = new Background(new BackgroundFill(new ImagePattern(skipBehindImage), null, null));
+        skipBehind.getStyleClass().clear();
+        skipBehind.setBackground(skipBehindBackground);
+        skipBehind.setOnAction(e -> skipTimeBehind(15));
+        setDynamicSize(skipBehind);
+
+        HBox buttonHBox = new HBox(skipBehind, skipBackward, startStop, skipForward, skipAhead);
         buttonHBox.setAlignment(Pos.CENTER);
         buttonHBox.setSpacing(10);
         buttonHBox.maxWidthProperty().bind(getHeightProperty().divide(2));
 
         Slider slider = new Slider(0, 1, 0);
         slider.setValue(volume);
+        /*mir gefällt es besser ohne
         slider.setMinorTickCount(10);
         slider.setMajorTickUnit(10.0);
         slider.setShowTickMarks(true);
         slider.setShowTickLabels(true);
+        */
         slider.getStyleClass().add("volume");
         slider.valueProperty().addListener((useless1, useless2, sliderValue) -> {
             volume = sliderValue.doubleValue();
@@ -233,6 +269,14 @@ public class SongView extends MenuBarView implements StringListenerManager {
             currentIndex = playlist.size() - 1;
         }
         updateSong(true);
+    }
+
+    private void skipTimeAhead(int timeInSeconds) {
+        player.seek(new Duration(player.getCurrentTime().toMillis() + (timeInSeconds*1000)));
+    }
+
+    private void skipTimeBehind(int timeInSeconds) {
+        player.seek(new Duration(player.getCurrentTime().toMillis() - (timeInSeconds*1000)));
     }
 
     private void activateListeners() {

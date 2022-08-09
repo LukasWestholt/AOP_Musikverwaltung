@@ -125,12 +125,12 @@ public class PlaylistView extends MenuBarView {
                 tilePane.getChildren().add(playlistButton);
             }
         });
-
+        //letzte Playlisten werden geladen
         ObservableList<Playlist> temp = FXCollections.observableArrayList();
         temp.addAll(SettingFile.load().getMediaLibrary());
-        System.out.println("!!!!!!!!!: " + temp);
         if (!temp.isEmpty())
             mediaLibrary.addAll(temp);
+
 
         ScrollPane sp = new ScrollPane();
         sp.setId("scroll-playlists");

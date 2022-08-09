@@ -13,30 +13,9 @@ public class SettingFile implements Serializable {
 
     private ArrayList<Playlist> mediaLibrary;
 
-    private Playlist playlist;
-
-    private Song song;
     private List<String> paths = new ArrayList<>();
     private File lastSong;
 
-
-    public static void setSOOONG(Song song) {
-        SettingFile setting = load();
-        if (setting.song != song) {
-            setting.song = song;
-            save(setting);
-        }
-        System.out.println("added " + song + "to settingsfile");
-    }
-
-    public static void setPLAAAY(Playlist playlist) {
-        SettingFile setting = load();
-        if (setting.playlist != playlist) {
-            setting.playlist = playlist;
-            save(setting);
-        }
-        System.out.println("added " + playlist + "to settingsfile");
-    }
     public static void setMediaLibrary(ObservableList<Playlist> mediaLibrary) {
         SettingFile setting = load();
         ArrayList<Playlist> temp = new ArrayList<>(mediaLibrary);
@@ -87,10 +66,6 @@ public class SettingFile implements Serializable {
     public File getLastSong() {
         return lastSong;
     }
-
-    public Song getSong() {return song;}
-
-    public Playlist getPlaylist() {return playlist;}
 
     public ArrayList<Playlist> getMediaLibrary() {return mediaLibrary;}
 

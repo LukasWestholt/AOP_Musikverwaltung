@@ -61,9 +61,9 @@
 }
 
 .song.slider .thumb {
-    -fx-background-color: lightblue;
-    -fx-pref-width: 20;
-    -fx-pref-height: 20;
+    -fx-background-color: white;
+    -fx-pref-width: 25;
+    -fx-pref-height: 25;
 }
 
 .song.slider .track {
@@ -74,18 +74,18 @@
 }
 
 .song.progress-bar {
-    -fx-background-color: null;
-    -fx-background-insets: 0;
-    -fx-background-radius: 0;
+    -fx-background-insets: 1;
+    -fx-background-radius: 1;
 }
 
 .song.progress-bar .track {
-    -fx-background-color: null;
+    -fx-background-color: rgb(129, 140, 48);
     -fx-background-insets: 0;
     -fx-background-radius: 0;
 }
 
 .song.progress-bar .bar {
+    -fx-background-color: rgb(97, 195, 148);
     -fx-background-insets: 0;
     -fx-background-radius: 0;
 }
