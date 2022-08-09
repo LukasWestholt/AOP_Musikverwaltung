@@ -1,18 +1,20 @@
 package musikverwaltung;
 
-import java.io.*;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.nio.file.Path;
 import java.util.ArrayList;
-
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-
 public class Playlist implements Externalizable {
     private final SimpleStringProperty name = new SimpleStringProperty();
-
-    private final SimpleStringProperty previewImagePath = new SimpleStringProperty();
-    private ObservableList<Song> songs = FXCollections.observableArrayList();
+    private final ObservableList<Song> songs = FXCollections.observableArrayList();
+    private final SimpleObjectProperty<Path> previewImage = new SimpleObjectProperty<>();
 
     public Playlist() {
         this.name.setValue("Playlist 1");
@@ -20,7 +22,14 @@ public class Playlist implements Externalizable {
 
     public Playlist(String name, ObservableList<Song> playlist) {
         this.name.setValue(name);
-        this.songs = playlist;
+        songs.setAll(playlist);
+    }
+
+    public Playlist(Playlist baseOfCopy) {
+        this.name.setValue(baseOfCopy.getName());
+        for (Song song : baseOfCopy.getAll()) {
+            this.add(song);
+        }
     }
 
     public String getName() {
@@ -35,46 +44,32 @@ public class Playlist implements Externalizable {
         this.name.set(name);
     }
 
-    public void setPreviewImage(String path) {
-        //TODO paths austesten
-        //https://stackoverflow.com/questions/1697303/is-there-a-java-utility-which-will-convert-a-string-path-to-use-the-correct-file
-        /*String correctSeperator = FileSystems.getDefault().getSeparator();
-        System.out.println("file sep = " + File.separatorChar);
-        if (path==null) return;
-        if (!path.contains(File.separator)) {
-                // From Windows to Linux/Mac
-                path = path.replace('/', File.separatorChar);
-                // From Linux/Mac to Windows
-                path = path.replace('\\', File.separatorChar);
-        }*/
-        //path = path.replace("\"", "\\"");
-        //path = Paths.get(path).toString();
-        //System.out.println(path);
-        previewImagePath.set(path);
+    public Path getPreviewImage() {
+        return previewImage.get();
     }
 
-    public String getPreviewImage() {
-        return previewImagePath.get();
+    public SimpleObjectProperty<Path> getPreviewImageProperty() {
+        return previewImage;
     }
 
-    public SimpleStringProperty getPreviewImageProperty() {
-        return previewImagePath;
+    public void setPreviewImage(Path path) {
+        previewImage.set(path);
     }
 
-    public ObservableList<Song> getSongs() {
-        return songs;
-    }
-
-    public void setSongs(ObservableList<Song> playlist) {
-        this.songs = playlist;
-    }
-
-    public Song getSong(int index) {
+    public Song get(int index) {
         return songs.get(index);
     }
 
-    public void setSong(int index, Song newSong) {
+    public ObservableList<Song> getAll() {
+        return songs;
+    }
+
+    public void set(int index, Song newSong) {
         songs.set(index, newSong);
+    }
+
+    public void setAll(ObservableList<Song> playlist) {
+        songs.setAll(playlist);
     }
 
     public void add(Song song) {
@@ -95,15 +90,6 @@ public class Playlist implements Externalizable {
 
     public int size() {
         return songs.size();
-    }
-
-    public Playlist copy() {
-        Playlist copyPlaylist = new Playlist();
-        copyPlaylist.setName(this.getName());
-        for (Song song : this.getSongs()) {
-            copyPlaylist.add(song);
-        }
-        return copyPlaylist;
     }
 
     @Override
@@ -138,7 +124,7 @@ public class Playlist implements Externalizable {
     //https://www.geeksforgeeks.org/externalizable-interface-java/
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        ArrayList<Song> temp = new ArrayList<>(getSongs());
+        ArrayList<Song> temp = new ArrayList<>(getAll());
         out.writeObject(getName());
         out.writeObject(temp);
         out.writeObject(getPreviewImage());
@@ -146,14 +132,14 @@ public class Playlist implements Externalizable {
 
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        setName((String)in.readObject());
+        setName((String) in.readObject());
         //System.out.println(getName());
-        ArrayList<Song> temp = (ArrayList<Song>)in.readObject();
+        ArrayList<Song> temp = (ArrayList<Song>) in.readObject();
         ObservableList<Song> songs = FXCollections.observableArrayList();
         songs.addAll(temp);
-        setSongs(songs);
+        setAll(songs);
         //System.out.println(getSongs());
-        setPreviewImage((String)in.readObject());
+        setPreviewImage((Path) in.readObject());
         //System.out.println(getPreviewImage());
     }
 }

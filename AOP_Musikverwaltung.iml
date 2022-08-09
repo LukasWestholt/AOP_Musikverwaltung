@@ -12,6 +12,8 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/lib" />
       <excludeFolder url="file://$MODULE_DIR$/scenicview-win" />
+      <excludePattern pattern=".classpath" />
+      <excludePattern pattern=".project" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

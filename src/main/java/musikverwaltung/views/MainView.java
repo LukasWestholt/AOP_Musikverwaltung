@@ -34,7 +34,7 @@ public class MainView extends MenuBarView {
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
     final TableView<Song> table = new TableView<>();
-    private final Playlist playList = new Playlist();
+    private final Playlist playList = new Playlist(); // TODO not needed?
     final MediaManager mediaManager;
 
     // https://stackoverflow.com/a/47560767/8980073
@@ -251,10 +251,10 @@ public class MainView extends MenuBarView {
             if (view instanceof PlaylistView playlistView) {
                 Playlist returnPlaylist = new Playlist();
                 returnPlaylist.setName(playlistNameEntry.getText());
-                returnPlaylist.setSongs(new FilteredList<>(flSong, Song::isSelected));
+                returnPlaylist.setAll(new FilteredList<>(flSong, Song::isSelected));
                 if (!returnPlaylist.isEmpty()) {
                     playlistView.addPlaylist(returnPlaylist);
-                    System.out.println("playlist added: " + returnPlaylist.getSongs());
+                    System.out.println("playlist added: " + returnPlaylist.getAll());
                     actionLabel.setText("Playlist with " + returnPlaylist.size() + " items added");
                 }
             }

@@ -1,17 +1,20 @@
 package musikverwaltung;
 
-import javafx.collections.ObservableList;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javafx.collections.ObservableList;
 
 public class SettingFile implements Serializable {
 
     private static final String filename = "settings.ser";
 
-    private ArrayList<Playlist> mediaLibrary;
+    // explicitly
+    private static final long SerialVersionUID = 10L;
+    // TODO testing
+
+    private ArrayList<Playlist> mediaLibrary = new ArrayList<>();
 
     private Playlist playlist;
 
@@ -25,26 +28,27 @@ public class SettingFile implements Serializable {
         if (setting.song != song) {
             setting.song = song;
             save(setting);
+            System.out.println("added song " + song + "to settingsfile");
         }
-        System.out.println("added " + song + "to settingsfile");
-    }
+    } // TODO what is this?
 
     public static void setPLAAAY(Playlist playlist) {
         SettingFile setting = load();
         if (setting.playlist != playlist) {
             setting.playlist = playlist;
             save(setting);
+            System.out.println("added playlist " + playlist + "to settingsfile");
         }
-        System.out.println("added " + playlist + "to settingsfile");
-    }
+    } // TODO what is this?
+
     public static void setMediaLibrary(ObservableList<Playlist> mediaLibrary) {
         SettingFile setting = load();
         ArrayList<Playlist> temp = new ArrayList<>(mediaLibrary);
         if (!Objects.equals(setting.mediaLibrary, temp)) {
             setting.mediaLibrary = temp;
             save(setting);
+            System.out.println("added mediaLibrary " + mediaLibrary + " to settingsfile");
         }
-        System.out.println("added " + mediaLibrary + " to settingsfile");
     }
 
     public static void setLastSong(File lastSong) {
@@ -88,11 +92,17 @@ public class SettingFile implements Serializable {
         return lastSong;
     }
 
-    public Song getSong() {return song;}
+    public Song getSong() {
+        return song;
+    }
 
-    public Playlist getPlaylist() {return playlist;}
+    public Playlist getPlaylist() {
+        return playlist;
+    }
 
-    public ArrayList<Playlist> getMediaLibrary() {return mediaLibrary;}
+    public ArrayList<Playlist> getMediaLibrary() {
+        return mediaLibrary;
+    }
 
     public List<String> getPaths() {
         return paths;

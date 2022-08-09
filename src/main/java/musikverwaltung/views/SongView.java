@@ -202,8 +202,8 @@ public class SongView extends MenuBarView implements StringListenerManager {
         }
         reset(true);
 
-        File file = playlist.getSong(currentIndex).getPath();
-        labelSongName.setText(playlist.getSong(currentIndex).getTitle());
+        File file = playlist.get(currentIndex).getPath();
+        labelSongName.setText(playlist.get(currentIndex).getTitle());
         setDestroyListener(() -> SettingFile.setLastSong(file));
         currentSong = new Media(file.toURI().toString());
         player = new MediaPlayer(currentSong);

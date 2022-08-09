@@ -1,8 +1,9 @@
 package musikverwaltung.views;
 
 import java.io.File;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.ArrayList;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -13,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
@@ -59,28 +61,41 @@ public class PlaylistView extends MenuBarView {
         tilePane.setPrefColumns(1);
         tilePane.setMaxHeight(Region.USE_PREF_SIZE);
 
-        ContextMenu quickOptions = new ContextMenu();
         //TODO überlegen das öfter einzubauen mit radio und checkMenu sehr praktisch
-        MenuItem deleteMenu = new MenuItem("Löschen");
-        MenuItem renameMenu = new MenuItem("Umbenennen");
-        MenuItem selectMenu = new MenuItem("Bild auswählen");
-        TextField nameField = new TextField("");
-        CustomMenuItem textMenu = new CustomMenuItem(nameField);
-        textMenu.setHideOnClick(false);
+        final MenuItem deleteMenu = new MenuItem("Löschen");
+        final MenuItem selectMenu = new MenuItem("Bild auswählen");
+        final TextField nameField = new TextField("");
+        final ImageButton resetRenameButton = new ImageButton(
+                Helper.getResourceFile(this.getClass(), "/icons/reset.png", false),
+                true, false
+        );
+        final HBox renameBox = new HBox();
 
+        resetRenameButton.setOnAction(e -> nameField.setText(contextPlaylist.getName()));
+        resetRenameButton.setPrefSize(30, 30);
+        renameBox.setAlignment(Pos.CENTER);
+        renameBox.getChildren().addAll(nameField, resetRenameButton);
+        CustomMenuItem renameMenu = new CustomMenuItem(renameBox);
+        renameMenu.setHideOnClick(false);
         deleteMenu.setOnAction(action -> mediaLibrary.remove(contextPlaylist));
-        renameMenu.setOnAction(action -> {
-            contextPlaylist.setName(nameField.getText());
-            nameField.clear();
-        });
-        //TODO chooser error free machen
         selectMenu.setOnAction(action -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Suche dir ein Vorschaubild für die Playlist aus");
             File imageFile = fileChooser.showOpenDialog(stage);
-            contextPlaylist.setPreviewImage(imageFile.getPath());
+            if (imageFile == null) {
+                return;
+            }
+            try {
+                Path imagePath = imageFile.toPath();
+                contextPlaylist.setPreviewImage(imagePath);
+            } catch (InvalidPathException ignored) {
+                System.out.println("Problem on loading File");
+            }
         });
-        quickOptions.getItems().addAll(deleteMenu,renameMenu,selectMenu, textMenu);
+        SeparatorMenuItem sep = new SeparatorMenuItem();
+        ContextMenu quickOptions = new ContextMenu();
+        quickOptions.getItems().addAll(deleteMenu, selectMenu, sep, renameMenu);
+        quickOptions.setOnAutoHide(event -> contextPlaylist.setName(nameField.getText()));
 
         mediaLibrary.addListener((ListChangeListener<? super Playlist>) change -> {
             tilePane.getChildren().clear();
@@ -113,11 +128,16 @@ public class PlaylistView extends MenuBarView {
                         songView.setPlaylist(playlist, true);
                     }
                 });
-                if (playlist.getPreviewImage() != null && playlistButton.graphicProperty().get() == null)
+                if (playlist.getPreviewImage() != null && playlistButton.graphicProperty().get() == null) {
                     showPlaylistImage(playlistButton, playlist.getPreviewImage());
-                playlist.getPreviewImageProperty().addListener((observableValue, oldString, newString) -> showPlaylistImage(playlistButton, newString));
+                }
+                playlist.getPreviewImageProperty().addListener((observableValue, oldString, newString) ->
+                        showPlaylistImage(playlistButton, newString)
+                );
 
-                playlist.getNameProperty().addListener((observableValue, oldString, newString) -> playlistButton.setText(newString));
+                playlist.getNameProperty().addListener((observableValue, oldString, newString) ->
+                        playlistButton.setText(newString)
+                );
                 playlistButton.setAlignment(Pos.BASELINE_CENTER);
                 playlistButton.setStyle("-fx-font-size:20");
                 playlistButton.setPrefHeight(100);
@@ -126,11 +146,7 @@ public class PlaylistView extends MenuBarView {
             }
         });
 
-        ObservableList<Playlist> temp = FXCollections.observableArrayList();
-        temp.addAll(SettingFile.load().getMediaLibrary());
-        System.out.println("!!!!!!!!!: " + temp);
-        if (!temp.isEmpty())
-            mediaLibrary.addAll(temp);
+        mediaLibrary.addAll(SettingFile.load().getMediaLibrary());
 
         ScrollPane sp = new ScrollPane();
         sp.setId("scroll-playlists");
@@ -173,8 +189,8 @@ public class PlaylistView extends MenuBarView {
         }
         //for cloning playlist in mainView can change without interacting with the saved playlists in the media library
         System.out.println("added a new playlist " + createdPlaylist.getName());
-        Playlist newPlaylist = createdPlaylist.copy();
-        mediaLibrary.add(newPlaylist);
+        Playlist copyPlaylist = new Playlist(createdPlaylist);
+        mediaLibrary.add(copyPlaylist);
         //SettingFile.setMediaLibrary(mediaLibrary);
         return true;
     }
@@ -227,9 +243,8 @@ public class PlaylistView extends MenuBarView {
         allSongs.setPredicate(null);
     }
     //nicht ideal die methode aber muss einmal am anfang und im listener eingesetzt werden
-    private void showPlaylistImage(Button playlistButton, String path) {
-        File imgFile = new File(path);
-        Image previewImage = new Image(imgFile.toURI().toString());
+    private void showPlaylistImage(Button playlistButton, Path path) {
+        Image previewImage = new Image(path.toUri().toString(), true);
         System.out.println(previewImage.errorProperty());
         if (!previewImage.isError()) {
             ImageView previewView = new ImageView(previewImage);
@@ -237,7 +252,7 @@ public class PlaylistView extends MenuBarView {
             //\media\AlbumCover.jpg zum Beispiel
             previewView.setFitWidth(80);
             previewView.setFitHeight(80);
-            //TODO preserve ratio or not?
+            //TODO preserve ratio or not? --> LW: yeeesss :)
             previewView.setPreserveRatio(true);
             playlistButton.setGraphic(previewView);
         }
