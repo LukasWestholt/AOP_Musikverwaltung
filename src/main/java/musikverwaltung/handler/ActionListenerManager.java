@@ -1,10 +1,9 @@
 package musikverwaltung.handler;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public interface ActionListenerManager {
-    List<Runnable> listeners = new ArrayList<>();
+    ArrayList<Runnable> listeners = new ArrayList<>();
 
     default void addActionListenerIfNotContains(Runnable toAdd) {
         if (toAdd != null && !listeners.contains(toAdd)) {

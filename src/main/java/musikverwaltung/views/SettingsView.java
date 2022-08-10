@@ -17,7 +17,8 @@ import musikverwaltung.SettingFile;
 import musikverwaltung.handler.ActionListenerManager;
 
 public class SettingsView extends GenericView implements ActionListenerManager {
-    final ObservableList<String> list = FXCollections.observableArrayList();
+    final ObservableList<String> directories = FXCollections.observableArrayList();
+    final CheckBox checkBox;
 
     public SettingsView(ScreenController sc) {
         super(sc, 350, 300);
@@ -26,17 +27,20 @@ public class SettingsView extends GenericView implements ActionListenerManager {
         selectDirectory.setOnAction(e -> {
             Path selectedDirectory = CachedPathChooser.showDialog(stage, null);
             if (selectedDirectory != null) {
-                list.add(selectedDirectory.toAbsolutePath().toString());
+                directories.add(selectedDirectory.toAbsolutePath().toString());
             }
         });
-        ListView<String> listDirectory = new ListView<>(list);
+        ListView<String> listDirectory = new ListView<>(directories);
         listDirectory.setCellFactory(param -> new XCell(getWidthProperty()));
         listDirectory.setFocusTraversable(false);
         VBox.setVgrow(listDirectory, Priority.ALWAYS);
 
+        checkBox = new CheckBox("Show unplayable songs");
+
         Button buttonSave = new Button("Save");
         buttonSave.setOnAction(e -> {
-            SettingFile.savePaths(new ArrayList<>(list));
+            SettingFile.savePaths(new ArrayList<>(directories));
+            SettingFile.saveShowUnplayableSongs(checkBox.isSelected());
             stage.close();
             triggerActionListener();
         });
@@ -44,13 +48,14 @@ public class SettingsView extends GenericView implements ActionListenerManager {
         buttonCancel.setCancelButton(true);
         buttonCancel.setOnAction(e -> stage.close());
         HBox buttonHBox = new HBox(buttonSave, buttonCancel);
-        VBox settingsVBox = new VBox(selectDirectory, listDirectory, buttonHBox);
+        VBox settingsVBox = new VBox(selectDirectory, listDirectory, checkBox, buttonHBox);
         showNodes(settingsVBox);
     }
 
     @Override
     public Node get() {
-        list.setAll(SettingFile.load().getPaths());
+        directories.setAll(SettingFile.load().getPaths());
+        checkBox.setSelected(SettingFile.load().getShowUnplayableSongs());
         return super.get();
     }
 

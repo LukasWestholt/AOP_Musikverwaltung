@@ -3,26 +3,25 @@ package musikverwaltung;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class SettingFile implements Externalizable {
 
-    private static final String filename = "settings.ser";
-
     // explicitly
     private static final long SerialVersionUID = 10L;
-    // TODO testing
+
+    private static final String filename = "settings.ser";
 
     private ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
 
     private Playlist playlist;
 
     private Song song;
-    private List<String> paths = new ArrayList<>();
+    private ArrayList<String> paths = new ArrayList<>();
     private Path lastSong;
+
+    private boolean showUnplayableSongs;
 
 
     public static void saveSong(Song song) {
@@ -45,7 +44,7 @@ public class SettingFile implements Externalizable {
 
     public static void saveMediaLibrary(ObservableList<Playlist> mediaLibrary) {
         SettingFile setting = load();
-        if (!Objects.equals(setting.mediaLibrary, mediaLibrary)) {
+        if (!setting.mediaLibrary.equals(mediaLibrary)) {
             setting.mediaLibrary = mediaLibrary;
             save(setting);
             System.out.println("added mediaLibrary " + mediaLibrary + " to settingsfile");
@@ -54,7 +53,7 @@ public class SettingFile implements Externalizable {
 
     public static void saveLastSong(Path lastSong) {
         SettingFile setting = load();
-        if (setting.lastSong != lastSong) {
+        if (setting.lastSong.equals(lastSong)) {
             setting.lastSong = lastSong;
             save(setting);
             System.out.println("added lastSong " + lastSong + " to settingsfile");
@@ -63,10 +62,19 @@ public class SettingFile implements Externalizable {
 
     public static void savePaths(ArrayList<String> paths) {
         SettingFile setting = load();
-        if (setting.paths != paths) {
+        if (!setting.paths.equals(paths)) {
             setting.paths = paths;
             save(setting);
             System.out.println("added paths " + paths + " to settingsfile");
+        }
+    }
+
+    public static void saveShowUnplayableSongs(boolean showUnplayableSongs) {
+        SettingFile setting = load();
+        if (setting.showUnplayableSongs != showUnplayableSongs) {
+            setting.showUnplayableSongs = showUnplayableSongs;
+            save(setting);
+            System.out.println("added showUnplayableSongs " + showUnplayableSongs + " to settingsfile");
         }
     }
 
@@ -99,6 +107,7 @@ public class SettingFile implements Externalizable {
         out.writeObject(song);
         out.writeObject(paths);
         out.writeUTF(Helper.p2uris(lastSong));
+        out.writeBoolean(showUnplayableSongs);
     }
 
     @Override
@@ -110,8 +119,9 @@ public class SettingFile implements Externalizable {
         setMediaLibrary(mediaLibrary);
         setPlaylist((Playlist) in.readObject());
         setSong((Song) in.readObject());
-        setPaths((List<String>) in.readObject());
+        setPaths((ArrayList<String>) in.readObject());
         setLastSong(Helper.uris2p(in.readUTF()));
+        setShowUnplayableSongs(in.readBoolean());
     }
 
     public Path getLastSong() {
@@ -146,11 +156,21 @@ public class SettingFile implements Externalizable {
         this.mediaLibrary = mediaLibrary;
     }
 
-    public List<String> getPaths() {
+    public ArrayList<String> getPaths() {
         return paths;
     }
 
-    public void setPaths(List<String> paths) {
+    public void setPaths(ArrayList<String> paths) {
         this.paths = paths;
     }
+
+    public boolean getShowUnplayableSongs() {
+        return showUnplayableSongs;
+    }
+
+    public void setShowUnplayableSongs(boolean showUnplayableSongs) {
+        this.showUnplayableSongs = showUnplayableSongs;
+    }
+
+
 }

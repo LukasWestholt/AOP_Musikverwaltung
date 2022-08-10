@@ -8,9 +8,9 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,10 +43,10 @@ public class MediaManager {
         music.clear();
         mediaFiles.clear();
 
-        List<String> list = SettingFile.load().getPaths();
-        for (final String folder : list) {
-            try (Stream<Path> paths = Files.walk(Helper.s2p(folder))) {
-                paths.filter(Files::isRegularFile).forEach(this::checkMediaExtension);
+        ArrayList<String> paths = SettingFile.load().getPaths();
+        for (final String folder : paths) {
+            try (Stream<Path> pathsStream = Files.walk(Helper.s2p(folder))) {
+                pathsStream.filter(Files::isRegularFile).forEach(this::checkMediaExtension);
             } catch (Exception e) {
                 e.printStackTrace();
             }

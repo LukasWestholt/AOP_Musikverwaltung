@@ -13,6 +13,10 @@ import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 
 public class Playlist implements Externalizable {
+
+    // explicitly
+    private static final long SerialVersionUID = 20L;
+
     private final SimpleStringProperty name = new SimpleStringProperty();
     private final ObservableList<Song> songs = FXCollections.observableArrayList();
     private final SimpleObjectProperty<Image> previewImage = new SimpleObjectProperty<>();
