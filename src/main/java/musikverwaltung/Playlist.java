@@ -53,8 +53,23 @@ public class Playlist implements Externalizable {
         return previewImage.get();
     }
 
+    public String getPreviewImageUrl() {
+        Image image = getPreviewImage();
+        if (image == null) {
+            return "";
+        }
+        return image.getUrl();
+    }
+
+    public void setPreviewImage(String string) {
+        if (string != null && !string.isEmpty()) {
+            previewImage.set(new Image(string));
+        }
+    }
+
     public void setPreviewImage(Path path) {
-        previewImage.set(new Image(Helper.p2uris(path)));
+        String string = Helper.p2uris(path);
+        setPreviewImage(string);
     }
 
     public SimpleObjectProperty<Image> getPreviewImageProperty() {
@@ -111,19 +126,13 @@ public class Playlist implements Externalizable {
         if (!(other instanceof Playlist otherPlaylist)) {
             return false;
         }
-        if (!(this.getName().equals(otherPlaylist.getName()))) {
-            return false;
-        }
         if (this.size() != otherPlaylist.size()) {
             return false;
         }
-        for (Song otherSong : otherPlaylist.songs) {
-            if (!this.songs.contains(otherSong)) {
-                return false;
-            }
-        }
-        //ist der auch Name einer Playlist wichtig oder nur der Inhalt?
-        return true;
+
+        return this.getName().equals(otherPlaylist.getName())
+                && this.getAll().equals(otherPlaylist.getAll())
+                && this.getPreviewImageUrl().equals(otherPlaylist.getPreviewImageUrl());
     }
 
     //https://www.geeksforgeeks.org/externalizable-interface-java/
@@ -132,7 +141,7 @@ public class Playlist implements Externalizable {
         ArrayList<Song> temp = new ArrayList<>(getAll());
         out.writeUTF(getName());
         out.writeObject(temp);
-        out.writeUTF(getPreviewImage().getUrl());
+        out.writeUTF(getPreviewImageUrl());
     }
 
     @Override
@@ -143,6 +152,6 @@ public class Playlist implements Externalizable {
         ObservableList<Song> songs = FXCollections.observableArrayList();
         songs.addAll(temp);
         setAll(songs);
-        setPreviewImage(Helper.uris2p(in.readUTF()));
+        setPreviewImage(in.readUTF());
     }
 }

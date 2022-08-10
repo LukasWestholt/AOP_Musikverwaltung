@@ -1,6 +1,7 @@
 package musikverwaltung.views;
 
 import java.nio.file.Path;
+import javafx.beans.binding.Bindings;
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
@@ -88,35 +89,40 @@ public class SongView extends MenuBarView implements StringListenerManager {
         HBox.setHgrow(startStop, Priority.SOMETIMES);
 
         ImageButton skipForward = new ImageButton(
-                Helper.getResourcePathUriString(this.getClass(), "/icons/skip.png", false),
+                Helper.getResourcePath(this.getClass(), "/icons/skip.png", false),
                 false, true
         );
         skipForward.setOnAction(e -> skipforwards());
         setDynamicSize(skipForward);
         skipForward.maxHeightProperty().bind(startStop.widthProperty().multiply(0.7));
 
-        ImageButton skipBackward = new ImageButton(Helper.getResourcePathUriString(this.getClass(), "/icons/skipback.png", false),
+        ImageButton skipBackward = new ImageButton(
+                Helper.getResourcePath(this.getClass(), "/icons/skipback.png", false),
                 false, true
         );
         skipBackward.setOnAction(e -> skipbackwards());
         setDynamicSize(skipBackward);
         skipBackward.maxHeightProperty().bind(startStop.widthProperty().multiply(0.7));
 
-        //startStop.minWidthProperty().bind(
-        //        Bindings.max(skipBackward.heightProperty(), skipForward.heightProperty())
-        //);
-        ImageButton skipAhead = new ImageButton(Helper.getResourcePathUriString(this.getClass(), "/icons/15sAhead.png", false),
+        startStop.minWidthProperty().bind(
+                Bindings.max(skipBackward.heightProperty(), skipForward.heightProperty())
+        );
+        /*ImageButton skipAhead = new ImageButton(
+                Helper.getResourcePath(this.getClass(), "/icons/15sAhead.png", false),
                 false, true
                 );
-        skipAhead.setOnAction(e -> skipTimeAhead(15));
+        skipAhead.setOnAction(e -> skipTime(15));
         setDynamicSize(skipAhead);
 
-        ImageButton skipBehind = new ImageButton(Helper.getResourcePathUriString(this.getClass(), "/icons/15sBack.png", false),
+        ImageButton skipBehind = new ImageButton(Helper.getResourcePath(
+                this.getClass(), "/icons/15sBack.png", false),
                 false, true);
-        skipBehind.setOnAction(e -> skipTimeBehind(15));
-        setDynamicSize(skipBehind);
+        skipBehind.setOnAction(e -> skipTime(-15));
+        setDynamicSize(skipBehind);*/
 
-        HBox buttonHBox = new HBox(skipBehind, skipBackward, startStop, skipForward, skipAhead);
+        //HBox buttonHBox = new HBox(skipBehind, skipBackward, startStop, skipForward, skipAhead);
+        HBox buttonHBox = new HBox(skipBackward, startStop, skipForward);
+        //HBox buttonHBox = new HBox(startStop);
         buttonHBox.setAlignment(Pos.CENTER);
         buttonHBox.setSpacing(10);
         buttonHBox.maxWidthProperty().bind(getHeightProperty().divide(2));
@@ -234,12 +240,8 @@ public class SongView extends MenuBarView implements StringListenerManager {
         updateSong(true);
     }
 
-    private void skipTimeAhead(int timeInSeconds) {
+    private void skipTime(int timeInSeconds) {
         player.seek(new Duration(player.getCurrentTime().toMillis() + (timeInSeconds*1000)));
-    }
-
-    private void skipTimeBehind(int timeInSeconds) {
-        player.seek(new Duration(player.getCurrentTime().toMillis() - (timeInSeconds*1000)));
     }
 
     private void activateListeners() {

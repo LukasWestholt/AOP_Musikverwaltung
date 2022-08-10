@@ -197,11 +197,11 @@ public class MainView extends MenuBarView {
         ));
         genreCol.setCellFactory(highlightedTableCell());
 
-        // Quick fix for not showing the horizontal scroll bar.
-        checkCol.prefWidthProperty().bind(table.widthProperty().divide(10));
-        titleCol.prefWidthProperty().bind(table.widthProperty().divide(3).subtract(15));
+        checkCol.setPrefWidth(40);
+        titleCol.prefWidthProperty().bind(table.widthProperty().divide(3));
         interpretCol.prefWidthProperty().bind(table.widthProperty().divide(3));
-        genreCol.prefWidthProperty().bind(table.widthProperty().divide(3));
+        // Quick fix for not showing the horizontal scroll bar.
+        genreCol.prefWidthProperty().bind(table.widthProperty().divide(3).subtract(40).subtract(40));
 
         table.setItems(flSong); //Set the table's items using the filtered list
         table.getColumns().add(checkCol);

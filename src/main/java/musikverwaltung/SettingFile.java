@@ -3,6 +3,7 @@ package musikverwaltung;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -31,7 +32,7 @@ public class SettingFile implements Externalizable {
 
     public static void saveLastSong(Path lastSong) {
         SettingFile setting = load();
-        if (setting.lastSong.equals(lastSong)) {
+        if (!Objects.equals(setting.lastSong, lastSong)) {
             setting.lastSong = lastSong;
             save(setting);
             System.out.println("added lastSong " + lastSong + " to settingsfile");
@@ -40,7 +41,7 @@ public class SettingFile implements Externalizable {
 
     public static void savePaths(ArrayList<String> paths) {
         SettingFile setting = load();
-        if (!setting.paths.equals(paths)) {
+        if (!Objects.equals(setting.paths, paths)) {
             setting.paths = paths;
             save(setting);
             System.out.println("added paths " + paths + " to settingsfile");

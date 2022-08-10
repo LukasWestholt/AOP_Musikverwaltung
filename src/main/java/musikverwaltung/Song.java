@@ -174,7 +174,7 @@ public class Song implements Externalizable {
                 + "title: " + getTitle() + ", "
                 + "artist: " + getArtist() + ", "
                 + "genre: " + getGenre() + ", "
-                + "path: " + path.toString() + ", "
+                + "path: " + getPath() + ", "
                 + "isSelected: " + isSelected;
     }
 
@@ -186,17 +186,11 @@ public class Song implements Externalizable {
         if (!(other instanceof Song otherSong)) {
             return false;
         }
-        //Entscheiden ob path ein Teil des Vergleichs seihen soll
-        if (!this.getTitle().equals(otherSong.getTitle())) {
-            return false;
-        }
-        if (!this.getArtist().equals(otherSong.getArtist())) {
-            return false;
-        }
-        if (!this.getGenre().equals(otherSong.getGenre())) {
-            return false;
-        }
-        return this.getPath().equals(otherSong.getPath());
+
+        return this.getTitle().equals(otherSong.getTitle())
+                && this.getArtist().equals(otherSong.getArtist())
+                && this.getGenre().equals(otherSong.getGenre())
+                && this.getPath().equals(otherSong.getPath());
     }
 
     @Override
