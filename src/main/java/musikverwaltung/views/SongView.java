@@ -247,7 +247,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
     }
 
     private void skipTime(int timeInSeconds) {
-        player.seek(new Duration(player.getCurrentTime().toMillis() + (timeInSeconds*1000)));
+        player.seek(new Duration(player.getCurrentTime().toMillis() + (timeInSeconds * 1000)));
     }
 
     private void activateListeners() {

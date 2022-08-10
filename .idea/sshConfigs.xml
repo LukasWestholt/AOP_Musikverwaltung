@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SshConfigs">
+    <configs>
+      <sshConfig authType="PASSWORD" host="kain.imn.htwk-leipzig.de" id="6fa0312b-2c88-497e-b183-8c574b432cdf" port="22" nameFormat="DESCRIPTIVE" username="lwesthol" useOpenSSHConfig="true" />
+    </configs>
+  </component>
+</project>

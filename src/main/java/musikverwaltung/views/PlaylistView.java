@@ -191,11 +191,12 @@ public class PlaylistView extends MenuBarView {
         //Criteria: genre and artist
         final ArrayList<String> genreCriteria = new ArrayList<>();
         final ArrayList<String> artistCriteria = new ArrayList<>();
-        for (int i = 0; i < flSongs.size(); i++) {
-            if (!(genreCriteria.contains(flSongs.get(i).getGenre())) && !(flSongs.get(i).getGenre().equals(""))) {
-                genreCriteria.add(flSongs.get(i).getGenre());
-            } else if (!(artistCriteria.contains(flSongs.get(i).getArtist())) && !(flSongs.get(i).getArtist().equals(""))) {
-                artistCriteria.add(flSongs.get(i).getArtist());
+        for (Song flSong : flSongs) {
+            if (!(genreCriteria.contains(flSong.getGenre())) && !(flSong.getGenre().equals(""))) {
+                genreCriteria.add(flSong.getGenre());
+            } else if (!(artistCriteria.contains(flSong.getArtist()))
+                    && !(flSong.getArtist().equals(""))) {
+                artistCriteria.add(flSong.getArtist());
             }
         }
         //System.out.println(genreCriteria + "\n" + artistCriteria);

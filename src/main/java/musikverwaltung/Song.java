@@ -141,9 +141,9 @@ public class Song implements Externalizable {
      * This method adds to matching substrings a prefix and suffix.
      * If no match is found the text is returned without modification.
      *
-     * @param text Text like "Helene Fischer"
-     * @param searchText Text like "Helene"
-     * @return Highlighted text like {@code <HIGHLIGHT_START>Helene<HIGHLIGHT_END> Fischer}
+     * @param text Text like "Helene Fischer".
+     * @param searchText Text like "Helene".
+     * @return Highlighted text like {@code <HIGHLIGHT_START>Helene<HIGHLIGHT_END> Fischer}.
      */
     private static String getHighlighted(String text, String searchText) {
         if (searchText.length() > 3) {

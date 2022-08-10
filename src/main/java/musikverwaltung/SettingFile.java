@@ -26,7 +26,7 @@ public class SettingFile implements Externalizable {
         if (!setting.mediaLibrary.equals(mediaLibrary)) {
             setting.mediaLibrary = mediaLibrary;
             save(setting);
-            System.out.println("added mediaLibrary " + mediaLibrary + " to settingsfile");
+            System.out.println("added mediaLibrary " + mediaLibrary + " to SettingFile");
         }
     }
 
@@ -35,7 +35,7 @@ public class SettingFile implements Externalizable {
         if (!Objects.equals(setting.lastSong, lastSong)) {
             setting.lastSong = lastSong;
             save(setting);
-            System.out.println("added lastSong " + lastSong + " to settingsfile");
+            System.out.println("added lastSong " + lastSong + " to SettingFile");
         }
     }
 
@@ -44,7 +44,7 @@ public class SettingFile implements Externalizable {
         if (!Objects.equals(setting.paths, paths)) {
             setting.paths = paths;
             save(setting);
-            System.out.println("added paths " + paths + " to settingsfile");
+            System.out.println("added paths " + paths + " to SettingFile");
         }
     }
 
@@ -53,7 +53,7 @@ public class SettingFile implements Externalizable {
         if (setting.showUnplayableSongs != showUnplayableSongs) {
             setting.showUnplayableSongs = showUnplayableSongs;
             save(setting);
-            System.out.println("added showUnplayableSongs " + showUnplayableSongs + " to settingsfile");
+            System.out.println("added showUnplayableSongs " + showUnplayableSongs + " to SettingFile");
         }
     }
 

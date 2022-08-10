@@ -2,6 +2,8 @@
   <configuration default="false" name="Musikverwaltung" type="Application" factoryName="Application" singleton="true" nameIsGenerated="true">
     <option name="MAIN_CLASS_NAME" value="musikverwaltung.Musikverwaltung" />
     <module name="AOP_Musikverwaltung" />
+    <projectPathOnTarget name="projectPathOnTarget" value="/home/lwesthol/AOP_Musikverwaltung" />
+    <target name="@@@LOCAL@@@" />
     <option name="VM_PARAMETERS" value="--module-path lib/openjfx-18.0.1_windows-x64_bin-sdk/javafx-sdk-18.0.1/lib --add-modules javafx.controls,javafx.media,javafx.web -ea" />
     <extension name="coverage">
       <pattern>

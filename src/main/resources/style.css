@@ -1,3 +1,4 @@
+/*noinspection CssUnusedSymbol*/
 .root {
     -fx-font-size: 16pt;
     -fx-font-family: "Courier New";
@@ -5,6 +6,7 @@
     -fx-background: rgb(225, 228, 203);
 }
 
+/*noinspection CssUnusedSymbol*/
 .button {
     -fx-text-fill: rgb(49, 89, 23);
     -fx-border-color: rgb(49, 89, 23);
@@ -12,6 +14,7 @@
     -fx-padding: 3 6 6 6;
 }
 
+/*noinspection CssUnusedSymbol*/
 .borders {
     -fx-border-color: rgb(103, 100, 78);
     -fx-border-style: dotted;
@@ -19,16 +22,19 @@
     -fx-border-insets: -5;
 }
 
+/*noinspection CssUnusedSymbol*/
 .header {
     -fx-font-size: 25pt;
     -fx-font-family: "Impact";
 }
 
+/*noinspection CssUnusedSymbol*/
 #scroll-playlists.scroll-pane {
     -fx-font-family: "Courier New";
     -fx-background-color: lightgrey;
 }
 
+/*noinspection CssUnusedSymbol*/
 #scroll-playlists.scroll-pane .viewport {
     -fx-background-color: transparent;
 }
@@ -52,6 +58,7 @@
     -fx-border-color: grey;
 }
 
+/*noinspection CssUnusedSymbol*/
 .song.slider {
     -fx-background-insets: 0;
     -fx-background-radius: 0;
@@ -59,12 +66,14 @@
     -fx-padding: 0 -10 0 -10;
 }
 
+/*noinspection CssUnusedSymbol*/
 .song.slider .thumb {
     -fx-background-color: white;
     -fx-pref-width: 25;
     -fx-pref-height: 25;
 }
 
+/*noinspection CssUnusedSymbol*/
 .song.slider .track {
     -fx-background-insets: 0;
     -fx-background-radius: 0;
@@ -72,23 +81,27 @@
     -fx-border-insets: 0;
 }
 
+/*noinspection CssUnusedSymbol*/
 .song.progress-bar {
     -fx-background-insets: 1;
     -fx-background-radius: 1;
 }
 
+/*noinspection CssUnusedSymbol*/
 .song.progress-bar .track {
     -fx-background-color: rgb(129, 140, 48);
     -fx-background-insets: 0;
     -fx-background-radius: 0;
 }
 
+/*noinspection CssUnusedSymbol*/
 .song.progress-bar .bar {
     -fx-background-color: rgb(97, 195, 148);
     -fx-background-insets: 0;
     -fx-background-radius: 0;
 }
 
+/*noinspection CssUnusedSymbol*/
 .volume.slider .thumb {
     -fx-background-image: url("/icons/speaker.png");
     -fx-background-size: 15, 15;
