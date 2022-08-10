@@ -20,6 +20,7 @@ import musikverwaltung.*;
 
 public class PlaylistView extends MenuBarView {
 
+    // TODO rename to playlists?
     private final ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
 
     final FilteredList<Song> flSongs;
@@ -181,14 +182,7 @@ public class PlaylistView extends MenuBarView {
         final Playlist copyPlaylist = new Playlist(createdPlaylist);
         mediaLibrary.add(copyPlaylist);
         //SettingFile.setMediaLibrary(mediaLibrary);
-        return true;
-    }
-
-    public boolean deletePlaylist(Playlist playlist) {
-        if (mediaLibrary.contains(playlist)) {
-            return false;
-        }
-        mediaLibrary.remove(playlist);
+        // TODO das könnte vielleicht besser sein als das Speichern am Ende oder?
         return true;
     }
 

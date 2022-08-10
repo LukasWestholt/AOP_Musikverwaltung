@@ -16,9 +16,7 @@
 - Projekt in der 106/107 (PC-Pool) lauffähig? (Java Version?)
 - Edit Song (with setupEditableStringColumn) in adminMode
 and save it in settings file or in metadata.
-- Credits field for "Musik: https://www.musicfox.com/"
 - Delete media files with copyright problems and download some new without
-- auto-Playlists
 - add everywhere javadoc messages (like checkstyle suggests)
 - setting checkbox show unplayable songs
 

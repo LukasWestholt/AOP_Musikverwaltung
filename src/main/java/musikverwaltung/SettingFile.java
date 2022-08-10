@@ -91,6 +91,29 @@ public class SettingFile implements Externalizable {
         }
     }
 
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        ArrayList<Playlist> temp = new ArrayList<>(mediaLibrary);
+        out.writeObject(temp);
+        out.writeObject(playlist);
+        out.writeObject(song);
+        out.writeObject(paths);
+        out.writeUTF(Helper.p2uris(lastSong));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        ArrayList<Playlist> temp = (ArrayList<Playlist>) in.readObject();
+        ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
+        mediaLibrary.addAll(temp);
+        setMediaLibrary(mediaLibrary);
+        setPlaylist((Playlist) in.readObject());
+        setSong((Song) in.readObject());
+        setPaths((List<String>) in.readObject());
+        setLastSong(Helper.uris2p(in.readUTF()));
+    }
+
     public Path getLastSong() {
         return lastSong;
     }
@@ -129,28 +152,5 @@ public class SettingFile implements Externalizable {
 
     public void setPaths(List<String> paths) {
         this.paths = paths;
-    }
-
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        ArrayList<Playlist> temp = new ArrayList<>(mediaLibrary);
-        out.writeObject(temp);
-        out.writeObject(playlist);
-        out.writeObject(song);
-        out.writeObject(paths);
-        out.writeUTF(Helper.p2uris(lastSong));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        ArrayList<Playlist> temp = (ArrayList<Playlist>) in.readObject();
-        ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
-        mediaLibrary.addAll(temp);
-        setMediaLibrary(mediaLibrary);
-        setPlaylist((Playlist) in.readObject());
-        setSong((Song) in.readObject());
-        setPaths((List<String>) in.readObject());
-        setLastSong(Helper.uris2p(in.readUTF()));
     }
 }
