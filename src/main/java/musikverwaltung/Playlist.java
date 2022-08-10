@@ -123,9 +123,10 @@ public class Playlist implements Externalizable {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof Playlist otherPlaylist)) {
+        if (!(other instanceof Playlist)) {
             return false;
         }
+        Playlist otherPlaylist = (Playlist) other;
         if (this.size() != otherPlaylist.size()) {
             return false;
         }

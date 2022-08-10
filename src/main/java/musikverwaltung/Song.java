@@ -183,10 +183,10 @@ public class Song implements Externalizable {
         if (this == other) {
             return true;
         }
-        if (!(other instanceof Song otherSong)) {
+        if (!(other instanceof Song)) {
             return false;
         }
-
+        Song otherSong = (Song) other;
         return this.getTitle().equals(otherSong.getTitle())
                 && this.getArtist().equals(otherSong.getArtist())
                 && this.getGenre().equals(otherSong.getGenre())

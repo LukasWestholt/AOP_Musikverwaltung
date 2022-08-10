@@ -47,7 +47,8 @@ public class MainView extends MenuBarView {
         addActiveMenuButton(settingViewButton,
                 e -> {
                     final GenericView view = screenController.activateWindow(SettingsView.class, false);
-                    if (view instanceof SettingsView settingsView) {
+                    if (view instanceof SettingsView) {
+                        SettingsView settingsView = (SettingsView) view;
                         settingsView.addActionListenerIfNotContains(uniqueRefreshRunnable);
                     }
                 }
@@ -125,18 +126,20 @@ public class MainView extends MenuBarView {
         textSearchField.textProperty().addListener((obs, oldValue, newValue) -> {
             switch (choiceBox.getValue()) {
                 //filter table by one key
-                case "Überall" -> flSong.setPredicate(p ->
-                        p.search_everywhere(newValue));
-                case "Titel" -> flSong.setPredicate(p ->
-                        p.getPrimaryKey().toLowerCase().contains(newValue.toLowerCase().trim())
-                );
-                case "Interpret" -> flSong.setPredicate(p ->
-                        p.getArtist().toLowerCase().contains(newValue.toLowerCase().trim())
-                );
-                case "Genre" -> flSong.setPredicate(p ->
-                        p.getGenre().toLowerCase().contains(newValue.toLowerCase().trim())
-                );
-                default -> throw new InputMismatchException("");
+                case "Überall":
+                    flSong.setPredicate(p -> p.search_everywhere(newValue));
+                    break;
+                case "Titel":
+                    flSong.setPredicate(p -> p.getPrimaryKey().toLowerCase().contains(newValue.toLowerCase().trim()));
+                    break;
+                case "Interpret":
+                    flSong.setPredicate(p -> p.getArtist().toLowerCase().contains(newValue.toLowerCase().trim()));
+                    break;
+                case "Genre":
+                    flSong.setPredicate(p -> p.getGenre().toLowerCase().contains(newValue.toLowerCase().trim()));
+                    break;
+                default:
+                    throw new InputMismatchException("");
             }
         });
 
@@ -152,7 +155,8 @@ public class MainView extends MenuBarView {
         musicPlayerButton.setOnAction(e -> {
             actionLabel.setText("Starte Player");
             final GenericView view = screenController.activateWindow(SongView.class, true);
-            if (view instanceof SongView songView) {
+            if (view instanceof SongView) {
+                SongView songView = (SongView) view;
                 songView.addStringListenerIfNotContains(setActionText);
                 Song lastSong = mediaManager.getLastSong();
                 if (lastSong != null) {
@@ -217,7 +221,8 @@ public class MainView extends MenuBarView {
                     singleSongPlaylist.add(row.getItem());
                     singleSongPlaylist.setName(row.getItem().getTitle());
                     final GenericView view = screenController.activateWindow(SongView.class, true);
-                    if (view instanceof SongView songView) {
+                    if (view instanceof SongView) {
+                        SongView songView = (SongView) view;
                         songView.addStringListenerIfNotContains(setActionText);
                         songView.setPlaylist(singleSongPlaylist, true);
                     }
@@ -248,11 +253,12 @@ public class MainView extends MenuBarView {
         makePlaylistButton.setOnAction(action -> {
             // TODO save playlist to file and don't activate PlaylistView each
             final GenericView view = screenController.activate(PlaylistView.class);
-            if (view instanceof PlaylistView playlistView) {
+            if (view instanceof PlaylistView) {
                 Playlist returnPlaylist = new Playlist();
                 returnPlaylist.setName(playlistNameEntry.getText());
                 returnPlaylist.setAll(new FilteredList<>(flSong, Song::isSelected));
                 if (!returnPlaylist.isEmpty()) {
+                    PlaylistView playlistView = (PlaylistView) view;
                     playlistView.addPlaylist(returnPlaylist);
                     System.out.println("playlist added: " + returnPlaylist.getAll());
                     actionLabel.setText("Playlist with " + returnPlaylist.size() + " items added");

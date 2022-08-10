@@ -112,7 +112,8 @@ public class PlaylistView extends MenuBarView {
 
                 playlistButton.setOnAction((e) -> {
                     final GenericView view = screenController.activateWindow(SongView.class, true);
-                    if (view instanceof SongView songView) {
+                    if (view instanceof SongView) {
+                        SongView songView = (SongView) view;
                         songView.setPlaylist(playlist, true);
                     }
                 });
@@ -147,12 +148,13 @@ public class PlaylistView extends MenuBarView {
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
         musicPlayerButton.setOnAction(e -> {
             final GenericView view = screenController.activateWindow(SongView.class, true);
-            if (view instanceof SongView songView) {
+            if (view instanceof SongView) {
                 final Song lastSong = mediaManager.getLastSong();
                 if (lastSong != null) {
                     Playlist singleSongPlaylist = new Playlist();
                     singleSongPlaylist.add(lastSong);
                     singleSongPlaylist.setName(lastSong.getTitle());
+                    SongView songView = (SongView) view;
                     songView.setPlaylist(singleSongPlaylist, false);
                 }
             }
