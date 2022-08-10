@@ -15,32 +15,10 @@ public class SettingFile implements Externalizable {
 
     private ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
 
-    private Playlist playlist;
-
-    private Song song;
     private ArrayList<String> paths = new ArrayList<>();
     private Path lastSong;
 
     private boolean showUnplayableSongs;
-
-
-    public static void saveSong(Song song) {
-        SettingFile setting = load();
-        if (setting.song != song) {
-            setting.song = song;
-            save(setting);
-            System.out.println("added song " + song + "to settingsfile");
-        }
-    } // TODO what is this?
-
-    public static void savePlaylist(Playlist playlist) {
-        SettingFile setting = load();
-        if (setting.playlist != playlist) {
-            setting.playlist = playlist;
-            save(setting);
-            System.out.println("added playlist " + playlist + "to settingsfile");
-        }
-    } // TODO what is this?
 
     public static void saveMediaLibrary(ObservableList<Playlist> mediaLibrary) {
         SettingFile setting = load();
@@ -103,8 +81,6 @@ public class SettingFile implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
         ArrayList<Playlist> temp = new ArrayList<>(mediaLibrary);
         out.writeObject(temp);
-        out.writeObject(playlist);
-        out.writeObject(song);
         out.writeObject(paths);
         out.writeUTF(Helper.p2uris(lastSong));
         out.writeBoolean(showUnplayableSongs);
@@ -117,8 +93,6 @@ public class SettingFile implements Externalizable {
         ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
         mediaLibrary.addAll(temp);
         setMediaLibrary(mediaLibrary);
-        setPlaylist((Playlist) in.readObject());
-        setSong((Song) in.readObject());
         setPaths((ArrayList<String>) in.readObject());
         setLastSong(Helper.uris2p(in.readUTF()));
         setShowUnplayableSongs(in.readBoolean());
@@ -130,22 +104,6 @@ public class SettingFile implements Externalizable {
 
     public void setLastSong(Path lastSong) {
         this.lastSong = lastSong;
-    }
-
-    public Song getSong() {
-        return song;
-    }
-
-    public void setSong(Song song) {
-        this.song = song;
-    }
-
-    public Playlist getPlaylist() {
-        return playlist;
-    }
-
-    public void setPlaylist(Playlist playlist) {
-        this.playlist = playlist;
     }
 
     public ObservableList<Playlist> getMediaLibrary() {

@@ -132,7 +132,7 @@ public class PlaylistView extends MenuBarView {
                 tilePane.getChildren().add(playlistButton);
             }
         });
-
+        //letzte Playlisten werden geladen
         mediaLibrary.addAll(SettingFile.load().getMediaLibrary());
 
         final ScrollPane sp = new ScrollPane();
