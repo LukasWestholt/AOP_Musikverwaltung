@@ -31,10 +31,8 @@ public class MediaManager {
             o.getTitleProperty(),
             o.getArtistProperty(),
             o.getGenreProperty(),
-            o.isSelectedProperty()
-            // TODO is needed?
     });
-
+    //TODO einlesen bei Jazzy night und ambient pearls hat Probleme
     private static final String genreFilename = "genres.txt";
 
     public Path lastSong;

@@ -20,8 +20,7 @@ import musikverwaltung.*;
 
 public class PlaylistView extends MenuBarView {
 
-    // TODO rename to playlists?
-    private final ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
+    private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
 
     final FilteredList<Song> flSongs;
 
@@ -54,7 +53,6 @@ public class PlaylistView extends MenuBarView {
         tilePane.setPrefColumns(1);
         tilePane.setMaxHeight(Region.USE_PREF_SIZE);
 
-        //TODO überlegen das öfter einzubauen mit radio und checkMenu sehr praktisch
         final MenuItem deleteMenu = new MenuItem("Löschen");
         final MenuItem selectMenu = new MenuItem("Bild auswählen");
         final TextField nameField = new TextField();
@@ -71,7 +69,7 @@ public class PlaylistView extends MenuBarView {
         CustomMenuItem renameMenu = new CustomMenuItem(renameBox);
         renameMenu.setHideOnClick(false);
         final MenuItem openMenu = new MenuItem("Zeige");
-        deleteMenu.setOnAction(action -> mediaLibrary.remove(contextPlaylist));
+        deleteMenu.setOnAction(action -> playlists.remove(contextPlaylist));
         selectMenu.setOnAction(action -> {
             final Path imageFile = CachedPathChooser.showOpenDialog(stage,
                     "Suche dir ein Vorschaubild für die Playlist aus");
@@ -100,9 +98,9 @@ public class PlaylistView extends MenuBarView {
         }
         quickOptions.setOnAutoHide(event -> contextPlaylist.setName(nameField.getText()));
 
-        mediaLibrary.addListener((ListChangeListener<? super Playlist>) change -> {
+        playlists.addListener((ListChangeListener<? super Playlist>) change -> {
             tilePane.getChildren().clear();
-            for (Playlist playlist : mediaLibrary) {
+            for (Playlist playlist : playlists) {
                 final Button playlistButton = new Button(playlist.getName());
                 playlistButton.setMinWidth(Region.USE_PREF_SIZE);
                 playlistButton.setWrapText(true);
@@ -113,7 +111,6 @@ public class PlaylistView extends MenuBarView {
                         playlistButton.setStyle("-fx-font-size:18");
                     }
                 });
-                //genau position beim auftauchen setzen // TODO LW ist schon genaue position oder?
                 playlistButton.setOnMouseClicked(event -> {
                     if (event.isPopupTrigger()) {
                         contextPlaylist = playlist;
@@ -133,7 +130,6 @@ public class PlaylistView extends MenuBarView {
                 previewView.imageProperty().bind(playlist.getPreviewImageProperty());
                 previewView.setFitWidth(80);
                 previewView.setFitHeight(80);
-                //TODO preserve ratio or not? --> LW: yeeesss :)
                 previewView.setPreserveRatio(true);
                 playlistButton.graphicProperty().bind(new When(playlist.getPreviewImageProperty().isNull())
                         .then((ImageView) null).otherwise(previewView));
@@ -146,7 +142,7 @@ public class PlaylistView extends MenuBarView {
             }
         });
         //letzte Playlisten werden geladen
-        mediaLibrary.addAll(SettingFile.load().getMediaLibrary());
+        playlists.addAll(SettingFile.load().getMediaLibrary());
 
         final ScrollPane sp = new ScrollPane();
         sp.setId("scroll-playlists");
@@ -183,25 +179,24 @@ public class PlaylistView extends MenuBarView {
         vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton, automaticPlaylistButton);
         showNodes(vbox);
 
-        setDestroyListener(() -> SettingFile.saveMediaLibrary(mediaLibrary));
+        setDestroyListener(() -> SettingFile.saveMediaLibrary(playlists));
     }
 
     public boolean addPlaylist(Playlist createdPlaylist) {
         //damit nicht mehrere Playlisten selben inhalts erstellt werden
-        if (mediaLibrary.contains(createdPlaylist)) {
+        if (playlists.contains(createdPlaylist)) {
             return false;
         }
-        //for cloning playlist in mainView can change without interacting with the saved playlists in the media library
         System.out.println("added a new playlist " + createdPlaylist.getName());
         final Playlist copyPlaylist = new Playlist(createdPlaylist);
-        mediaLibrary.add(copyPlaylist);
-        //SettingFile.setMediaLibrary(mediaLibrary);
-        // TODO das könnte vielleicht besser sein als das Speichern am Ende oder?
+        playlists.add(copyPlaylist);
+        // TODO Asynchron speichern der aktuellen Playlisten
         return true;
     }
 
     private void createAutomaticPlaylists() {
-        final int threshold = 10;
+        final int threshold = 5;
+        boolean isCreatedAlready;
         //Criteria: genre and artist
         final ArrayList<String> genreCriteria = new ArrayList<>();
         final ArrayList<String> artistCriteria = new ArrayList<>();
@@ -223,7 +218,14 @@ public class PlaylistView extends MenuBarView {
                 for (Song song : flSongs) {
                     automaticPlaylist.add(song);
                 }
-                addPlaylist(automaticPlaylist);
+                isCreatedAlready = false;
+                for (Playlist playlist:playlists) {
+                    if (playlist.isAlmostEqual(automaticPlaylist))
+                        isCreatedAlready = true;
+                }
+                if (!isCreatedAlready) {
+                    addPlaylist(automaticPlaylist);
+                }
             }
         }
         flSongs.setPredicate(null);
@@ -235,7 +237,14 @@ public class PlaylistView extends MenuBarView {
                 for (Song song : flSongs) {
                     automaticPlaylist.add(song);
                 }
-                addPlaylist(automaticPlaylist);
+                isCreatedAlready = false;
+                for (Playlist playlist:playlists) {
+                    if (playlist.isAlmostEqual(automaticPlaylist))
+                        isCreatedAlready = true;
+                }
+                if (!isCreatedAlready) {
+                    addPlaylist(automaticPlaylist);
+                }
             }
         }
         flSongs.setPredicate(null);
