@@ -125,14 +125,15 @@ public class Playlist implements Externalizable {
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         ArrayList<Song> temp = new ArrayList<>(getAll());
-        out.writeObject(getName());
+        out.writeUTF(getName());
         out.writeObject(temp);
         out.writeObject(getPreviewImage());
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        setName((String) in.readObject());
+        setName(in.readUTF());
         //System.out.println(getName());
         ArrayList<Song> temp = (ArrayList<Song>) in.readObject();
         ObservableList<Song> songs = FXCollections.observableArrayList();

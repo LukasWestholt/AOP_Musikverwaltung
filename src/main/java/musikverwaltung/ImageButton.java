@@ -7,7 +7,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
 
 public class ImageButton extends Button {
-    public ImageButton(Path path, boolean isCircle, boolean withoutButtonStyle) {
+    ImageView imageView = new ImageView();
+
+    public ImageButton(Image image, boolean isCircle, boolean withoutButtonStyle) {
         super();
         if (withoutButtonStyle) {
             getStyleClass().clear();
@@ -15,12 +17,19 @@ public class ImageButton extends Button {
         if (isCircle) {
             setShape(new Circle(1));
         }
-        final Image image = new Image(Helper.p2s(path), true);
-        ImageView imageView = new ImageView(image);
+        imageView.setImage(image);
         imageView.setSmooth(true);
         imageView.setCache(true);
         imageView.fitHeightProperty().bind(prefHeightProperty());
         imageView.setPreserveRatio(true);
         setGraphic(imageView);
+    }
+
+    public ImageButton(Path path, boolean isCircle, boolean withoutButtonStyle) {
+        this(new Image(Helper.p2uris(path), true), isCircle, withoutButtonStyle);
+    }
+
+    public void switchImage(Image image) {
+        imageView.setImage(image);
     }
 }

@@ -45,7 +45,7 @@ public class MediaManager {
 
         List<String> list = SettingFile.load().getPaths();
         for (final String folder : list) {
-            try (Stream<Path> paths = Files.walk(Helper.getPath(folder))) {
+            try (Stream<Path> paths = Files.walk(Helper.s2p(folder))) {
                 paths.filter(Files::isRegularFile).forEach(this::checkMediaExtension);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -55,7 +55,7 @@ public class MediaManager {
         MapChangeListener<String, Object> metadataListener;
         for (final Path mediaFile : mediaFiles) {
             music.add(new Song(mediaFile));
-            Media media = new Media(Helper.p2s(mediaFile));
+            Media media = new Media(Helper.p2uris(mediaFile));
             ObservableMap<String, Object> metadataForListener = media.getMetadata();
             metadataListener = metadata -> {
                 //System.out.println(currentSong.getMetadata());

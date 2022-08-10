@@ -12,13 +12,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Circle;
 import javafx.util.Duration;
-import musikverwaltung.Helper;
-import musikverwaltung.Playlist;
-import musikverwaltung.ScreenController;
-import musikverwaltung.SettingFile;
+import musikverwaltung.*;
 import musikverwaltung.handler.StringListenerManager;
 
 public class SongView extends MenuBarView implements StringListenerManager {
@@ -27,9 +22,9 @@ public class SongView extends MenuBarView implements StringListenerManager {
     double volume = 0.5;
     final Image defaultImage;
     final ImageView img;
-    final Button startStop;
-    final Background playBackground;
-    final Background pauseBackground;
+    final ImageButton startStop;
+    final Image playImage;
+    final Image pauseImage;
     final Label labelSongName;
     Media currentSong;
     MediaPlayer player;
@@ -42,7 +37,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         https://stackoverflow.com/questions/26850828/how-to-make-a-javafx-button-with-circle-shape-of-3xp-diameter
          */
         super(sc, 320, 560);
-        defaultImage = new Image(Helper.getResourcePathString(this.getClass(), "/default_img.jpg", false));
+        defaultImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/default_img.jpg", false));
 
         addActiveMenuButton(mainViewButton,
                 e -> screenController.activate(MainView.class)
@@ -84,14 +79,9 @@ public class SongView extends MenuBarView implements StringListenerManager {
             }
         });
 
-        startStop = new Button();
-        Image playImage = new Image(Helper.getResourcePathString(this.getClass(), "/icons/play.png", false));
-        Image pauseImage = new Image(Helper.getResourcePathString(this.getClass(), "/icons/pause.png", false));
-        playBackground = new Background(new BackgroundFill(new ImagePattern(playImage), null, null));
-        pauseBackground = new Background(new BackgroundFill(new ImagePattern(pauseImage), null, null));
-        startStop.getStyleClass().clear();
-        startStop.setBackground(playBackground);
-        startStop.setShape(new Circle(1));
+        playImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/icons/play.png", false));
+        pauseImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/icons/pause.png", false));
+        startStop = new ImageButton(playImage, true, true);
         startStop.setOnAction(e -> startStopSong());
         startStop.prefHeightProperty().bind(startStop.widthProperty());
         startStop.setMaxWidth(Double.MAX_VALUE);
@@ -166,11 +156,11 @@ public class SongView extends MenuBarView implements StringListenerManager {
         }
         if (isPlaying()) {
             player.pause();
-            startStop.setBackground(playBackground);
+            startStop.switchImage(playImage);
             triggerStringListener("Stoppe Musik");
         } else {
             player.play();
-            startStop.setBackground(pauseBackground);
+            startStop.switchImage(pauseImage);
             triggerStringListener("Spiele: " + labelSongName.getText());
         }
     }
@@ -183,7 +173,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         if (andDispose) {
             player.dispose();
         }
-        startStop.setBackground(playBackground);
+        startStop.switchImage(playImage);
     }
 
     private void updateSong(boolean startPlaying) {
@@ -197,8 +187,8 @@ public class SongView extends MenuBarView implements StringListenerManager {
 
         Path path = playlist.get(currentIndex).getPath();
         labelSongName.setText(playlist.get(currentIndex).getTitle());
-        setDestroyListener(() -> SettingFile.setLastSong(path));
-        currentSong = new Media(Helper.p2s(path));
+        setDestroyListener(() -> SettingFile.saveLastSong(path));
+        currentSong = new Media(Helper.p2uris(path));
         player = new MediaPlayer(currentSong);
         player.setOnEndOfMedia(this::skipforwards);
         player.setVolume(volume);

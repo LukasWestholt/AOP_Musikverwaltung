@@ -1,5 +1,7 @@
 package musikverwaltung.views;
 
+import java.util.ArrayList;
+import java.util.List;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Node;
@@ -20,6 +22,8 @@ public abstract class GenericView implements DestroyListenerManager {
 
     public static final double DEFAULT_WIDTH = 650;
     public static final double DEFAULT_HEIGHT = 560;
+
+    private final List<Runnable> destroyListener = new ArrayList<>();
 
     public GenericView(ScreenController sc, double prefWidth, double prefHeight) {
         screenController = sc;
@@ -63,5 +67,20 @@ public abstract class GenericView implements DestroyListenerManager {
 
     public void showNodes(Node... nodes) {
         stackPane.getChildren().addAll(nodes);
+    }
+
+    @Override
+    public void setDestroyListener(Runnable toSet) {
+        if (toSet != null) {
+            destroyListener.clear();
+            destroyListener.add(toSet);
+        }
+    }
+
+    @Override
+    public void triggerDestroyListener() {
+        for (Runnable hl : destroyListener) {
+            hl.run();
+        }
     }
 }

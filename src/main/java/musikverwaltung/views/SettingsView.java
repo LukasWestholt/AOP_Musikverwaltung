@@ -36,7 +36,7 @@ public class SettingsView extends GenericView implements ActionListenerManager {
 
         Button buttonSave = new Button("Save");
         buttonSave.setOnAction(e -> {
-            SettingFile.setPaths(new ArrayList<>(list));
+            SettingFile.savePaths(new ArrayList<>(list));
             stage.close();
             triggerActionListener();
         });

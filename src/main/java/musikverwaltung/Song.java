@@ -203,18 +203,18 @@ public class Song implements Externalizable {
     //https://www.geeksforgeeks.org/externalizable-interface-java/
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeObject(getTitle());
-        out.writeObject(getGenre());
-        out.writeObject(getArtist());
-        out.writeObject(getPath().toAbsolutePath().toString());
+        out.writeUTF(getTitle());
+        out.writeUTF(getGenre());
+        out.writeUTF(getArtist());
+        out.writeUTF(getPath().toAbsolutePath().toString());
     }
 
     @Override
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        setTitle((String) in.readObject());
-        setGenre((String) in.readObject());
-        setArtist((String) in.readObject());
-        setPath(Helper.getPath((String) in.readObject()));
+    public void readExternal(ObjectInput in) throws IOException {
+        setTitle(in.readUTF());
+        setGenre(in.readUTF());
+        setArtist(in.readUTF());
+        setPath(Helper.s2p(in.readUTF()));
         isSelected.set(false);
     }
 }

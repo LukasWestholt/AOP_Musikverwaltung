@@ -5,9 +5,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class SettingFile implements Serializable {
+public class SettingFile implements Externalizable {
 
     private static final String filename = "settings.ser";
 
@@ -15,7 +16,7 @@ public class SettingFile implements Serializable {
     private static final long SerialVersionUID = 10L;
     // TODO testing
 
-    private ArrayList<Playlist> mediaLibrary = new ArrayList<>();
+    private ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
 
     private Playlist playlist;
 
@@ -24,7 +25,7 @@ public class SettingFile implements Serializable {
     private Path lastSong;
 
 
-    public static void setSOOONG(Song song) {
+    public static void saveSong(Song song) {
         SettingFile setting = load();
         if (setting.song != song) {
             setting.song = song;
@@ -33,7 +34,7 @@ public class SettingFile implements Serializable {
         }
     } // TODO what is this?
 
-    public static void setPLAAAY(Playlist playlist) {
+    public static void savePlaylist(Playlist playlist) {
         SettingFile setting = load();
         if (setting.playlist != playlist) {
             setting.playlist = playlist;
@@ -42,17 +43,16 @@ public class SettingFile implements Serializable {
         }
     } // TODO what is this?
 
-    public static void setMediaLibrary(ObservableList<Playlist> mediaLibrary) {
+    public static void saveMediaLibrary(ObservableList<Playlist> mediaLibrary) {
         SettingFile setting = load();
-        ArrayList<Playlist> temp = new ArrayList<>(mediaLibrary);
-        if (!Objects.equals(setting.mediaLibrary, temp)) {
-            setting.mediaLibrary = temp;
+        if (!Objects.equals(setting.mediaLibrary, mediaLibrary)) {
+            setting.mediaLibrary = mediaLibrary;
             save(setting);
             System.out.println("added mediaLibrary " + mediaLibrary + " to settingsfile");
         }
     }
 
-    public static void setLastSong(Path lastSong) {
+    public static void saveLastSong(Path lastSong) {
         SettingFile setting = load();
         if (setting.lastSong != lastSong) {
             setting.lastSong = lastSong;
@@ -61,7 +61,7 @@ public class SettingFile implements Serializable {
         }
     }
 
-    public static void setPaths(ArrayList<String> paths) {
+    public static void savePaths(ArrayList<String> paths) {
         SettingFile setting = load();
         if (setting.paths != paths) {
             setting.paths = paths;
@@ -95,19 +95,62 @@ public class SettingFile implements Serializable {
         return lastSong;
     }
 
+    public void setLastSong(Path lastSong) {
+        this.lastSong = lastSong;
+    }
+
     public Song getSong() {
         return song;
+    }
+
+    public void setSong(Song song) {
+        this.song = song;
     }
 
     public Playlist getPlaylist() {
         return playlist;
     }
 
-    public ArrayList<Playlist> getMediaLibrary() {
+    public void setPlaylist(Playlist playlist) {
+        this.playlist = playlist;
+    }
+
+    public ObservableList<Playlist> getMediaLibrary() {
         return mediaLibrary;
+    }
+
+    public void setMediaLibrary(ObservableList<Playlist> mediaLibrary) {
+        this.mediaLibrary = mediaLibrary;
     }
 
     public List<String> getPaths() {
         return paths;
+    }
+
+    public void setPaths(List<String> paths) {
+        this.paths = paths;
+    }
+
+    @Override
+    public void writeExternal(ObjectOutput out) throws IOException {
+        ArrayList<Playlist> temp = new ArrayList<>(mediaLibrary);
+        out.writeObject(temp);
+        out.writeObject(playlist);
+        out.writeObject(song);
+        out.writeObject(paths);
+        out.writeUTF(Helper.p2uris(lastSong));
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        ArrayList<Playlist> temp = (ArrayList<Playlist>) in.readObject();
+        ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
+        mediaLibrary.addAll(temp);
+        setMediaLibrary(mediaLibrary);
+        setPlaylist((Playlist) in.readObject());
+        setSong((Song) in.readObject());
+        setPaths((List<String>) in.readObject());
+        setLastSong(Helper.uris2p(in.readUTF()));
     }
 }

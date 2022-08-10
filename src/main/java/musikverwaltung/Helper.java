@@ -1,5 +1,6 @@
 package musikverwaltung;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -23,7 +24,7 @@ public class Helper {
             System.out.println("resourcePath is not starting with a '/'. Are you sure this is correct?");
         }
         URL url = c.getResource(resourcePath);
-        Path path = getPath(url);
+        Path path = url2p(url);
         if (path == null & exitOnFailure) {
             System.out.println("Resource \"" + resourcePath + "\" not found. Aborting.");
             System.exit(-1);
@@ -31,22 +32,33 @@ public class Helper {
         return path;
     }
 
-    public static String getResourcePathString(Class<?> c, String resourcePath, boolean exitOnFailure) {
-        return p2s(getResourcePath(c, resourcePath, exitOnFailure));
+    public static String getResourcePathUriString(Class<?> c, String resourcePath, boolean exitOnFailure) {
+        return p2uris(getResourcePath(c, resourcePath, exitOnFailure));
     }
 
-    public static String p2s(Path path) {
+    public static String p2uris(Path path) {
         if (path == null) {
             return "";
         }
         return path.toUri().toString();
     }
 
-    public static Path getPath(String string) {
+    public static Path s2p(String string) {
         return Paths.get(string);
     }
 
-    public static Path getPath(URL url) {
+    public static Path uris2p(String string) {
+        if (string.isEmpty()) {
+            return null;
+        }
+        try {
+            return Paths.get(new URI(string));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Path url2p(URL url) {
         if (url != null) {
             try {
                 return Paths.get(url.toURI());

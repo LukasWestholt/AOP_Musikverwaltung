@@ -174,7 +174,7 @@ public class PlaylistView extends MenuBarView {
         vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton, automaticPlaylistButton);
         showNodes(vbox);
 
-        setDestroyListener(() -> SettingFile.setMediaLibrary(mediaLibrary));
+        setDestroyListener(() -> SettingFile.saveMediaLibrary(mediaLibrary));
     }
 
     public boolean addPlaylist(Playlist createdPlaylist) {
@@ -240,7 +240,7 @@ public class PlaylistView extends MenuBarView {
 
     //nicht ideal die methode aber muss einmal am anfang und im listener eingesetzt werden
     private void showPlaylistImage(Button playlistButton, Path path) {
-        Image previewImage = new Image(Helper.p2s(path), true);
+        Image previewImage = new Image(Helper.p2uris(path), true);
         System.out.println(previewImage.errorProperty());
         if (!previewImage.isError()) {
             ImageView previewView = new ImageView(previewImage);
