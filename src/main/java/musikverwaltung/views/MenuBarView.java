@@ -18,13 +18,13 @@ public class MenuBarView extends GenericView {
     private final VBox wrapperVBox = new VBox();
 
     final Button mainViewButton = new Button("Musikverwaltung");
-    final Button playlistButton = new Button("Playlist");
-    final Button settingButton = new Button("Einstellungen");
-    final Button creditsButton = new Button("Credits");
+    final Button playlistViewButton = new Button("Playlist");
+    final Button settingViewButton = new Button("Einstellungen");
+    final Button creditsViewButton = new Button("Credits");
 
     public MenuBarView(ScreenController sc, double prefWidth, double prefHeight) {
         super(sc, prefWidth, prefHeight);
-        addMenuItems(true, mainViewButton, playlistButton, settingButton, creditsButton);
+        addMenuItems(true, mainViewButton, playlistViewButton, settingViewButton, creditsViewButton);
         wrapperVBox.getChildren().addAll(menuToolBar, stackPane);
     }
 

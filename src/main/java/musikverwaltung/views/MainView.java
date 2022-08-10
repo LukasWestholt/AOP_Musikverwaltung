@@ -44,7 +44,7 @@ public class MainView extends MenuBarView {
         this.mediaManager = mediaManager;
 
         Runnable uniqueRefreshRunnable = refresh();
-        addActiveMenuButton(settingButton,
+        addActiveMenuButton(settingViewButton,
                 e -> {
                     GenericView view = screenController.activateWindow(SettingsView.class, false);
                     if (view instanceof SettingsView settingsView) {
@@ -52,10 +52,10 @@ public class MainView extends MenuBarView {
                     }
                 }
         );
-        addActiveMenuButton(playlistButton,
+        addActiveMenuButton(playlistViewButton,
                 e -> screenController.activate(PlaylistView.class)
         );
-        addActiveMenuButton(creditsButton,
+        addActiveMenuButton(creditsViewButton,
                 e -> screenController.activateWindow(CreditsView.class, false)
         );
         setActiveMenuItem(mainViewButton);

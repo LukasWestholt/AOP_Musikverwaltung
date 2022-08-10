@@ -33,16 +33,16 @@ public class PlaylistView extends MenuBarView {
 
         allSongs = new FilteredList<>(mediaManager.music, p -> true);
 
-        addActiveMenuButton(settingButton,
+        addActiveMenuButton(settingViewButton,
                 e -> screenController.activateWindow(SettingsView.class, false)
         );
         addActiveMenuButton(mainViewButton,
                 e -> screenController.activate(MainView.class)
         );
-        addActiveMenuButton(creditsButton,
+        addActiveMenuButton(creditsViewButton,
                 e -> screenController.activateWindow(CreditsView.class, false)
         );
-        setActiveMenuItem(playlistButton);
+        setActiveMenuItem(playlistViewButton);
 
         final Label welcomeLabel = new Label("Playlisten");
         welcomeLabel.getStyleClass().add("header");

@@ -45,7 +45,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         addActiveMenuButton(new Button("Reset"),
                 e -> reset(false)
         );
-        ignoreMenuItems(settingButton, playlistButton, creditsButton);
+        ignoreMenuItems(settingViewButton, playlistViewButton, creditsViewButton);
 
         labelSongName = new Label("Unbekannt");
         labelSongName.getStyleClass().add("header");
