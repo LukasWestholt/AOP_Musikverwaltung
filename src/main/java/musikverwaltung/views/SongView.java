@@ -1,7 +1,6 @@
 package musikverwaltung.views;
 
 import java.nio.file.Path;
-import javafx.beans.binding.Bindings;
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
@@ -83,9 +82,16 @@ public class SongView extends MenuBarView implements StringListenerManager {
         pauseImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/icons/pause.png", false));
         startStop = new ImageButton(playImage, true, true);
         startStop.setOnAction(e -> startStopSong());
-        startStop.prefHeightProperty().bind(startStop.widthProperty());
+        //startStop.prefHeightProperty().bind(startStop.widthProperty());
+        startStop.setPrefSize(30, 30);
         startStop.setMaxWidth(Double.MAX_VALUE);
         startStop.maxHeightProperty().bind(startStop.widthProperty());
+        /*
+        region.setMinWidth(Control.USE_PREF_SIZE);
+        region.setMinHeight(Control.USE_PREF_SIZE);
+        region.setMaxHeight(Double.MAX_VALUE);
+        */
+
         HBox.setHgrow(startStop, Priority.SOMETIMES);
 
         ImageButton skipForward = new ImageButton(
@@ -94,7 +100,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         );
         skipForward.setOnAction(e -> skipforwards());
         setDynamicSize(skipForward);
-        skipForward.maxHeightProperty().bind(startStop.widthProperty().multiply(0.7));
+        skipForward.setPrefSize(30, 30);
 
         ImageButton skipBackward = new ImageButton(
                 Helper.getResourcePath(this.getClass(), "/icons/skipback.png", false),
@@ -102,27 +108,27 @@ public class SongView extends MenuBarView implements StringListenerManager {
         );
         skipBackward.setOnAction(e -> skipbackwards());
         setDynamicSize(skipBackward);
-        skipBackward.maxHeightProperty().bind(startStop.widthProperty().multiply(0.7));
+        skipBackward.setPrefSize(30, 30);
 
-        startStop.minWidthProperty().bind(
+        /*startStop.minWidthProperty().bind(
                 Bindings.max(skipBackward.heightProperty(), skipForward.heightProperty())
-        );
-        /*ImageButton skipAhead = new ImageButton(
+        );*/
+        ImageButton skipAhead = new ImageButton(
                 Helper.getResourcePath(this.getClass(), "/icons/15sAhead.png", false),
                 false, true
                 );
         skipAhead.setOnAction(e -> skipTime(15));
         setDynamicSize(skipAhead);
+        skipAhead.setPrefSize(30, 30);
 
         ImageButton skipBehind = new ImageButton(Helper.getResourcePath(
                 this.getClass(), "/icons/15sBack.png", false),
                 false, true);
         skipBehind.setOnAction(e -> skipTime(-15));
-        setDynamicSize(skipBehind);*/
+        setDynamicSize(skipBehind);
+        skipBehind.setPrefSize(30, 30);
 
-        //HBox buttonHBox = new HBox(skipBehind, skipBackward, startStop, skipForward, skipAhead);
-        HBox buttonHBox = new HBox(skipBackward, startStop, skipForward);
-        //HBox buttonHBox = new HBox(startStop);
+        HBox buttonHBox = new HBox(skipBehind, skipBackward, startStop, skipForward, skipAhead);
         buttonHBox.setAlignment(Pos.CENTER);
         buttonHBox.setSpacing(10);
         buttonHBox.maxWidthProperty().bind(getHeightProperty().divide(2));
