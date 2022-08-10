@@ -26,7 +26,7 @@
 
 #scroll-playlists.scroll-pane {
     -fx-font-family: "Courier New";
-    -fx-background-color: yellow;
+    -fx-background-color: lightgrey;
 }
 
 #scroll-playlists.scroll-pane .viewport {
@@ -34,7 +34,6 @@
 }
 
 #playlists {
-    -fx-background-color: red;
 }
 
 #playlists > * {

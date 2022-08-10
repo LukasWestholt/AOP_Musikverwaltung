@@ -40,7 +40,7 @@ public class ScreenController {
     }
 
     public GenericView activate(Class<? extends GenericView> id) {
-        GenericView view = screenMap.get(id);
+        final GenericView view = screenMap.get(id);
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
         getMainChildren().clear();
         getMainChildren().add(view.get());
@@ -53,7 +53,7 @@ public class ScreenController {
             return activate(id);
         }
 
-        GenericView view = screenMap.get(id);
+        final GenericView view = screenMap.get(id);
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
         Node root = view.get();
 
@@ -112,7 +112,7 @@ public class ScreenController {
 
     public GenericView activateWindow(Class<? extends GenericView> id, boolean neighborToMain) {
         Stage stage = stageMap.get(id);
-        GenericView view = screenMap.get(id);
+        final GenericView view = screenMap.get(id);
         if (stage != null) {
             return activate(stage, view, id.getName(), neighborToMain);
         }

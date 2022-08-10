@@ -46,7 +46,7 @@ public class MainView extends MenuBarView {
         Runnable uniqueRefreshRunnable = refresh();
         addActiveMenuButton(settingViewButton,
                 e -> {
-                    GenericView view = screenController.activateWindow(SettingsView.class, false);
+                    final GenericView view = screenController.activateWindow(SettingsView.class, false);
                     if (view instanceof SettingsView settingsView) {
                         settingsView.addActionListenerIfNotContains(uniqueRefreshRunnable);
                     }
@@ -151,7 +151,7 @@ public class MainView extends MenuBarView {
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
         musicPlayerButton.setOnAction(e -> {
             actionLabel.setText("Starte Player");
-            GenericView view = screenController.activateWindow(SongView.class, true);
+            final GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView songView) {
                 songView.addStringListenerIfNotContains(setActionText);
                 Song lastSong = mediaManager.getLastSong();
@@ -167,7 +167,7 @@ public class MainView extends MenuBarView {
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton); //Add choiceBox and textField to hBox
         searchHBox.setAlignment(Pos.CENTER); //Center HBox
 
-        TableColumn<Song, CheckBox> checkCol = new TableColumn<>("   ");
+        TableColumn<Song, CheckBox> checkCol = new TableColumn<>();
         checkCol.setCellValueFactory(cellData -> {
             CheckBox checkBox = new CheckBox();
             Song song = cellData.getValue();
@@ -216,7 +216,7 @@ public class MainView extends MenuBarView {
                     Playlist singleSongPlaylist = new Playlist();
                     singleSongPlaylist.add(row.getItem());
                     singleSongPlaylist.setName(row.getItem().getTitle());
-                    GenericView view = screenController.activateWindow(SongView.class, true);
+                    final GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView songView) {
                         songView.addStringListenerIfNotContains(setActionText);
                         songView.setPlaylist(singleSongPlaylist, true);
@@ -247,7 +247,7 @@ public class MainView extends MenuBarView {
         Button makePlaylistButton = new Button("Playlist erstellen");
         makePlaylistButton.setOnAction(action -> {
             // TODO save playlist to file and don't activate PlaylistView each
-            GenericView view = screenController.activate(PlaylistView.class);
+            final GenericView view = screenController.activate(PlaylistView.class);
             if (view instanceof PlaylistView playlistView) {
                 Playlist returnPlaylist = new Playlist();
                 returnPlaylist.setName(playlistNameEntry.getText());

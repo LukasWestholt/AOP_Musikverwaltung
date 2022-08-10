@@ -3,6 +3,7 @@ package musikverwaltung.views;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import javafx.beans.binding.When;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -10,7 +11,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
@@ -19,19 +19,18 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import musikverwaltung.*;
 
-
 public class PlaylistView extends MenuBarView {
 
     private final ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
 
-    final FilteredList<Song> allSongs;
+    final FilteredList<Song> flSongs;
 
     private Playlist contextPlaylist;
 
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
 
-        allSongs = new FilteredList<>(mediaManager.music, p -> true);
+        flSongs = new FilteredList<>(mediaManager.music, p -> true);
 
         addActiveMenuButton(settingViewButton,
                 e -> screenController.activateWindow(SettingsView.class, false)
@@ -47,11 +46,7 @@ public class PlaylistView extends MenuBarView {
         final Label welcomeLabel = new Label("Playlisten");
         welcomeLabel.getStyleClass().add("header");
 
-        final VBox vbox = new VBox();
-        vbox.setSpacing(5);
-        vbox.setPadding(new Insets(10));
-
-        TilePane tilePane = new TilePane();
+        final TilePane tilePane = new TilePane();
         tilePane.setId("playlists");
         tilePane.setHgap(5);
         tilePane.setVgap(5);
@@ -62,7 +57,7 @@ public class PlaylistView extends MenuBarView {
         //TODO überlegen das öfter einzubauen mit radio und checkMenu sehr praktisch
         final MenuItem deleteMenu = new MenuItem("Löschen");
         final MenuItem selectMenu = new MenuItem("Bild auswählen");
-        final TextField nameField = new TextField("");
+        final TextField nameField = new TextField();
         final ImageButton resetRenameButton = new ImageButton(
                 Helper.getResourcePath(this.getClass(), "/icons/reset.png", false),
                 true, false
@@ -77,7 +72,8 @@ public class PlaylistView extends MenuBarView {
         renameMenu.setHideOnClick(false);
         deleteMenu.setOnAction(action -> mediaLibrary.remove(contextPlaylist));
         selectMenu.setOnAction(action -> {
-            Path imageFile = CachedPathChooser.showOpenDialog(stage, "Suche dir ein Vorschaubild für die Playlist aus");
+            final Path imageFile = CachedPathChooser.showOpenDialog(stage,
+                    "Suche dir ein Vorschaubild für die Playlist aus");
             if (imageFile == null) {
                 return;
             }
@@ -87,18 +83,15 @@ public class PlaylistView extends MenuBarView {
                 System.out.println("Problem on loading File");
             }
         });
-        SeparatorMenuItem sep = new SeparatorMenuItem();
-        ContextMenu quickOptions = new ContextMenu();
+        final SeparatorMenuItem sep = new SeparatorMenuItem();
+        final ContextMenu quickOptions = new ContextMenu();
         quickOptions.getItems().addAll(deleteMenu, selectMenu, sep, renameMenu);
         quickOptions.setOnAutoHide(event -> contextPlaylist.setName(nameField.getText()));
 
         mediaLibrary.addListener((ListChangeListener<? super Playlist>) change -> {
             tilePane.getChildren().clear();
-            //System.out.println(mediaLibrary);
             for (Playlist playlist : mediaLibrary) {
-                //System.out.println(playlist.getName());
-                //System.out.println();
-                Button playlistButton = new Button(playlist.getName());
+                final Button playlistButton = new Button(playlist.getName());
                 playlistButton.setMinWidth(Region.USE_PREF_SIZE);
                 playlistButton.setWrapText(true);
                 playlistButton.hoverProperty().addListener((obs, oldValue, newValue) -> {
@@ -118,21 +111,20 @@ public class PlaylistView extends MenuBarView {
                 playlistButton.setContextMenu(quickOptions);
 
                 playlistButton.setOnAction((e) -> {
-                    GenericView view = screenController.activateWindow(SongView.class, true);
+                    final GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView songView) {
                         songView.setPlaylist(playlist, true);
                     }
                 });
-                if (playlist.getPreviewImage() != null && playlistButton.graphicProperty().get() == null) {
-                    showPlaylistImage(playlistButton, playlist.getPreviewImage());
-                }
-                playlist.getPreviewImageProperty().addListener((observableValue, oldString, newString) ->
-                        showPlaylistImage(playlistButton, newString)
-                );
-
-                playlist.getNameProperty().addListener((observableValue, oldString, newString) ->
-                        playlistButton.setText(newString)
-                );
+                final ImageView previewView = new ImageView();
+                previewView.imageProperty().bind(playlist.getPreviewImageProperty());
+                previewView.setFitWidth(80);
+                previewView.setFitHeight(80);
+                //TODO preserve ratio or not? --> LW: yeeesss :)
+                previewView.setPreserveRatio(true);
+                playlistButton.graphicProperty().bind(new When(playlist.getPreviewImageProperty().isNull())
+                        .then((ImageView) null).otherwise(previewView));
+                playlistButton.textProperty().bind(playlist.getNameProperty());
                 playlistButton.setAlignment(Pos.BASELINE_CENTER);
                 playlistButton.setStyle("-fx-font-size:20");
                 playlistButton.setPrefHeight(100);
@@ -143,7 +135,7 @@ public class PlaylistView extends MenuBarView {
 
         mediaLibrary.addAll(SettingFile.load().getMediaLibrary());
 
-        ScrollPane sp = new ScrollPane();
+        final ScrollPane sp = new ScrollPane();
         sp.setId("scroll-playlists");
         sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -151,12 +143,12 @@ public class PlaylistView extends MenuBarView {
         sp.setContent(tilePane);
         sp.setMaxHeight(Control.USE_PREF_SIZE);
 
-        Button musicPlayerButton = new Button("Player");
+        final Button musicPlayerButton = new Button("Player");
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
         musicPlayerButton.setOnAction(e -> {
-            GenericView view = screenController.activateWindow(SongView.class, true);
+            final GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView songView) {
-                Song lastSong = mediaManager.getLastSong();
+                final Song lastSong = mediaManager.getLastSong();
                 if (lastSong != null) {
                     Playlist singleSongPlaylist = new Playlist();
                     singleSongPlaylist.add(lastSong);
@@ -167,10 +159,13 @@ public class PlaylistView extends MenuBarView {
         });
 
         //TODO verbuggt beim mehrmaligen aktivieren?
-        Button automaticPlaylistButton = new Button("Playlist Vorschläge");
+        final Button automaticPlaylistButton = new Button("Playlist Vorschläge");
         automaticPlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
         automaticPlaylistButton.setOnAction(e -> createAutomaticPlaylists());
 
+        final VBox vbox = new VBox();
+        vbox.setSpacing(5);
+        vbox.setPadding(new Insets(10));
         vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton, automaticPlaylistButton);
         showNodes(vbox);
 
@@ -184,7 +179,7 @@ public class PlaylistView extends MenuBarView {
         }
         //for cloning playlist in mainView can change without interacting with the saved playlists in the media library
         System.out.println("added a new playlist " + createdPlaylist.getName());
-        Playlist copyPlaylist = new Playlist(createdPlaylist);
+        final Playlist copyPlaylist = new Playlist(createdPlaylist);
         mediaLibrary.add(copyPlaylist);
         //SettingFile.setMediaLibrary(mediaLibrary);
         return true;
@@ -199,58 +194,42 @@ public class PlaylistView extends MenuBarView {
     }
 
     private void createAutomaticPlaylists() {
-        int threshold = 10;
+        final int threshold = 10;
         //Criteria: genre and artist
-        ArrayList<String> genreCriteria = new ArrayList<>();
-        ArrayList<String> artistCriteria = new ArrayList<>();
-        for (int i = 0; i < allSongs.size(); i++) {
-            if (!(genreCriteria.contains(allSongs.get(i).getGenre())) && !(allSongs.get(i).getGenre().equals(""))) {
-                genreCriteria.add(allSongs.get(i).getGenre());
-            } else if (!(artistCriteria.contains(allSongs.get(i).getArtist())) && !(allSongs.get(i).getArtist().equals(""))) {
-                artistCriteria.add(allSongs.get(i).getArtist());
+        final ArrayList<String> genreCriteria = new ArrayList<>();
+        final ArrayList<String> artistCriteria = new ArrayList<>();
+        for (int i = 0; i < flSongs.size(); i++) {
+            if (!(genreCriteria.contains(flSongs.get(i).getGenre())) && !(flSongs.get(i).getGenre().equals(""))) {
+                genreCriteria.add(flSongs.get(i).getGenre());
+            } else if (!(artistCriteria.contains(flSongs.get(i).getArtist())) && !(flSongs.get(i).getArtist().equals(""))) {
+                artistCriteria.add(flSongs.get(i).getArtist());
             }
         }
         //System.out.println(genreCriteria + "\n" + artistCriteria);
 
         for (String genre : genreCriteria) {
-            allSongs.setPredicate(p -> p.getGenre().contains(genre));
-            if (allSongs.size() >= threshold) {
-                Playlist automaticPlaylist = new Playlist();
+            flSongs.setPredicate(p -> p.getGenre().contains(genre));
+            if (flSongs.size() >= threshold) {
+                final Playlist automaticPlaylist = new Playlist();
                 automaticPlaylist.setName("Genre: " + genre);
-                for (Song song : allSongs) {
+                for (Song song : flSongs) {
                     automaticPlaylist.add(song);
                 }
                 addPlaylist(automaticPlaylist);
             }
         }
-        allSongs.setPredicate(null);
+        flSongs.setPredicate(null);
         for (String artist : artistCriteria) {
-            allSongs.setPredicate(p -> p.getArtist().contains(artist));
-            if (allSongs.size() >= threshold) {
-                Playlist automaticPlaylist = new Playlist();
+            flSongs.setPredicate(p -> p.getArtist().contains(artist));
+            if (flSongs.size() >= threshold) {
+                final Playlist automaticPlaylist = new Playlist();
                 automaticPlaylist.setName("Artist: " + artist);
-                for (Song song : allSongs) {
+                for (Song song : flSongs) {
                     automaticPlaylist.add(song);
                 }
                 addPlaylist(automaticPlaylist);
             }
         }
-        allSongs.setPredicate(null);
-    }
-
-    //nicht ideal die methode aber muss einmal am anfang und im listener eingesetzt werden
-    private void showPlaylistImage(Button playlistButton, Path path) {
-        Image previewImage = new Image(Helper.p2uris(path), true);
-        System.out.println(previewImage.errorProperty());
-        if (!previewImage.isError()) {
-            ImageView previewView = new ImageView(previewImage);
-            System.out.println("new image " + path);
-            //\media\AlbumCover.jpg zum Beispiel
-            previewView.setFitWidth(80);
-            previewView.setFitHeight(80);
-            //TODO preserve ratio or not? --> LW: yeeesss :)
-            previewView.setPreserveRatio(true);
-            playlistButton.setGraphic(previewView);
-        }
+        flSongs.setPredicate(null);
     }
 }

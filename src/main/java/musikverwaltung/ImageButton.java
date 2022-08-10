@@ -17,7 +17,7 @@ public class ImageButton extends Button {
         if (isCircle) {
             setShape(new Circle(1));
         }
-        imageView.setImage(image);
+        switchImage(image);
         imageView.setSmooth(true);
         imageView.setCache(true);
         imageView.fitHeightProperty().bind(prefHeightProperty());
@@ -30,6 +30,9 @@ public class ImageButton extends Button {
     }
 
     public void switchImage(Image image) {
+        if (image.isError()) {
+            System.out.println("image has error");
+        }
         imageView.setImage(image);
     }
 }

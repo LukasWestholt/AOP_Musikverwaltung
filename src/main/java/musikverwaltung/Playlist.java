@@ -10,11 +10,12 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 
 public class Playlist implements Externalizable {
     private final SimpleStringProperty name = new SimpleStringProperty();
     private final ObservableList<Song> songs = FXCollections.observableArrayList();
-    private final SimpleObjectProperty<Path> previewImage = new SimpleObjectProperty<>();
+    private final SimpleObjectProperty<Image> previewImage = new SimpleObjectProperty<>();
 
     public Playlist() {
         this.name.setValue("Playlist 1");
@@ -44,16 +45,16 @@ public class Playlist implements Externalizable {
         this.name.set(name);
     }
 
-    public Path getPreviewImage() {
+    public Image getPreviewImage() {
         return previewImage.get();
     }
 
-    public SimpleObjectProperty<Path> getPreviewImageProperty() {
-        return previewImage;
+    public void setPreviewImage(Path path) {
+        previewImage.set(new Image(Helper.p2uris(path)));
     }
 
-    public void setPreviewImage(Path path) {
-        previewImage.set(path);
+    public SimpleObjectProperty<Image> getPreviewImageProperty() {
+        return previewImage;
     }
 
     public Song get(int index) {
@@ -94,7 +95,7 @@ public class Playlist implements Externalizable {
 
     @Override
     public String toString() {
-        return "PlayList{" + "name=" + getName() + ", songs=" + songs + " mediafile: " + getPreviewImage() + '}';
+        return "PlayList{" + "name=" + getName() + ", songs=" + songs + ", previewImage: " + getPreviewImage() + '}';
     }
     //TODO equals method ausgiebig testen
 
@@ -127,20 +128,17 @@ public class Playlist implements Externalizable {
         ArrayList<Song> temp = new ArrayList<>(getAll());
         out.writeUTF(getName());
         out.writeObject(temp);
-        out.writeObject(getPreviewImage());
+        out.writeUTF(getPreviewImage().getUrl());
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         setName(in.readUTF());
-        //System.out.println(getName());
         ArrayList<Song> temp = (ArrayList<Song>) in.readObject();
         ObservableList<Song> songs = FXCollections.observableArrayList();
         songs.addAll(temp);
         setAll(songs);
-        //System.out.println(getSongs());
-        setPreviewImage((Path) in.readObject());
-        //System.out.println(getPreviewImage());
+        setPreviewImage(Helper.uris2p(in.readUTF()));
     }
 }
