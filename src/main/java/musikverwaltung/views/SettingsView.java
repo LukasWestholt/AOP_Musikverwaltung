@@ -1,7 +1,6 @@
 package musikverwaltung.views;
 
-
-import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import javafx.beans.binding.DoubleBinding;
 import javafx.collections.FXCollections;
@@ -12,27 +11,22 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
+import musikverwaltung.CachedPathChooser;
 import musikverwaltung.ScreenController;
 import musikverwaltung.SettingFile;
 import musikverwaltung.handler.ActionListenerManager;
 
 public class SettingsView extends GenericView implements ActionListenerManager {
     final ObservableList<String> list = FXCollections.observableArrayList();
-    File directory;
 
     public SettingsView(ScreenController sc) {
         super(sc, 350, 300);
 
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-
-        directoryChooser.setInitialDirectory(directory);
-
         Button selectDirectory = new Button("Select Directory");
         selectDirectory.setOnAction(e -> {
-            File selectedDirectory = directoryChooser.showDialog(stage);
+            Path selectedDirectory = CachedPathChooser.showDialog(stage, null);
             if (selectedDirectory != null) {
-                list.add(selectedDirectory.getAbsolutePath());
+                list.add(selectedDirectory.toAbsolutePath().toString());
             }
         });
         ListView<String> listDirectory = new ListView<>(list);
@@ -42,7 +36,7 @@ public class SettingsView extends GenericView implements ActionListenerManager {
 
         Button buttonSave = new Button("Save");
         buttonSave.setOnAction(e -> {
-            SettingFile.setPath(new ArrayList<>(list));
+            SettingFile.setPaths(new ArrayList<>(list));
             stage.close();
             triggerActionListener();
         });
@@ -57,11 +51,6 @@ public class SettingsView extends GenericView implements ActionListenerManager {
     @Override
     public Node get() {
         list.setAll(SettingFile.load().getPaths());
-
-        directory = new File(System.getProperty("user.home"));
-        if (!directory.exists()) {
-            directory = new File(".");
-        }
         return super.get();
     }
 

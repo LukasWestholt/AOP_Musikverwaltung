@@ -25,7 +25,7 @@ public class CreditsView extends GenericView {
         WebView webView = new WebView();
         webView.setContextMenuEnabled(false);
         WebEngine webEngine = webView.getEngine();
-        webEngine.load(Helper.getResourceFile(this.getClass(), "/credits.html", false).toURI().toString());
+        webEngine.load(Helper.getResourcePathString(this.getClass(), "/credits.html", false));
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (Worker.State.SUCCEEDED.equals(newValue)) {
                 Document document = webEngine.getDocument();

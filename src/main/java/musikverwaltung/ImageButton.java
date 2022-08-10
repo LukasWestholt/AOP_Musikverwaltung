@@ -1,13 +1,13 @@
 package musikverwaltung;
 
-import java.io.File;
+import java.nio.file.Path;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.shape.Circle;
 
 public class ImageButton extends Button {
-    public ImageButton(File file, boolean isCircle, boolean withoutButtonStyle) {
+    public ImageButton(Path path, boolean isCircle, boolean withoutButtonStyle) {
         super();
         if (withoutButtonStyle) {
             getStyleClass().clear();
@@ -15,7 +15,7 @@ public class ImageButton extends Button {
         if (isCircle) {
             setShape(new Circle(1));
         }
-        final Image image = new Image(file.toURI().toString(), true);
+        final Image image = new Image(Helper.p2s(path), true);
         ImageView imageView = new ImageView(image);
         imageView.setSmooth(true);
         imageView.setCache(true);

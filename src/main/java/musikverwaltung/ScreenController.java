@@ -106,9 +106,7 @@ public class ScreenController {
         stage.show();
         stage.toFront();
 
-        stage.getScene().getStylesheets().add(
-                Helper.getResourceFile(this.getClass(), "/style.css", true).toURI().toString()
-        );
+        stage.getScene().getStylesheets().add(Helper.getResourcePathString(this.getClass(), "/style.css", true));
         return view;
     }
 

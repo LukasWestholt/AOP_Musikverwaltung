@@ -1,6 +1,5 @@
 package musikverwaltung.views;
 
-import java.io.File;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -18,7 +17,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import musikverwaltung.*;
 
 
@@ -66,7 +64,7 @@ public class PlaylistView extends MenuBarView {
         final MenuItem selectMenu = new MenuItem("Bild auswählen");
         final TextField nameField = new TextField("");
         final ImageButton resetRenameButton = new ImageButton(
-                Helper.getResourceFile(this.getClass(), "/icons/reset.png", false),
+                Helper.getResourcePath(this.getClass(), "/icons/reset.png", false),
                 true, false
         );
         final HBox renameBox = new HBox();
@@ -79,15 +77,12 @@ public class PlaylistView extends MenuBarView {
         renameMenu.setHideOnClick(false);
         deleteMenu.setOnAction(action -> mediaLibrary.remove(contextPlaylist));
         selectMenu.setOnAction(action -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Suche dir ein Vorschaubild für die Playlist aus");
-            File imageFile = fileChooser.showOpenDialog(stage);
+            Path imageFile = CachedPathChooser.showOpenDialog(stage, "Suche dir ein Vorschaubild für die Playlist aus");
             if (imageFile == null) {
                 return;
             }
             try {
-                Path imagePath = imageFile.toPath();
-                contextPlaylist.setPreviewImage(imagePath);
+                contextPlaylist.setPreviewImage(imageFile);
             } catch (InvalidPathException ignored) {
                 System.out.println("Problem on loading File");
             }
@@ -217,7 +212,7 @@ public class PlaylistView extends MenuBarView {
         }
         //System.out.println(genreCriteria + "\n" + artistCriteria);
 
-        for (String genre:genreCriteria) {
+        for (String genre : genreCriteria) {
             allSongs.setPredicate(p -> p.getGenre().contains(genre));
             if (allSongs.size() >= threshold) {
                 Playlist automaticPlaylist = new Playlist();
@@ -229,7 +224,7 @@ public class PlaylistView extends MenuBarView {
             }
         }
         allSongs.setPredicate(null);
-        for (String artist:artistCriteria) {
+        for (String artist : artistCriteria) {
             allSongs.setPredicate(p -> p.getArtist().contains(artist));
             if (allSongs.size() >= threshold) {
                 Playlist automaticPlaylist = new Playlist();
@@ -242,9 +237,10 @@ public class PlaylistView extends MenuBarView {
         }
         allSongs.setPredicate(null);
     }
+
     //nicht ideal die methode aber muss einmal am anfang und im listener eingesetzt werden
     private void showPlaylistImage(Button playlistButton, Path path) {
-        Image previewImage = new Image(path.toUri().toString(), true);
+        Image previewImage = new Image(Helper.p2s(path), true);
         System.out.println(previewImage.errorProperty());
         if (!previewImage.isError()) {
             ImageView previewView = new ImageView(previewImage);

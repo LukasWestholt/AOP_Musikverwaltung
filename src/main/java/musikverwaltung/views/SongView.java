@@ -1,6 +1,6 @@
 package musikverwaltung.views;
 
-import java.io.File;
+import java.nio.file.Path;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
@@ -42,8 +42,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         https://stackoverflow.com/questions/26850828/how-to-make-a-javafx-button-with-circle-shape-of-3xp-diameter
          */
         super(sc, 320, 560);
-        File imgFile = Helper.getResourceFile(this.getClass(), "/default_img.jpg", false);
-        defaultImage = new Image(imgFile.toURI().toString());
+        defaultImage = new Image(Helper.getResourcePathString(this.getClass(), "/default_img.jpg", false));
 
         addActiveMenuButton(mainViewButton,
                 e -> screenController.activate(MainView.class)
@@ -86,14 +85,8 @@ public class SongView extends MenuBarView implements StringListenerManager {
         });
 
         startStop = new Button();
-        Image playImage = new Image(
-                Helper.getResourceFile(this.getClass(), "/icons/play.png", false)
-                        .toURI().toString()
-        );
-        Image pauseImage = new Image(
-                Helper.getResourceFile(this.getClass(), "/icons/pause.png", false)
-                        .toURI().toString()
-        );
+        Image playImage = new Image(Helper.getResourcePathString(this.getClass(), "/icons/play.png", false));
+        Image pauseImage = new Image(Helper.getResourcePathString(this.getClass(), "/icons/pause.png", false));
         playBackground = new Background(new BackgroundFill(new ImagePattern(playImage), null, null));
         pauseBackground = new Background(new BackgroundFill(new ImagePattern(pauseImage), null, null));
         startStop.getStyleClass().clear();
@@ -202,10 +195,10 @@ public class SongView extends MenuBarView implements StringListenerManager {
         }
         reset(true);
 
-        File file = playlist.get(currentIndex).getPath();
+        Path path = playlist.get(currentIndex).getPath();
         labelSongName.setText(playlist.get(currentIndex).getTitle());
-        setDestroyListener(() -> SettingFile.setLastSong(file));
-        currentSong = new Media(file.toURI().toString());
+        setDestroyListener(() -> SettingFile.setLastSong(path));
+        currentSong = new Media(Helper.p2s(path));
         player = new MediaPlayer(currentSong);
         player.setOnEndOfMedia(this::skipforwards);
         player.setVolume(volume);

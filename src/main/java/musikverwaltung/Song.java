@@ -3,7 +3,11 @@ package musikverwaltung;
 import static musikverwaltung.views.MainView.HIGHLIGHT_END;
 import static musikverwaltung.views.MainView.HIGHLIGHT_START;
 
-import java.io.*;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.nio.file.Path;
 import java.util.Objects;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -13,24 +17,24 @@ public class Song implements Externalizable {
     private final SimpleStringProperty artist = new SimpleStringProperty();
     private final SimpleStringProperty genre = new SimpleStringProperty();
     private final SimpleBooleanProperty isSelected = new SimpleBooleanProperty();
-    private File path;
+    private Path path;
 
     @SuppressWarnings("unused")
-    public Song(String titel, String artist, String genre, File path) {
+    public Song(String titel, String artist, String genre, Path path) {
         this.title.setValue(titel);
         this.artist.setValue(artist);
         this.genre.setValue(genre);
         this.path = path;
     }
 
-    public Song(File path) {
+    public Song(Path path) {
         this.path = path;
     }
 
     public Song() {}
 
     public String getPrimaryKey() {
-        return title.get() != null ? title.get() : path.getName();
+        return title.get() != null ? title.get() : path.getFileName().toString();
     }
 
     public String getTitle() {
@@ -81,11 +85,11 @@ public class Song implements Externalizable {
         isSelected.set(value);
     }
 
-    public File getPath() {
+    public Path getPath() {
         return path;
     }
 
-    public void setPath(File path) {
+    public void setPath(Path path) {
         this.path = path;
     }
 
@@ -202,14 +206,15 @@ public class Song implements Externalizable {
         out.writeObject(getTitle());
         out.writeObject(getGenre());
         out.writeObject(getArtist());
-        out.writeObject(getPath());
+        out.writeObject(getPath().toAbsolutePath().toString());
     }
+
     @Override
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        setTitle((String)in.readObject());
-        setGenre((String)in.readObject());
-        setArtist((String)in.readObject());
-        setPath((File)in.readObject());
+        setTitle((String) in.readObject());
+        setGenre((String) in.readObject());
+        setArtist((String) in.readObject());
+        setPath(Helper.getPath((String) in.readObject()));
         isSelected.set(false);
     }
 }

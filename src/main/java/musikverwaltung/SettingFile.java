@@ -1,6 +1,7 @@
 package musikverwaltung;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +21,7 @@ public class SettingFile implements Serializable {
 
     private Song song;
     private List<String> paths = new ArrayList<>();
-    private File lastSong;
+    private Path lastSong;
 
 
     public static void setSOOONG(Song song) {
@@ -51,19 +52,21 @@ public class SettingFile implements Serializable {
         }
     }
 
-    public static void setLastSong(File lastSong) {
+    public static void setLastSong(Path lastSong) {
         SettingFile setting = load();
         if (setting.lastSong != lastSong) {
             setting.lastSong = lastSong;
             save(setting);
+            System.out.println("added lastSong " + lastSong + " to settingsfile");
         }
     }
 
-    public static void setPath(ArrayList<String> list) {
+    public static void setPaths(ArrayList<String> paths) {
         SettingFile setting = load();
-        if (setting.paths != list) {
-            setting.paths = list;
+        if (setting.paths != paths) {
+            setting.paths = paths;
             save(setting);
+            System.out.println("added paths " + paths + " to settingsfile");
         }
     }
 
@@ -88,7 +91,7 @@ public class SettingFile implements Serializable {
         }
     }
 
-    public File getLastSong() {
+    public Path getLastSong() {
         return lastSong;
     }
 
