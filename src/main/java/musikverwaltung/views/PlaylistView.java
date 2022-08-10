@@ -12,7 +12,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
@@ -101,9 +100,9 @@ public class PlaylistView extends MenuBarView {
                         playlistButton.setStyle("-fx-font-size:18");
                     }
                 });
-                //genau position beim auftauchen setzen
+                //genau position beim auftauchen setzen // TODO LW ist schon genaue position oder?
                 playlistButton.setOnMouseClicked(event -> {
-                    if (event.getButton() == MouseButton.SECONDARY) {
+                    if (event.isPopupTrigger()) {
                         contextPlaylist = playlist;
                         nameField.setText(contextPlaylist.getName());
                     }
