@@ -24,7 +24,11 @@ public class ScreenController {
     }
 
     public Stage getMain() {
-        return stageMap.get(GenericView.class);
+        final Stage stage = stageMap.get(GenericView.class);
+        if (stage == null) {
+            throw new InternalError("Stage not exists");
+        }
+        return stage;
     }
 
     public Scene getMainScene() {
@@ -41,6 +45,9 @@ public class ScreenController {
 
     public GenericView activate(Class<? extends GenericView> id) {
         final GenericView view = screenMap.get(id);
+        if (view == null) {
+            throw new InternalError("View not exists");
+        }
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
         getMainChildren().clear();
         getMainChildren().add(view.get());
@@ -54,6 +61,9 @@ public class ScreenController {
         }
 
         final GenericView view = screenMap.get(id);
+        if (view == null) {
+            throw new InternalError("View not exists");
+        }
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
         Node root = view.get();
 
@@ -111,8 +121,11 @@ public class ScreenController {
     }
 
     public GenericView activateWindow(Class<? extends GenericView> id, boolean neighborToMain) {
-        Stage stage = stageMap.get(id);
         final GenericView view = screenMap.get(id);
+        if (view == null) {
+            throw new InternalError("View not exists");
+        }
+        Stage stage = stageMap.get(id);
         if (stage != null) {
             return activate(stage, view, id.getName(), neighborToMain);
         }

@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.image.Image;
 
 public class Playlist implements Externalizable {
@@ -82,6 +83,15 @@ public class Playlist implements Externalizable {
 
     public ObservableList<Song> getAll() {
         return songs;
+    }
+
+    public FilteredList<Song> getAllPlayable() {
+        if (SettingFile.load().getShowUnplayableSongs()) {
+            return songs.filtered(null);
+        } else {
+            return songs.filtered(Song::isPlayable);
+        }
+        // TODO mybe with MediaManager
     }
 
     public void set(int index, Song newSong) {

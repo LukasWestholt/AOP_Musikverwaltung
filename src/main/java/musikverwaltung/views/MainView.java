@@ -1,9 +1,13 @@
 package musikverwaltung.views;
 
-import java.util.InputMismatchException;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.When;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -36,6 +40,13 @@ public class MainView extends MenuBarView {
     final TableView<Song> table = new TableView<>();
     private final Playlist playList = new Playlist(); // TODO not needed?
     final MediaManager mediaManager;
+    final Label welcomeLabel;
+
+    private final FilteredList<Song> flSong;
+
+    public ObjectProperty<Predicate<Song>> songFilterForPlaylist = new SimpleObjectProperty<>();
+
+    final StackPane customButtonPane = new StackPane();
 
     // https://stackoverflow.com/a/47560767/8980073
     public MainView(ScreenController sc, MediaManager mediaManager) {
@@ -62,16 +73,21 @@ public class MainView extends MenuBarView {
         setActiveMenuItem(mainViewButton);
         uniqueRefreshRunnable.run();
 
+        songFilterForPlaylist.bind(Bindings.createObjectBinding(() -> song -> true));
+        ObjectProperty<Predicate<Song>> userFilter = new SimpleObjectProperty<>();
+        userFilter.bind(Bindings.createObjectBinding(() -> song -> true));
+
         //Pass the data to a filtered list
-        final FilteredList<Song> flSong = new FilteredList<>(mediaManager.music, p -> true);
+        flSong = new FilteredList<>(mediaManager.music);
+        flSong.predicateProperty().bind(Bindings.createObjectBinding(
+                () -> songFilterForPlaylist.get().and(userFilter.get()),
+                songFilterForPlaylist, userFilter));
+
         final SimpleBooleanProperty showPlaylistAdd = new SimpleBooleanProperty();
 
-        final Label welcomeLabel = new Label("Willkommen in der Musikverwaltung");
+        welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.getStyleClass().add("header");
 
-        Button deleteButton = new Button("Löschen");
-        deleteButton.setMinWidth(Control.USE_PREF_SIZE);
-        deleteButton.setStyle("-fx-text-fill: #ef0505");
         Label actionLabel = new Label();
         actionLabel.setAlignment(Pos.CENTER);
         actionLabel.setMaxWidth(Double.MAX_VALUE);
@@ -83,11 +99,11 @@ public class MainView extends MenuBarView {
             }
         });
         HBox.setHgrow(actionLabel, Priority.ALWAYS);
-        Button saveButton = new Button("Speichern");
-        saveButton.setMinWidth(Control.USE_PREF_SIZE);
-        saveButton.setOnAction(e -> {
-            actionLabel.setText("Save button pressed");
-            table.refresh();
+        Button reloadButton = new Button("Neuladen");
+        reloadButton.setMinWidth(Control.USE_PREF_SIZE);
+        reloadButton.setOnAction(e -> {
+            actionLabel.setText("Reload");
+            uniqueRefreshRunnable.run();
         });
 
         Button selectAll = new Button("alle auswählen");
@@ -111,7 +127,7 @@ public class MainView extends MenuBarView {
             table.refresh(); // TODO not needed right? Doch für das update der checkboxen visuals
         });
 
-        HBox menu = new HBox(deleteButton, actionLabel, selectAll, saveButton);
+        HBox menu = new HBox(customButtonPane, actionLabel, selectAll, reloadButton);
         menu.setAlignment(Pos.CENTER);
         menu.setSpacing(5);
 
@@ -123,25 +139,9 @@ public class MainView extends MenuBarView {
 
         TextField textSearchField = new TextField();
         textSearchField.setPromptText("Search here!");
-        textSearchField.textProperty().addListener((obs, oldValue, newValue) -> {
-            switch (choiceBox.getValue()) {
-                //filter table by one key
-                case "Überall":
-                    flSong.setPredicate(p -> p.search_everywhere(newValue));
-                    break;
-                case "Titel":
-                    flSong.setPredicate(p -> p.getPrimaryKey().toLowerCase().contains(newValue.toLowerCase().trim()));
-                    break;
-                case "Interpret":
-                    flSong.setPredicate(p -> p.getArtist().toLowerCase().contains(newValue.toLowerCase().trim()));
-                    break;
-                case "Genre":
-                    flSong.setPredicate(p -> p.getGenre().toLowerCase().contains(newValue.toLowerCase().trim()));
-                    break;
-                default:
-                    throw new InputMismatchException("");
-            }
-        });
+        userFilter.bind(Bindings.createObjectBinding(
+                () -> s -> (generateUserFilter(choiceBox, s, textSearchField)).get(),
+                textSearchField.textProperty()));
 
         choiceBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             //reset table and text-field when new choice is selected
@@ -178,7 +178,7 @@ public class MainView extends MenuBarView {
             checkBox.setSelected(song.isSelected());
             checkBox.setOnAction(action -> {
                 song.setSelected(!song.isSelected());
-                showPlaylistAdd.set(!new FilteredList<>(flSong, Song::isSelected).isEmpty());
+                showPlaylistAdd.set(!getSelectedSongs().isEmpty());
             });
             return new SimpleObjectProperty<>(checkBox);
         });
@@ -256,7 +256,7 @@ public class MainView extends MenuBarView {
             if (view instanceof PlaylistView) {
                 Playlist returnPlaylist = new Playlist();
                 returnPlaylist.setName(playlistNameEntry.getText());
-                returnPlaylist.setAll(new FilteredList<>(flSong, Song::isSelected));
+                returnPlaylist.setAll(getSelectedSongs());
                 if (!returnPlaylist.isEmpty()) {
                     PlaylistView playlistView = (PlaylistView) view;
                     playlistView.addPlaylist(returnPlaylist);
@@ -290,6 +290,23 @@ public class MainView extends MenuBarView {
     public Node get() {
         Platform.runLater(refresh());
         return super.get();
+    }
+
+    private BooleanBinding generateUserFilter(ChoiceBox<String> choiceBox, Song song, TextField textField) {
+        String search = textField.getText().toLowerCase().trim();
+        return new When(choiceBox.valueProperty().isEqualTo("Überall"))
+                .then(song.searchEverywhere(search)).otherwise(
+                    new When(choiceBox.valueProperty().isEqualTo("Titel"))
+                .then(song.getPrimaryKey().toLowerCase().contains(search)).otherwise(
+                    new When(choiceBox.valueProperty().isEqualTo("Interpret"))
+                .then(song.getArtist().toLowerCase().contains(search)).otherwise(
+                    new When(choiceBox.valueProperty().isEqualTo("Genre"))
+                .then(song.getGenre().toLowerCase().contains(search)).otherwise(true)
+                )));
+    }
+
+    public FilteredList<Song> getSelectedSongs() {
+        return new FilteredList<>(flSong, Song::isSelected);
     }
 
     // https://stackoverflow.com/q/26906810/8980073

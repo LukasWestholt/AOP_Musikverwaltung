@@ -30,7 +30,7 @@ public class PlaylistView extends MenuBarView {
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
 
-        flSongs = new FilteredList<>(mediaManager.music, p -> true);
+        flSongs = new FilteredList<>(mediaManager.music);
 
         addActiveMenuButton(settingViewButton,
                 e -> screenController.activateWindow(SettingsView.class, false)
@@ -70,6 +70,7 @@ public class PlaylistView extends MenuBarView {
         renameBox.getChildren().addAll(nameField, resetRenameButton);
         CustomMenuItem renameMenu = new CustomMenuItem(renameBox);
         renameMenu.setHideOnClick(false);
+        final MenuItem openMenu = new MenuItem("Zeige");
         deleteMenu.setOnAction(action -> mediaLibrary.remove(contextPlaylist));
         selectMenu.setOnAction(action -> {
             final Path imageFile = CachedPathChooser.showOpenDialog(stage,
@@ -83,9 +84,20 @@ public class PlaylistView extends MenuBarView {
                 System.out.println("Problem on loading File");
             }
         });
-        final SeparatorMenuItem sep = new SeparatorMenuItem();
+        openMenu.setOnAction(action -> {
+            final GenericView view = screenController.activateWindow(PlaylistDetailView.class, false);
+            if (view instanceof PlaylistDetailView) {
+                PlaylistDetailView playlistDetailView = (PlaylistDetailView) view;
+                playlistDetailView.setPlaylist(contextPlaylist);
+            }
+        });
         final ContextMenu quickOptions = new ContextMenu();
-        quickOptions.getItems().addAll(deleteMenu, selectMenu, sep, renameMenu);
+        quickOptions.getItems().addAll(deleteMenu, selectMenu, renameMenu, openMenu);
+        int[] sepIdices = {2, 4};
+        for (int sepIndex : sepIdices) {
+            final SeparatorMenuItem sep = new SeparatorMenuItem();
+            quickOptions.getItems().add(sepIndex, sep);
+        }
         quickOptions.setOnAutoHide(event -> contextPlaylist.setName(nameField.getText()));
 
         mediaLibrary.addListener((ListChangeListener<? super Playlist>) change -> {

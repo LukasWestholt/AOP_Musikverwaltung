@@ -59,10 +59,9 @@ public class MediaManager {
             ObservableMap<String, Object> metadataForListener = media.getMetadata();
             metadataListener = metadata -> {
                 //System.out.println(currentSong.getMetadata());
-                FilteredList<Song> fl = music.filtered(p -> p.getPath() == mediaFile);
+                FilteredList<Song> fl = music.filtered(p -> Objects.equals(p.getPath(), mediaFile));
                 if (fl.size() != 1) {
-                    System.out.println("es gibt ein problem");
-                    return;
+                    throw new InternalError("There is a problem");
                 }
                 Song song = fl.get(0);
 

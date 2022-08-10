@@ -3,6 +3,8 @@ package musikverwaltung.views;
 import java.nio.file.Path;
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.FXCollections;
+import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -27,7 +29,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
     final Label labelSongName;
     Media currentSong;
     MediaPlayer player;
-    private Playlist playlist = new Playlist();
+    private FilteredList<Song> playableSongs = new FilteredList<>(FXCollections.observableArrayList());
     private final ChangeListener<Duration> playerSongLengthListener;
 
     public SongView(ScreenController sc) {
@@ -205,16 +207,17 @@ public class SongView extends MenuBarView implements StringListenerManager {
     }
 
     private void updateSong(boolean startPlaying) {
-        if (currentIndex + 1 > playlist.size()) {
+        if (currentIndex + 1 > playableSongs.size()) {
             currentIndex = 0;
         }
-        if (playlist.size() == 0) {
+        if (playableSongs.size() == 0) {
             return;
         }
         reset(true);
+        Song song = playableSongs.get(currentIndex);
 
-        Path path = playlist.get(currentIndex).getPath();
-        labelSongName.setText(playlist.get(currentIndex).getTitle());
+        Path path = song.getPath();
+        labelSongName.setText(song.getTitle());
         setDestroyListener(() -> SettingFile.saveLastSong(path));
         currentSong = new Media(Helper.p2uris(path));
         player = new MediaPlayer(currentSong);
@@ -229,7 +232,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
     }
 
     private void skipforwards() {
-        if (currentIndex < (playlist.size() - 1)) {
+        if (currentIndex < (playableSongs.size() - 1)) {
             currentIndex++;
         } else {
             currentIndex = 0;
@@ -240,8 +243,8 @@ public class SongView extends MenuBarView implements StringListenerManager {
     private void skipbackwards() {
         if (currentIndex > 0) {
             currentIndex--;
-        } else if (playlist.size() != 0) {
-            currentIndex = playlist.size() - 1;
+        } else if (playableSongs.size() != 0) {
+            currentIndex = playableSongs.size() - 1;
         }
         updateSong(true);
     }
@@ -260,7 +263,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
     }
 
     void setPlaylist(Playlist newPlaylist, boolean startPlaying) {
-        this.playlist = newPlaylist;
+        this.playableSongs = newPlaylist.getAllPlayable();
         updateSong(startPlaying);
     }
 

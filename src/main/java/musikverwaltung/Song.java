@@ -7,6 +7,7 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -97,7 +98,11 @@ public class Song implements Externalizable {
         this.path = path;
     }
 
-    public boolean search_everywhere(String searchKey) {
+    public boolean isPlayable() {
+        return Files.exists(path);
+    }
+
+    public boolean searchEverywhere(String searchKey) {
         return getPrimaryKey().toLowerCase().contains(searchKey.toLowerCase().trim())
                 || getArtist().toLowerCase().contains(searchKey.toLowerCase().trim())
                 || getGenre().toLowerCase().contains(searchKey.toLowerCase().trim());
