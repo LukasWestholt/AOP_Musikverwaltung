@@ -28,6 +28,9 @@ public class PlaylistView extends MenuBarView {
 
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
+        Runnable saveTask = new SettingsSaveTask(playlists);
+        Thread saveTaskThread = new Thread(saveTask);
+        saveTaskThread.start();
 
         flSongs = new FilteredList<>(mediaManager.music);
 
@@ -190,6 +193,7 @@ public class PlaylistView extends MenuBarView {
         System.out.println("added a new playlist " + createdPlaylist.getName());
         final Playlist copyPlaylist = new Playlist(createdPlaylist);
         playlists.add(copyPlaylist);
+
         // TODO Asynchron speichern der aktuellen Playlisten
         return true;
     }
