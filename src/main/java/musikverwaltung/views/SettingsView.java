@@ -31,7 +31,7 @@ public class SettingsView extends GenericView implements ActionListenerManager {
             }
         });
         ListView<String> listDirectory = new ListView<>(directories);
-        listDirectory.setCellFactory(param -> new XCell(getWidthProperty()));
+        listDirectory.setCellFactory(param -> new DirectoryCell(getWidthProperty()));
         listDirectory.setFocusTraversable(false);
         VBox.setVgrow(listDirectory, Priority.ALWAYS);
 
@@ -59,12 +59,12 @@ public class SettingsView extends GenericView implements ActionListenerManager {
         return super.get();
     }
 
-    static class XCell extends ListCell<String> {
+    static class DirectoryCell extends ListCell<String> {
         final HBox hbox = new HBox();
         final Label label = new Label("");
         final Button button = new Button("(Del)");
 
-        public XCell(DoubleBinding widthProperty) {
+        public DirectoryCell(DoubleBinding widthProperty) {
             super();
             button.setMinWidth(Control.USE_PREF_SIZE);
             button.setOnAction(event -> getListView().getItems().remove(getItem()));

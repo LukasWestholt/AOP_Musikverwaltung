@@ -5,11 +5,19 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * Helper class with static methods.
  */
 public class Helper {
+
+
+    public static List<String> imageExtensions = List.of(
+            "*.png", "*.jpg", "*.jpeg", "*.tif", "*.tiff", "*.gif", "*.bmp"
+    );
+    public static String audioExtensions = "*.{wav,mp3,m4a,aif,aiff}";
+
     /**
      * get a resource path by a path string.
      * https://stackoverflow.com/a/19459180/8980073

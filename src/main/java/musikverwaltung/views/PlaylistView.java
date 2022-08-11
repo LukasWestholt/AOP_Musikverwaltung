@@ -3,6 +3,8 @@ package musikverwaltung.views;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import javafx.beans.binding.When;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -30,7 +32,7 @@ public class PlaylistView extends MenuBarView {
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
 
-        flSongs = new FilteredList<>(mediaManager.music);
+        flSongs = mediaManager.getPlayableMusic();
 
         addActiveMenuButton(settingViewButton,
                 e -> screenController.activateWindow(SettingsView.class, false)
@@ -73,8 +75,11 @@ public class PlaylistView extends MenuBarView {
         final MenuItem openMenu = new MenuItem("Zeige");
         deleteMenu.setOnAction(action -> mediaLibrary.remove(contextPlaylist));
         selectMenu.setOnAction(action -> {
+            LinkedHashMap<String, List<String>> extensions = new LinkedHashMap<>();
+            extensions.put("Alle Bilddateien", Helper.imageExtensions);
+            extensions.put("Alle Dateien", List.of("*.*"));
             final Path imageFile = CachedPathChooser.showOpenDialog(stage,
-                    "Suche dir ein Vorschaubild für die Playlist aus");
+                    "Suche dir ein Vorschaubild für die Playlist aus", extensions);
             if (imageFile == null) {
                 return;
             }
@@ -88,7 +93,7 @@ public class PlaylistView extends MenuBarView {
             final GenericView view = screenController.activateWindow(PlaylistDetailView.class, false);
             if (view instanceof PlaylistDetailView) {
                 PlaylistDetailView playlistDetailView = (PlaylistDetailView) view;
-                playlistDetailView.setPlaylist(contextPlaylist);
+                playlistDetailView.showPlaylist(contextPlaylist);
             }
         });
         final ContextMenu quickOptions = new ContextMenu();
@@ -161,13 +166,10 @@ public class PlaylistView extends MenuBarView {
         musicPlayerButton.setOnAction(e -> {
             final GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView) {
-                final Song lastSong = mediaManager.getLastSong();
+                final Song lastSong = mediaManager.getPlayableLastSong();
                 if (lastSong != null) {
-                    Playlist singleSongPlaylist = new Playlist();
-                    singleSongPlaylist.add(lastSong);
-                    singleSongPlaylist.setName(lastSong.getTitle());
                     SongView songView = (SongView) view;
-                    songView.setPlaylist(singleSongPlaylist, false);
+                    songView.setPlaylist(lastSong, false);
                 }
             }
         });
@@ -192,6 +194,7 @@ public class PlaylistView extends MenuBarView {
             return false;
         }
         //for cloning playlist in mainView can change without interacting with the saved playlists in the media library
+        // TODO because of this every song in a playlist gets duplicated --> memory?
         System.out.println("added a new playlist " + createdPlaylist.getName());
         final Playlist copyPlaylist = new Playlist(createdPlaylist);
         mediaLibrary.add(copyPlaylist);

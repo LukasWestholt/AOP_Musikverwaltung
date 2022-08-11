@@ -37,19 +37,18 @@ public class MainView extends MenuBarView {
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
-    final TableView<Song> table = new TableView<>();
+    private final TableView<Song> table = new TableView<>();
     private final Playlist playList = new Playlist(); // TODO not needed?
+    private final FilteredList<Song> flSong;
     final MediaManager mediaManager;
     final Label welcomeLabel;
-
-    private final FilteredList<Song> flSong;
-
+    final StackPane customButtonPane = new StackPane();
     public ObjectProperty<Predicate<Song>> songFilterForPlaylist = new SimpleObjectProperty<>();
 
-    final StackPane customButtonPane = new StackPane();
+    private final SimpleBooleanProperty showPlaylistAdd = new SimpleBooleanProperty();
 
     // https://stackoverflow.com/a/47560767/8980073
-    public MainView(ScreenController sc, MediaManager mediaManager) {
+    public MainView(ScreenController sc, MediaManager mediaManager, boolean includeUnplayableSongs) {
         super(sc);
 
         this.mediaManager = mediaManager;
@@ -78,12 +77,10 @@ public class MainView extends MenuBarView {
         userFilter.bind(Bindings.createObjectBinding(() -> song -> true));
 
         //Pass the data to a filtered list
-        flSong = new FilteredList<>(mediaManager.music);
+        flSong = mediaManager.music.filtered(s -> includeUnplayableSongs || s.isPlayable());
         flSong.predicateProperty().bind(Bindings.createObjectBinding(
                 () -> songFilterForPlaylist.get().and(userFilter.get()),
                 songFilterForPlaylist, userFilter));
-
-        final SimpleBooleanProperty showPlaylistAdd = new SimpleBooleanProperty();
 
         welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.getStyleClass().add("header");
@@ -112,13 +109,13 @@ public class MainView extends MenuBarView {
             boolean allUnselect = true;
             for (Song song : flSong) {
                 if (!song.isSelected()) {
-                    song.setSelected(true);
+                    song.setIsSelected(true);
                     allUnselect = false;
                 }
             }
             if (allUnselect) {
                 for (Song song : flSong) {
-                    song.setSelected(false);
+                    song.setIsSelected(false);
                 }
                 showPlaylistAdd.set(false);
             } else {
@@ -158,30 +155,20 @@ public class MainView extends MenuBarView {
             if (view instanceof SongView) {
                 SongView songView = (SongView) view;
                 songView.addStringListenerIfNotContains(setActionText);
-                Song lastSong = mediaManager.getLastSong();
-                if (lastSong != null) {
-                    Playlist singleSongPlaylist = new Playlist();
-                    singleSongPlaylist.add(lastSong);
-                    singleSongPlaylist.setName(lastSong.getTitle());
-                    songView.setPlaylist(singleSongPlaylist, false);
-                }
+                Song lastSong = mediaManager.getPlayableLastSong();
+                songView.setPlaylist(lastSong, false);
 
             }
         });
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton); //Add choiceBox and textField to hBox
         searchHBox.setAlignment(Pos.CENTER); //Center HBox
 
-        TableColumn<Song, CheckBox> checkCol = new TableColumn<>();
-        checkCol.setCellValueFactory(cellData -> {
-            CheckBox checkBox = new CheckBox();
-            Song song = cellData.getValue();
-            checkBox.setSelected(song.isSelected());
-            checkBox.setOnAction(action -> {
-                song.setSelected(!song.isSelected());
-                showPlaylistAdd.set(!getSelectedSongs().isEmpty());
-            });
-            return new SimpleObjectProperty<>(checkBox);
-        });
+        TableColumn<Song, Boolean> checkCol = new TableColumn<>();
+        checkCol.setCellValueFactory(cellData -> new SimpleBooleanProperty(
+                cellData.getValue().isSelected()
+        ));
+        //checkCol.setCellFactory(checkboxTableCell());
+        checkCol.setCellFactory(param -> new CheckboxCell());
 
         TableColumn<Song, String> titleCol = new TableColumn<>("Titel");
         titleCol.setCellValueFactory(cellData -> new SimpleStringProperty(
@@ -217,14 +204,11 @@ public class MainView extends MenuBarView {
             TableRow<Song> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                    Playlist singleSongPlaylist = new Playlist();
-                    singleSongPlaylist.add(row.getItem());
-                    singleSongPlaylist.setName(row.getItem().getTitle());
                     final GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView) {
                         SongView songView = (SongView) view;
                         songView.addStringListenerIfNotContains(setActionText);
-                        songView.setPlaylist(singleSongPlaylist, true);
+                        songView.setPlaylist(row.getItem(), true);
                     }
                 }
             });
@@ -306,7 +290,7 @@ public class MainView extends MenuBarView {
     }
 
     public FilteredList<Song> getSelectedSongs() {
-        return new FilteredList<>(flSong, Song::isSelected);
+        return flSong.filtered(Song::isSelected);
     }
 
     // https://stackoverflow.com/q/26906810/8980073
@@ -348,4 +332,63 @@ public class MainView extends MenuBarView {
             }
         };
     }
+
+    class CheckboxCell extends TableCell<Song, Boolean> {
+        private final CheckBox checkBox = new CheckBox();
+
+        public CheckboxCell() {
+            super();
+            checkBox.setOnAction(action -> {
+                final TableRow<Song> row = this.getTableRow();
+                final Song song = row.getItem();
+                song.setIsSelected(!song.isSelected());
+                song.setRowIndex(row.getIndex());
+                showPlaylistAdd.set(!getSelectedSongs().isEmpty());
+            });
+        }
+
+        @Override
+        protected void updateItem(Boolean isSelected, boolean empty) {
+            super.updateItem(isSelected, empty);
+            if (!empty && isSelected != null) {
+                checkBox.setSelected(isSelected);
+                setGraphic(checkBox);
+            } else {
+                setGraphic(null);
+            }
+        }
+    }
+
+    /*private Callback<TableColumn<Song, Boolean>, TableCell<Song, Boolean>> checkboxTableCell() {
+        return new Callback<>() {
+            @Override
+            public TableCell<Song, Boolean> call(TableColumn param) {
+                return new TableCell<>() {
+                    private final CheckBox checkBox = createCheckbox(this);
+                    @Override
+                    protected void updateItem(Boolean isSelected, boolean empty) {
+                        super.updateItem(isSelected, empty);
+                        if (!empty && isSelected != null) {
+                            checkBox.setSelected(isSelected);
+                            setGraphic(checkBox);
+                        } else {
+                            setGraphic(null);
+                        }
+                    }
+                };
+            }
+
+            private CheckBox createCheckbox(final TableCell<Song, Boolean> cell) {
+                CheckBox result = new CheckBox();
+                result.setOnAction(action -> {
+                    final TableRow<Song> row = cell.getTableRow();
+                    final Song song = row.getItem();
+                    song.setSelected(!song.isSelected());
+                    song.setRowIndex(row.getIndex());
+                    showPlaylistAdd.set(!getSelectedSongs().isEmpty());
+                });
+                return result;
+            }
+        };
+    }*/
 }

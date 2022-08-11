@@ -7,7 +7,6 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -23,6 +22,8 @@ public class Song implements Externalizable {
     private final SimpleStringProperty genre = new SimpleStringProperty();
     private final SimpleBooleanProperty isSelected = new SimpleBooleanProperty();
     private Path path;
+    private boolean isPlayable = true;
+    private int rowIndex = -1;
 
     @SuppressWarnings("unused")
     public Song(String titel, String artist, String genre, Path path) {
@@ -35,8 +36,6 @@ public class Song implements Externalizable {
     public Song(Path path) {
         this.path = path;
     }
-
-    public Song() {}
 
     public String getPrimaryKey() {
         return title.get() != null ? title.get() : path.getFileName().toString();
@@ -86,7 +85,7 @@ public class Song implements Externalizable {
         return isSelected;
     }
 
-    public void setSelected(boolean value) {
+    public void setIsSelected(boolean value) {
         isSelected.set(value);
     }
 
@@ -99,7 +98,19 @@ public class Song implements Externalizable {
     }
 
     public boolean isPlayable() {
-        return Files.exists(path);
+        return isPlayable;
+    }
+
+    public void setPlayable(boolean isPlayable) {
+        this.isPlayable = isPlayable;
+    }
+
+    public int getRowIndex() {
+        return rowIndex;
+    }
+
+    public void setRowIndex(int rowIndex) {
+        this.rowIndex = rowIndex;
     }
 
     public boolean searchEverywhere(String searchKey) {
@@ -175,7 +186,8 @@ public class Song implements Externalizable {
 
     @Override
     public String toString() {
-        return "<" + this.getClass().getSimpleName() + "> "
+        // TODO this toString to every important custom class
+        return "<" + this.getClass().getSimpleName() + "@" + Integer.toHexString(System.identityHashCode(this)) + "> "
                 + "title: " + getTitle() + ", "
                 + "artist: " + getArtist() + ", "
                 + "genre: " + getGenre() + ", "

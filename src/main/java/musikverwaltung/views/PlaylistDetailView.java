@@ -10,21 +10,32 @@ import musikverwaltung.ScreenController;
 public class PlaylistDetailView extends MainView {
 
     Playlist playlist;
+
     public PlaylistDetailView(ScreenController sc, MediaManager mediaManager) {
-        super(sc, mediaManager);
+        super(sc, mediaManager, true);
         ignoreMenuItems(mainViewButton, settingViewButton, playlistViewButton, creditsViewButton);
 
         Button deleteButton = new Button("Löschen");
         deleteButton.setMinWidth(Control.USE_PREF_SIZE);
         deleteButton.setStyle("-fx-text-fill: #ef0505");
         deleteButton.setOnAction(e -> {
-            getSelectedSongs().forEach(song -> playlist.remove(song));
+            getSelectedSongs().forEach(song -> {
+                int i = song.getRowIndex();
+                // TODO theoretisch könnte man hier auch playlist.get(i) == song machen, wenn der song überall
+                //  nur refrenziert wird
+                if (i != -1 && playlist.get(i).equals(song)) {
+                    playlist.remove(i);
+                } else {
+                    System.out.println("Use fallback removeFirstOccurrence");
+                    playlist.removeFirstOccurrence(song);
+                }
+            });
             refresh().run();
         });
         customButtonPane.getChildren().add(deleteButton);
     }
 
-    public void setPlaylist(Playlist playlist) {
+    public void showPlaylist(Playlist playlist) {
         this.playlist = playlist;
         songFilterForPlaylist.bind(Bindings.createObjectBinding(() -> playlist::contains));
         welcomeLabel.textProperty().bind(playlist.getNameProperty());

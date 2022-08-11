@@ -3,8 +3,6 @@ package musikverwaltung.views;
 import java.nio.file.Path;
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
-import javafx.collections.FXCollections;
-import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -18,7 +16,6 @@ import musikverwaltung.*;
 import musikverwaltung.handler.StringListenerManager;
 
 public class SongView extends MenuBarView implements StringListenerManager {
-    int currentIndex = 0;
     double songLength;
     double volume = 0.5;
     final Image defaultImage;
@@ -29,8 +26,11 @@ public class SongView extends MenuBarView implements StringListenerManager {
     final Label labelSongName;
     Media currentSong;
     MediaPlayer player;
-    private FilteredList<Song> playableSongs = new FilteredList<>(FXCollections.observableArrayList());
+    Playlist playlist;
+    private final SongHistoryList songHistoryStack = new SongHistoryList(10);
     private final ChangeListener<Duration> playerSongLengthListener;
+
+    private static final boolean onRepeat = true;
 
     public SongView(ScreenController sc) {
         /*
@@ -206,18 +206,14 @@ public class SongView extends MenuBarView implements StringListenerManager {
         startStop.switchImage(playImage);
     }
 
-    private void updateSong(boolean startPlaying) {
-        if (currentIndex + 1 > playableSongs.size()) {
-            currentIndex = 0;
-        }
-        if (playableSongs.size() == 0) {
+    private void updateSong(Song nextSong, boolean startPlaying) {
+        if (nextSong == null) {
             return;
         }
+        songHistoryStack.add(nextSong);
         reset(true);
-        Song song = playableSongs.get(currentIndex);
-
-        Path path = song.getPath();
-        labelSongName.setText(song.getTitle());
+        Path path = nextSong.getPath();
+        labelSongName.setText(nextSong.getTitle());
         setDestroyListener(() -> SettingFile.saveLastSong(path));
         currentSong = new Media(Helper.p2uris(path));
         player = new MediaPlayer(currentSong);
@@ -232,21 +228,11 @@ public class SongView extends MenuBarView implements StringListenerManager {
     }
 
     private void skipforwards() {
-        if (currentIndex < (playableSongs.size() - 1)) {
-            currentIndex++;
-        } else {
-            currentIndex = 0;
-        }
-        updateSong(true);
+        updateSong(playlist.nextSong(onRepeat), true);
     }
 
     private void skipbackwards() {
-        if (currentIndex > 0) {
-            currentIndex--;
-        } else if (playableSongs.size() != 0) {
-            currentIndex = playableSongs.size() - 1;
-        }
-        updateSong(true);
+        updateSong(playlist.beforeSong(onRepeat), true);
     }
 
     private void skipTime(int timeInSeconds) {
@@ -262,9 +248,18 @@ public class SongView extends MenuBarView implements StringListenerManager {
         return player != null && player.getStatus() == MediaPlayer.Status.PLAYING;
     }
 
-    void setPlaylist(Playlist newPlaylist, boolean startPlaying) {
-        this.playableSongs = newPlaylist.getAllPlayable();
-        updateSong(startPlaying);
+    void setPlaylist(Playlist playlist, boolean startPlaying) {
+        this.playlist = playlist;
+        updateSong(playlist.nextSong(onRepeat), startPlaying);
+    }
+
+    void setPlaylist(Song song, boolean startPlaying) {
+        if (song == null || !song.isPlayable()) {
+            return;
+        }
+        Playlist singleSongPlaylist = new Playlist();
+        singleSongPlaylist.add(song);
+        setPlaylist(singleSongPlaylist, startPlaying);
     }
 
     void setDynamicSize(Region region) {

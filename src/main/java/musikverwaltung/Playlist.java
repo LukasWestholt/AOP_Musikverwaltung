@@ -6,11 +6,11 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.scene.image.Image;
 
 public class Playlist implements Externalizable {
@@ -19,8 +19,11 @@ public class Playlist implements Externalizable {
     private static final long SerialVersionUID = 20L;
 
     private final SimpleStringProperty name = new SimpleStringProperty();
-    private final ObservableList<Song> songs = FXCollections.observableArrayList();
+
+    private final ObservableSongQueue songs = new ObservableSongQueue();
     private final SimpleObjectProperty<Image> previewImage = new SimpleObjectProperty<>();
+
+    private Song lastPlayedSong;
 
     public Playlist() {
         this.name.setValue("Playlist 1");
@@ -33,6 +36,7 @@ public class Playlist implements Externalizable {
 
     public Playlist(Playlist baseOfCopy) {
         this.name.setValue(baseOfCopy.getName());
+        this.lastPlayedSong = baseOfCopy.getLastPlayedSong();
         for (Song song : baseOfCopy.getAll()) {
             this.add(song);
         }
@@ -85,20 +89,7 @@ public class Playlist implements Externalizable {
         return songs;
     }
 
-    public FilteredList<Song> getAllPlayable() {
-        if (SettingFile.load().getShowUnplayableSongs()) {
-            return songs.filtered(null);
-        } else {
-            return songs.filtered(Song::isPlayable);
-        }
-        // TODO mybe with MediaManager
-    }
-
-    public void set(int index, Song newSong) {
-        songs.set(index, newSong);
-    }
-
-    public void setAll(ObservableList<Song> playlist) {
+    public void setAll(List<Song> playlist) {
         songs.setAll(playlist);
     }
 
@@ -106,8 +97,12 @@ public class Playlist implements Externalizable {
         songs.add(song);
     }
 
-    public void remove(Song song) {
-        songs.remove(song);
+    public void remove(int index) {
+        songs.remove(index);
+    }
+
+    public boolean removeFirstOccurrence(Song song) {
+        return songs.removeFirstOccurrence(song);
     }
 
     public boolean contains(Song song) {
@@ -159,10 +154,39 @@ public class Playlist implements Externalizable {
     @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         setName(in.readUTF());
-        ArrayList<Song> temp = (ArrayList<Song>) in.readObject();
-        ObservableList<Song> songs = FXCollections.observableArrayList();
-        songs.addAll(temp);
-        setAll(songs);
+        setAll((ArrayList<Song>) in.readObject());
         setPreviewImage(in.readUTF());
+    }
+
+    public Song nextSong(boolean onRepeat) {
+        System.out.println("Queue: " + songs.stream().map(Song::getPrimaryKey).collect(Collectors.toList()));
+        Song nextSong = songs.removeFirst();
+        songs.addLast(nextSong);
+        if (!nextSong.isPlayable()) {
+            return null;
+        }
+        if (nextSong == lastPlayedSong) {
+            return nextSong(onRepeat);
+        }
+        lastPlayedSong = nextSong;
+        return nextSong;
+    }
+
+    public Song beforeSong(boolean onRepeat) {
+        System.out.println("Queue: " + songs.stream().map(Song::getPrimaryKey).collect(Collectors.toList()));
+        Song nextSong = songs.removeLast();
+        songs.addFirst(nextSong);
+        if (!nextSong.isPlayable()) {
+            return null;
+        }
+        if (nextSong == lastPlayedSong) {
+            return beforeSong(onRepeat);
+        }
+        lastPlayedSong = nextSong;
+        return nextSong;
+    }
+
+    public Song getLastPlayedSong() {
+        return lastPlayedSong;
     }
 }

@@ -18,7 +18,6 @@
 and save it in settings file or in metadata.
 - Delete media files with copyright problems and download some new without
 - add everywhere javadoc messages (like checkstyle suggests)
-- setting checkbox show unplayable songs
 
 ## How to use in IDE
 

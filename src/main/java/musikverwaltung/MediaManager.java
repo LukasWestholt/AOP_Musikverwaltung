@@ -19,7 +19,6 @@ import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.media.Media;
 
@@ -43,7 +42,8 @@ public class MediaManager {
         music.clear();
         mediaFiles.clear();
 
-        ArrayList<String> paths = SettingFile.load().getPaths();
+        SettingFile settingFile = SettingFile.load();
+        ArrayList<String> paths = settingFile.getPaths();
         for (final String folder : paths) {
             try (Stream<Path> pathsStream = Files.walk(Helper.s2p(folder))) {
                 pathsStream.filter(Files::isRegularFile).forEach(this::checkMediaExtension);
@@ -56,10 +56,10 @@ public class MediaManager {
         for (final Path mediaFile : mediaFiles) {
             music.add(new Song(mediaFile));
             Media media = new Media(Helper.p2uris(mediaFile));
-            ObservableMap<String, Object> metadataForListener = media.getMetadata();
             metadataListener = metadata -> {
                 //System.out.println(currentSong.getMetadata());
-                FilteredList<Song> fl = music.filtered(p -> Objects.equals(p.getPath(), mediaFile));
+                FilteredList<Song> fl = music.filtered(
+                        p -> p.isPlayable() && Objects.equals(p.getPath(), mediaFile));
                 if (fl.size() != 1) {
                     throw new InternalError("There is a problem");
                 }
@@ -90,12 +90,27 @@ public class MediaManager {
                 }
                 refreshCallback.run();
             };
-            metadataForListener.addListener(metadataListener);
+            media.getMetadata().addListener(metadataListener);
+        }
+        // TODO save mediaLibriary earlier
+        if (settingFile.getShowUnplayableSongs()) {
+            for (Playlist playlist : settingFile.getMediaLibrary()) {
+                for (Song song : playlist.getAll()) {
+                    FilteredList<Song> fl = music.filtered(p -> Objects.equals(p.getPath(), song.getPath()));
+                    if (fl.size() > 1) {
+                        throw new InternalError("There is a problem");
+                    } else if (fl.isEmpty()) {
+                        System.out.println("add unplayable: " + song);
+                        song.setPlayable(false);
+                        music.add(song);
+                    }
+                }
+            }
         }
     }
 
     public void checkMediaExtension(Path path) {
-        String pattern = "glob:*.{wav,mp3,m4a,aif,aiff}";
+        String pattern = "glob:" + Helper.audioExtensions;
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher(pattern);
         if (matcher.matches(path.getFileName())) {
             mediaFiles.add(path);
@@ -130,9 +145,9 @@ public class MediaManager {
         return genresMap;
     }
 
-    public Song getLastSong() {
+    public Song getPlayableLastSong() {
         if (lastSong != null) {
-            for (final Song song : music) {
+            for (final Song song : getPlayableMusic()) {
                 try {
                     if (Files.isSameFile(song.getPath(), lastSong)) {
                         return song;
@@ -143,5 +158,9 @@ public class MediaManager {
             }
         }
         return null;
+    }
+
+    public FilteredList<Song> getPlayableMusic() {
+        return music.filtered(Song::isPlayable);
     }
 }
