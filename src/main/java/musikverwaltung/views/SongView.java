@@ -5,6 +5,7 @@ import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -23,6 +24,7 @@ import musikverwaltung.handler.StringListenerManager;
 public class SongView extends MenuBarView implements StringListenerManager {
     double songLength;
     double volume = 0.5;
+    boolean chartIsVisible;
     final Image defaultImage;
     final ImageView img;
     final ImageButton startStop;
@@ -80,7 +82,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         img.fitHeightProperty().bind(getHeightProperty().divide(2));
         img.setOnMouseClicked(event -> {
             //TODO set correct position
-            switchCenterObject.show(img, event.getSceneX(), event.getSceneY());
+            switchCenterObject.show(img, Side.RIGHT, 0, 0);
             //switchCenterObject.setX(event.getSceneX());
             //switchCenterObject.setY(event.getSceneY());
         });
@@ -196,7 +198,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
 
         audioSpectrumListener = (timestamp, duration, magnitudes, phases) -> {
             for (int i = 0; i < magnitudes.length; i++) {
-                //System.out.println(i + ": " + (magnitudes[i] + dBthreshold));
+                System.out.println(i + ": " + (magnitudes[i] + dBThreshold));
                 audioData.getData().add(new XYChart.Data<>(Integer.toString(i), magnitudes[i] + dBThreshold));
             }
         };
@@ -225,19 +227,23 @@ public class SongView extends MenuBarView implements StringListenerManager {
         audioBarChart.getData().add(audioData);
         //TODO set correct position siehe oben
         audioBarChart.setOnMouseClicked(event ->
-                switchCenterObject.show(audioBarChart, event.getSceneX(), event.getSceneY())
+                switchCenterObject.show(audioBarChart, Side.RIGHT, 0,0 )
         );
-        //TODO listener nur wenn graph gezeigt wird
+
         toggleGroup.selectedToggleProperty().addListener((observableValue, oldVal, newVal) -> {
             RadioMenuItem selectedMenu = (RadioMenuItem) toggleGroup.getSelectedToggle();
             switch (selectedMenu.getText()) {
                 case "Bild":
                     centerContainer.getChildren().clear();
                     centerContainer.getChildren().add(img);
+                    chartIsVisible = false;
+                    player.setAudioSpectrumListener(null);
                     break;
                 case "Graph":
                     centerContainer.getChildren().clear();
                     centerContainer.getChildren().add(audioBarChart);
+                    chartIsVisible = true;
+                    player.setAudioSpectrumListener(audioSpectrumListener);
                     break;
                 default:
                     centerContainer.getChildren().clear();
@@ -297,8 +303,6 @@ public class SongView extends MenuBarView implements StringListenerManager {
         player = new MediaPlayer(currentSong);
         player.setOnEndOfMedia(this::skipforwards);
         player.setVolume(volume);
-        //player.setAudioSpectrumNumBands(10);
-        player.setAudioSpectrumThreshold(-dBThreshold);
 
         //next song starts immediately or stops before
         if (startPlaying) {
@@ -338,7 +342,10 @@ public class SongView extends MenuBarView implements StringListenerManager {
     private void activateListeners() {
         currentSong.durationProperty().addListener((arg0, arg1, duration) -> songLength = duration.toSeconds());
         player.currentTimeProperty().addListener(playerSongLengthListener);
-        player.setAudioSpectrumListener(audioSpectrumListener);
+        if (chartIsVisible) {
+            player.setAudioSpectrumListener(audioSpectrumListener);
+            player.setAudioSpectrumThreshold(-dBThreshold);
+        }
     }
 
     private boolean isPlaying() {

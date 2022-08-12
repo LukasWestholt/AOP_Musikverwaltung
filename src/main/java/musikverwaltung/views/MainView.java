@@ -98,7 +98,7 @@ public class MainView extends MenuBarView {
         reloadButton.setOnAction(e -> {
             actionLabel.setText("Reload");
             uniqueRefreshRunnable.run();
-            // TODO bug: "Playlist erstellen" button geht nicht weg
+            // TODO bug: "Playlist erstellen" button geht nicht weg -> AR: Lösung alle Songs auf unselected machen?
         });
 
         Button selectAll = new Button("alle auswählen");
