@@ -83,6 +83,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         img.setOnMouseClicked(event -> {
             //TODO set correct position
             switchCenterObject.show(img, Side.RIGHT, 0, 0);
+            //switchCenterObject.show(img, event.getX(), event.getY());
             //switchCenterObject.setX(event.getSceneX());
             //switchCenterObject.setY(event.getSceneY());
         });
