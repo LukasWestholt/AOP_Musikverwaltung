@@ -31,9 +31,9 @@ public class SongView extends MenuBarView implements StringListenerManager {
     final Label labelSongName;
     Media currentSong;
     MediaPlayer player;
-    final int dBthreshold = 60;
-    XYChart.Series<String, Number>  audioData;
-    AudioSpectrumListener audioSpectrumListener;
+    final int dBThreshold = 60;
+    XYChart.Series<String, Number> audioData;
+    final AudioSpectrumListener audioSpectrumListener;
     Playlist playlist;
     private final SongHistoryList songHistoryStack = new SongHistoryList(10);
     private final ChangeListener<Duration> playerSongLengthListener;
@@ -61,11 +61,11 @@ public class SongView extends MenuBarView implements StringListenerManager {
         labelSongName.getStyleClass().add("header");
 
         StackPane centerContainer = new StackPane();
-        centerContainer .setAlignment(Pos.CENTER);
-        VBox.setVgrow( centerContainer , Priority.ALWAYS);
+        centerContainer.setAlignment(Pos.CENTER);
+        VBox.setVgrow(centerContainer, Priority.ALWAYS);
 
-        ContextMenu switchCenterObject = new ContextMenu();
-        MenuItem headerMenu = new MenuItem("Ansicht wechseln:");
+        final ContextMenu switchCenterObject = new ContextMenu();
+        final MenuItem headerMenu = new MenuItem("Ansicht wechseln:");
         ToggleGroup toggleGroup = new ToggleGroup();
         RadioMenuItem radioImageMenu = new RadioMenuItem("Bild");
         radioImageMenu.setSelected(true);
@@ -197,13 +197,13 @@ public class SongView extends MenuBarView implements StringListenerManager {
         audioSpectrumListener = (timestamp, duration, magnitudes, phases) -> {
             for (int i = 0; i < magnitudes.length; i++) {
                 //System.out.println(i + ": " + (magnitudes[i] + dBthreshold));
-                audioData.getData().add(new XYChart.Data<>(Integer.toString(i), magnitudes[i] + dBthreshold));
+                audioData.getData().add(new XYChart.Data<>(Integer.toString(i), magnitudes[i] + dBThreshold));
             }
         };
         //TODO listener soll aufhören wenn player fenster nicht mehr zusehen ist
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
-        final BarChart<String,Number> audioBarChart = new BarChart<>(xAxis,yAxis);
+        final BarChart<String, Number> audioBarChart = new BarChart<>(xAxis, yAxis);
         audioBarChart.setBarGap(0);
         audioBarChart.setCategoryGap(0);
         audioBarChart.setLegendVisible(false);
@@ -220,11 +220,13 @@ public class SongView extends MenuBarView implements StringListenerManager {
         audioBarChart.prefHeightProperty().bind(getHeightProperty().divide(2));
         //audioBarChart.setMaxSize(900, 400);
         //audioBarChart.setMinSize(900, 400);
-        audioData =new XYChart.Series<> ();
+        audioData = new XYChart.Series<>();
         audioData.setName("audioData");
         audioBarChart.getData().add(audioData);
         //TODO set correct position siehe oben
-        audioBarChart.setOnMouseClicked(event -> switchCenterObject.show(audioBarChart, event.getSceneX(), event.getSceneY()));
+        audioBarChart.setOnMouseClicked(event ->
+                switchCenterObject.show(audioBarChart, event.getSceneX(), event.getSceneY())
+        );
         //TODO listener nur wenn graph gezeigt wird
         toggleGroup.selectedToggleProperty().addListener((observableValue, oldVal, newVal) -> {
             RadioMenuItem selectedMenu = (RadioMenuItem) toggleGroup.getSelectedToggle();
@@ -237,10 +239,12 @@ public class SongView extends MenuBarView implements StringListenerManager {
                     centerContainer.getChildren().clear();
                     centerContainer.getChildren().add(audioBarChart);
                     break;
+                default:
+                    centerContainer.getChildren().clear();
             }
         });
 
-        VBox playerVBox = new VBox(labelSongName,  centerContainer , mediaControlVBox);
+        VBox playerVBox = new VBox(labelSongName, centerContainer, mediaControlVBox);
         playerVBox.setAlignment(Pos.CENTER);
         playerVBox.setSpacing(10);
         showNodes(playerVBox);
@@ -293,7 +297,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         player.setOnEndOfMedia(this::skipforwards);
         player.setVolume(volume);
         //player.setAudioSpectrumNumBands(10);
-        player.setAudioSpectrumThreshold(-dBthreshold);
+        player.setAudioSpectrumThreshold(-dBThreshold);
 
         //next song starts immediately or stops before
         if (startPlaying) {

@@ -122,9 +122,11 @@ public class Playlist implements Externalizable {
     public String toString() {
         return "PlayList{" + "name=" + getName() + ", songs=" + songs + ", previewImage: " + getPreviewImage() + '}';
     }
+
     public boolean isAlmostEqual(Playlist otherPlaylist) {
         return this.getAll().equals(otherPlaylist.getAll()) && this.getName().equals(otherPlaylist.getName());
     }
+
     @Override
     public boolean equals(Object other) {
         if (this == other) {

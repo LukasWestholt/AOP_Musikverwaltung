@@ -120,7 +120,7 @@ public class MainView extends MenuBarView {
             } else {
                 showPlaylistAdd.set(true);
             }
-           table.refresh(); // TODO ist das für weirden übergang verantwortlich?
+            table.refresh(); // TODO ist das für weirden übergang verantwortlich?
         });
 
         HBox menu = new HBox(customButtonPane, actionLabel, selectAll, reloadButton);

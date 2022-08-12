@@ -226,9 +226,10 @@ public class PlaylistView extends MenuBarView {
                     automaticPlaylist.add(song);
                 }
                 isCreatedAlready = false;
-                for (Playlist playlist:playlists) {
-                    if (playlist.isAlmostEqual(automaticPlaylist))
+                for (Playlist playlist : playlists) {
+                    if (playlist.isAlmostEqual(automaticPlaylist)) {
                         isCreatedAlready = true;
+                    }
                 }
                 if (!isCreatedAlready) {
                     addPlaylist(automaticPlaylist);
@@ -245,9 +246,10 @@ public class PlaylistView extends MenuBarView {
                     automaticPlaylist.add(song);
                 }
                 isCreatedAlready = false;
-                for (Playlist playlist:playlists) {
-                    if (playlist.isAlmostEqual(automaticPlaylist))
+                for (Playlist playlist : playlists) {
+                    if (playlist.isAlmostEqual(automaticPlaylist)) {
                         isCreatedAlready = true;
+                    }
                 }
                 if (!isCreatedAlready) {
                     addPlaylist(automaticPlaylist);
