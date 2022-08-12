@@ -84,9 +84,9 @@ public class ScreenController {
         return activate(getMain(), view, id.getName());
     }
 
-    public void activate(Class<? extends GenericView> id, Boolean animated, Integer seconds) {
+    public void activate(Class<? extends GenericView> id, Boolean animated, Integer millis) {
         Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(seconds),
+                new KeyFrame(Duration.millis(millis),
                         event -> activate(id, animated)
                 )
         );

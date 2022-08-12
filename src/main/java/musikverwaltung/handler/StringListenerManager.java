@@ -11,7 +11,7 @@ public interface StringListenerManager {
         if (toAdd != null && !listeners.contains(toAdd)) {
             listeners.add(toAdd);
         }
-        assert listeners.size() <= 1; // TODO
+        assert listeners.size() <= 1; // TODO failed once
     }
 
     default void triggerStringListener(String e) {
