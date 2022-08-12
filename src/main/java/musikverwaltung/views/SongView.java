@@ -293,6 +293,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         labelSongName.setText(nextSong.getTitle());
         setDestroyListener(() -> SettingFile.saveLastSong(path));
         currentSong = new Media(Helper.p2uris(path));
+        // TODO memory leak on Media/MediaPlayer ? i cant delete music files after they got played
         player = new MediaPlayer(currentSong);
         player.setOnEndOfMedia(this::skipforwards);
         player.setVolume(volume);
@@ -318,7 +319,13 @@ public class SongView extends MenuBarView implements StringListenerManager {
         if (playlist == null) {
             return;
         }
-        updateSong(playlist.beforeSong(onRepeat), true);
+        if (player != null && player.getCurrentTime().toSeconds() < 2 && songLength > 10) {
+            // skip backwards to the song before
+            updateSong(playlist.beforeSong(onRepeat), true);
+        } else {
+            // skip backwards to the beginning of the song
+            updateSong(playlist.getLastPlayedSong(), true);
+        }
     }
 
     private void skipTime(int timeInSeconds) {
