@@ -228,14 +228,23 @@ public class SongView extends MenuBarView implements StringListenerManager {
     }
 
     private void skipforwards() {
+        if (playlist == null) {
+            return;
+        }
         updateSong(playlist.nextSong(onRepeat), true);
     }
 
     private void skipbackwards() {
+        if (playlist == null) {
+            return;
+        }
         updateSong(playlist.beforeSong(onRepeat), true);
     }
 
     private void skipTime(int timeInSeconds) {
+        if (player == null) {
+            return;
+        }
         player.seek(new Duration(player.getCurrentTime().toMillis() + (timeInSeconds * 1000)));
     }
 

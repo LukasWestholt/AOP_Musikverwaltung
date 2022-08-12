@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 public class SettingFile implements Externalizable {
 
     // explicitly
+    @SuppressWarnings("unused")
     private static final long SerialVersionUID = 10L;
 
     private static final String filename = "settings.ser";

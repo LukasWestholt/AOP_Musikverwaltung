@@ -7,10 +7,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.When;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.collections.transformation.FilteredList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -43,7 +40,7 @@ public class MainView extends MenuBarView {
     final MediaManager mediaManager;
     final Label welcomeLabel;
     final StackPane customButtonPane = new StackPane();
-    public ObjectProperty<Predicate<Song>> songFilterForPlaylist = new SimpleObjectProperty<>();
+    public final ObjectProperty<Predicate<Song>> songFilterForPlaylist = new SimpleObjectProperty<>();
 
     private final SimpleBooleanProperty showPlaylistAdd = new SimpleBooleanProperty();
 
@@ -77,7 +74,8 @@ public class MainView extends MenuBarView {
         userFilter.bind(Bindings.createObjectBinding(() -> song -> true));
 
         //Pass the data to a filtered list
-        flSong = mediaManager.music.filtered(s -> includeUnplayableSongs || s.isPlayable());
+        // TODO is the new FilteredList here necessary?
+        flSong = new FilteredList<>(mediaManager.music.filtered(s -> includeUnplayableSongs || s.isPlayable()));
         flSong.predicateProperty().bind(Bindings.createObjectBinding(
                 () -> songFilterForPlaylist.get().and(userFilter.get()),
                 songFilterForPlaylist, userFilter));
@@ -101,27 +99,29 @@ public class MainView extends MenuBarView {
         reloadButton.setOnAction(e -> {
             actionLabel.setText("Reload");
             uniqueRefreshRunnable.run();
+            // TODO bug: "Playlist erstellen" button geht nicht weg
         });
 
         Button selectAll = new Button("alle auswählen");
         selectAll.setMinWidth(Control.USE_PREF_SIZE);
         selectAll.setOnAction(e -> {
-            boolean allUnselect = true;
-            for (Song song : flSong) {
+            boolean wasAllSelect = true;
+            for (int i = 0; i < flSong.size(); i++) {
+                Song song = flSong.get(i);
                 if (!song.isSelected()) {
-                    song.setIsSelected(true);
-                    allUnselect = false;
+                    wasAllSelect = false;
+                    song.select(new SimpleIntegerProperty(i));
                 }
             }
-            if (allUnselect) {
+            if (wasAllSelect) {
                 for (Song song : flSong) {
-                    song.setIsSelected(false);
+                    song.deselect();
                 }
                 showPlaylistAdd.set(false);
             } else {
                 showPlaylistAdd.set(true);
             }
-            table.refresh(); // TODO not needed right? Doch für das update der checkboxen visuals
+            table.refresh();
         });
 
         HBox menu = new HBox(customButtonPane, actionLabel, selectAll, reloadButton);
@@ -167,7 +167,6 @@ public class MainView extends MenuBarView {
         checkCol.setCellValueFactory(cellData -> new SimpleBooleanProperty(
                 cellData.getValue().isSelected()
         ));
-        //checkCol.setCellFactory(checkboxTableCell());
         checkCol.setCellFactory(param -> new CheckboxCell());
 
         TableColumn<Song, String> titleCol = new TableColumn<>("Titel");
@@ -341,8 +340,11 @@ public class MainView extends MenuBarView {
             checkBox.setOnAction(action -> {
                 final TableRow<Song> row = this.getTableRow();
                 final Song song = row.getItem();
-                song.setIsSelected(!song.isSelected());
-                song.setRowIndex(row.getIndex());
+                if (song.isSelected()) {
+                    song.deselect();
+                } else {
+                    song.select(row.indexProperty());
+                }
                 showPlaylistAdd.set(!getSelectedSongs().isEmpty());
             });
         }
@@ -358,37 +360,4 @@ public class MainView extends MenuBarView {
             }
         }
     }
-
-    /*private Callback<TableColumn<Song, Boolean>, TableCell<Song, Boolean>> checkboxTableCell() {
-        return new Callback<>() {
-            @Override
-            public TableCell<Song, Boolean> call(TableColumn param) {
-                return new TableCell<>() {
-                    private final CheckBox checkBox = createCheckbox(this);
-                    @Override
-                    protected void updateItem(Boolean isSelected, boolean empty) {
-                        super.updateItem(isSelected, empty);
-                        if (!empty && isSelected != null) {
-                            checkBox.setSelected(isSelected);
-                            setGraphic(checkBox);
-                        } else {
-                            setGraphic(null);
-                        }
-                    }
-                };
-            }
-
-            private CheckBox createCheckbox(final TableCell<Song, Boolean> cell) {
-                CheckBox result = new CheckBox();
-                result.setOnAction(action -> {
-                    final TableRow<Song> row = cell.getTableRow();
-                    final Song song = row.getItem();
-                    song.setSelected(!song.isSelected());
-                    song.setRowIndex(row.getIndex());
-                    showPlaylistAdd.set(!getSelectedSongs().isEmpty());
-                });
-                return result;
-            }
-        };
-    }*/
 }

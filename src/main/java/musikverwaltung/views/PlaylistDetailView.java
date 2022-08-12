@@ -23,10 +23,10 @@ public class PlaylistDetailView extends MainView {
                 int i = song.getRowIndex();
                 // TODO theoretisch könnte man hier auch playlist.get(i) == song machen, wenn der song überall
                 //  nur refrenziert wird
-                if (i != -1 && playlist.get(i).equals(song)) {
+                if (i != -1 && i < playlist.size() && playlist.get(i).equals(song)) {
                     playlist.remove(i);
                 } else {
-                    System.out.println("Use fallback removeFirstOccurrence");
+                    //System.out.println("Use fallback removeFirstOccurrence");
                     playlist.removeFirstOccurrence(song);
                 }
             });

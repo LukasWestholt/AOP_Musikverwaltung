@@ -29,8 +29,7 @@ public class MediaManager {
     public final ObservableList<Song> music = FXCollections.observableArrayList(o -> new Observable[]{
             o.getTitleProperty(),
             o.getArtistProperty(),
-            o.getGenreProperty(),
-            o.isSelectedProperty()
+            o.getGenreProperty()
             // TODO is needed?
     });
 

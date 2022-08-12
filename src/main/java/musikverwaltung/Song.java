@@ -9,21 +9,21 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.nio.file.Path;
 import java.util.Objects;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class Song implements Externalizable {
 
     // explicitly
+    @SuppressWarnings("unused")
     private static final long SerialVersionUID = 30L;
 
     private final SimpleStringProperty title = new SimpleStringProperty();
     private final SimpleStringProperty artist = new SimpleStringProperty();
     private final SimpleStringProperty genre = new SimpleStringProperty();
-    private final SimpleBooleanProperty isSelected = new SimpleBooleanProperty();
+    private ReadOnlyIntegerProperty rowIndex;
     private Path path;
     private boolean isPlayable = true;
-    private int rowIndex = -1;
 
     @SuppressWarnings("unused")
     public Song(String titel, String artist, String genre, Path path) {
@@ -35,6 +35,10 @@ public class Song implements Externalizable {
 
     public Song(Path path) {
         this.path = path;
+    }
+
+    // Externalizable needs a public no-args constructor
+    public Song() {
     }
 
     public String getPrimaryKey() {
@@ -78,15 +82,22 @@ public class Song implements Externalizable {
     }
 
     public boolean isSelected() {
-        return isSelected.get();
+        return this.rowIndex != null;
     }
 
-    public SimpleBooleanProperty isSelectedProperty() {
-        return isSelected;
+    public void deselect() {
+        this.rowIndex = null;
     }
 
-    public void setIsSelected(boolean value) {
-        isSelected.set(value);
+    public void select(ReadOnlyIntegerProperty rowIndex) {
+        this.rowIndex = rowIndex;
+    }
+
+    public int getRowIndex() {
+        if (rowIndex == null) {
+            return -1;
+        }
+        return rowIndex.get();
     }
 
     public Path getPath() {
@@ -103,14 +114,6 @@ public class Song implements Externalizable {
 
     public void setPlayable(boolean isPlayable) {
         this.isPlayable = isPlayable;
-    }
-
-    public int getRowIndex() {
-        return rowIndex;
-    }
-
-    public void setRowIndex(int rowIndex) {
-        this.rowIndex = rowIndex;
     }
 
     public boolean searchEverywhere(String searchKey) {
@@ -192,7 +195,7 @@ public class Song implements Externalizable {
                 + "artist: " + getArtist() + ", "
                 + "genre: " + getGenre() + ", "
                 + "path: " + getPath() + ", "
-                + "isSelected: " + isSelected;
+                + "rowIndex: " + getRowIndex();
     }
 
     @Override
@@ -230,6 +233,5 @@ public class Song implements Externalizable {
         setGenre(in.readUTF());
         setArtist(in.readUTF());
         setPath(Helper.s2p(in.readUTF()));
-        isSelected.set(false);
     }
 }

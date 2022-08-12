@@ -2,6 +2,7 @@ package musikverwaltung;
 
 import java.util.LinkedList;
 
+// https://stackoverflow.com/a/14322473/8980073
 public class SongHistoryList extends LinkedList<Song> {
 
     private final int limit;

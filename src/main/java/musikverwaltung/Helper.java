@@ -13,10 +13,10 @@ import java.util.List;
 public class Helper {
 
 
-    public static List<String> imageExtensions = List.of(
+    public static final List<String> imageExtensions = List.of(
             "*.png", "*.jpg", "*.jpeg", "*.tif", "*.tiff", "*.gif", "*.bmp"
     );
-    public static String audioExtensions = "*.{wav,mp3,m4a,aif,aiff}";
+    public static final String audioExtensions = "*.{wav,mp3,m4a,aif,aiff}";
 
     /**
      * get a resource path by a path string.

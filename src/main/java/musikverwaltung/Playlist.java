@@ -16,6 +16,7 @@ import javafx.scene.image.Image;
 public class Playlist implements Externalizable {
 
     // explicitly
+    @SuppressWarnings("unused")
     private static final long SerialVersionUID = 20L;
 
     private final SimpleStringProperty name = new SimpleStringProperty();
@@ -160,7 +161,11 @@ public class Playlist implements Externalizable {
 
     public Song nextSong(boolean onRepeat) {
         System.out.println("Queue: " + songs.stream().map(Song::getPrimaryKey).collect(Collectors.toList()));
-        Song nextSong = songs.removeFirst();
+        Song nextSong = songs.pollFirst();
+        if (nextSong == null) {
+            // this playlist is empty
+            return null;
+        }
         songs.addLast(nextSong);
         if (!nextSong.isPlayable()) {
             return null;
@@ -174,7 +179,11 @@ public class Playlist implements Externalizable {
 
     public Song beforeSong(boolean onRepeat) {
         System.out.println("Queue: " + songs.stream().map(Song::getPrimaryKey).collect(Collectors.toList()));
-        Song nextSong = songs.removeLast();
+        Song nextSong = songs.pollLast();
+        if (nextSong == null) {
+            // this playlist is empty
+            return null;
+        }
         songs.addFirst(nextSong);
         if (!nextSong.isPlayable()) {
             return null;
