@@ -35,7 +35,6 @@ public class MainView extends MenuBarView {
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
     private final TableView<Song> table = new TableView<>();
-    private final Playlist playList = new Playlist(); // TODO not needed?
     private final FilteredList<Song> flSong;
     final MediaManager mediaManager;
     final Label welcomeLabel;
@@ -121,7 +120,7 @@ public class MainView extends MenuBarView {
             } else {
                 showPlaylistAdd.set(true);
             }
-            table.refresh();
+           table.refresh(); // TODO ist das für weirden übergang verantwortlich?
         });
 
         HBox menu = new HBox(customButtonPane, actionLabel, selectAll, reloadButton);

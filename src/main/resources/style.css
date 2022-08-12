@@ -110,3 +110,8 @@
     -fx-background-position: center, center;
     -fx-background-repeat: no-repeat;
 }
+
+/*noinspection CssUnusedSymbol*/
+.chart-bar {
+    -fx-bar-fill: rgb(97, 195, 148);
+}
