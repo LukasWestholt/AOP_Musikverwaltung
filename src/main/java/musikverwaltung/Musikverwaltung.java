@@ -21,6 +21,7 @@ public class Musikverwaltung extends Application {
 
         Scene scene = new Scene(new Group(), GenericView.DEFAULT_WIDTH, GenericView.DEFAULT_HEIGHT);
         stage.setScene(scene);
+        stage.setTitle("Musikverwaltung");
         stage.show();
 
         screenController = new ScreenController(stage);

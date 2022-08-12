@@ -98,21 +98,24 @@ public class MainView extends MenuBarView {
         reloadButton.setOnAction(e -> {
             actionLabel.setText("Reload");
             uniqueRefreshRunnable.run();
-            // TODO bug: "Playlist erstellen" button geht nicht weg -> AR: Lösung alle Songs auf unselected machen?
+            /*TODO bug: "Playlist erstellen" button geht nicht weg -> AR: müsste gefixt sein
+            wenn man von playlistview wieder zur mainview wechselt wird uniquerefreshrunnable ausgeführt (müsste vielleicht gar nicht) da der selct status nicht gespeichert bleibt sind
+            alle songs wieder auf unselected (was gut ist), aber der boolwert weiß noch nicht bescheid -> diesen im runnable auf false gesetzt
+             */
         });
 
         Button selectAll = new Button("alle auswählen");
         selectAll.setMinWidth(Control.USE_PREF_SIZE);
         selectAll.setOnAction(e -> {
-            boolean wasAllSelect = true;
+            boolean wasAllSelected = true;
             for (int i = 0; i < flSong.size(); i++) {
                 Song song = flSong.get(i);
                 if (!song.isSelected()) {
-                    wasAllSelect = false;
+                    wasAllSelected = false;
                     song.select(new SimpleIntegerProperty(i));
                 }
             }
-            if (wasAllSelect) {
+            if (wasAllSelected) {
                 for (Song song : flSong) {
                     song.deselect();
                 }
@@ -233,12 +236,13 @@ public class MainView extends MenuBarView {
 
         Button makePlaylistButton = new Button("Playlist erstellen");
         makePlaylistButton.setOnAction(action -> {
-            // TODO save playlist to file and don't activate PlaylistView each
+            // TODO save playlist to file and don't activate PlaylistView each AR: willst du nicht das Fenster wechseln beim erstellen? ich finde das gut
             final GenericView view = screenController.activate(PlaylistView.class);
             if (view instanceof PlaylistView) {
                 Playlist returnPlaylist = new Playlist();
                 returnPlaylist.setName(playlistNameEntry.getText());
                 returnPlaylist.setAll(getSelectedSongs());
+                //TODO entfernen, weil Knopf nur da wenn getSelectedSongs != empty oder?
                 if (!returnPlaylist.isEmpty()) {
                     PlaylistView playlistView = (PlaylistView) view;
                     playlistView.addPlaylist(returnPlaylist);
@@ -265,6 +269,7 @@ public class MainView extends MenuBarView {
     }
 
     public Runnable refresh() {
+        showPlaylistAdd.set(false);
         return () -> mediaManager.clearAndLoadAll(table::refresh);
     }
 
@@ -286,6 +291,7 @@ public class MainView extends MenuBarView {
                 .then(song.getGenre().toLowerCase().contains(search)).otherwise(true)
                 )));
     }
+    //public void unselectAll;
 
     public FilteredList<Song> getSelectedSongs() {
         return flSong.filtered(Song::isSelected);
@@ -352,6 +358,7 @@ public class MainView extends MenuBarView {
         protected void updateItem(Boolean isSelected, boolean empty) {
             super.updateItem(isSelected, empty);
             if (!empty && isSelected != null) {
+                System.out.println("changed");
                 checkBox.setSelected(isSelected);
                 setGraphic(checkBox);
             } else {
