@@ -35,14 +35,6 @@ public class Playlist implements Externalizable {
         songs.setAll(playlist);
     }
 
-    public Playlist(Playlist baseOfCopy) {
-        this.name.setValue(baseOfCopy.getName());
-        this.lastPlayedSong = baseOfCopy.getLastPlayedSong();
-        for (Song song : baseOfCopy.getAll()) {
-            this.add(song);
-        }
-    }
-
     public String getName() {
         return name.get();
     }
@@ -174,7 +166,9 @@ public class Playlist implements Externalizable {
             return null;
         }
         if (nextSong == lastPlayedSong) {
-            return nextSong(onRepeat);
+            //geklärt! stackoverflowError weil es sich unendlich selber aufruft, schauen ob das optimaler fix so ist (onrepeat macht nichts? weg)
+            return lastPlayedSong;
+            //return nextSong(onRepeat);
         }
         lastPlayedSong = nextSong;
         return nextSong;
@@ -192,7 +186,8 @@ public class Playlist implements Externalizable {
             return null;
         }
         if (nextSong == lastPlayedSong) {
-            return beforeSong(onRepeat);
+            return lastPlayedSong;
+            //return beforeSong(onRepeat);
         }
         lastPlayedSong = nextSong;
         return nextSong;

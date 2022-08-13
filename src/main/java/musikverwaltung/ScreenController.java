@@ -51,7 +51,7 @@ public class ScreenController {
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
         getMainChildren().clear();
         getMainChildren().add(view.get());
-        return activate(getMain(), view, id.getSimpleName()); // TODO (LW) class.getName() or better: String in GenericView -> AR: Lösung mit SimpleName finde ich ausreichend
+        return activate(getMain(), view, id.getSimpleName());
     }
 
     // https://genuinecoder.com/javafx-scene-switch-change-animation/
@@ -130,6 +130,7 @@ public class ScreenController {
             return activate(stage, view, id.getSimpleName(), neighborToMain);
         }
         stage = new Stage();
+        view.setStage(stage);
         stageMap.put(id, stage);
         Scene scene = new Scene(new Group(), view.getPrefWidth(),
                 (neighborToMain ? getMainScene().getHeight() : view.getPrefHeight()));

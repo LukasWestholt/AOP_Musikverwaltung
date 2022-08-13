@@ -20,6 +20,8 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import musikverwaltung.*;
 
+import static java.lang.Thread.State.TERMINATED;
+
 public class PlaylistView extends MenuBarView {
 
     private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
@@ -28,11 +30,13 @@ public class PlaylistView extends MenuBarView {
 
     private Playlist contextPlaylist;
 
+    Thread saveTaskThread;
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
         Runnable saveTask = new SettingsSaveTask(playlists);
-        Thread saveTaskThread = new Thread(saveTask);
-        saveTaskThread.start();
+        saveTaskThread = new Thread(saveTask);
+
+        saveTaskThread.setName("savetaskthread");
 
         flSongs = mediaManager.getPlayableMusic();
 
@@ -94,8 +98,12 @@ public class PlaylistView extends MenuBarView {
             final GenericView view = screenController.activateWindow(PlaylistDetailView.class, false);
             if (view instanceof PlaylistDetailView) {
                 PlaylistDetailView playlistDetailView = (PlaylistDetailView) view;
-                playlistDetailView.showPlaylist(contextPlaylist);
+                playlistDetailView.showPlaylistInContext(contextPlaylist, playlists);
             }
+            /*if (view instanceof PlaylistDetailView2) {
+                PlaylistDetailView2 playlistDetailView2 = (PlaylistDetailView2) view;
+                playlistDetailView2.initializeWithPlaylist(contextPlaylist, playlists);
+            }*/
         });
         final ContextMenu quickOptions = new ContextMenu();
         quickOptions.getItems().addAll(deleteMenu, selectMenu, renameMenu, openMenu);
@@ -165,15 +173,14 @@ public class PlaylistView extends MenuBarView {
         musicPlayerButton.setOnAction(e -> {
             final GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView) {
-                final Song lastSong = mediaManager.getPlayableLastSong();
-                if (lastSong != null) {
-                    SongView songView = (SongView) view;
+                SongView songView = (SongView) view;
+                if (!songView.isPlaying() && mediaManager.getPlayableLastSong()!=null) {
+                    final Song lastSong = mediaManager.getPlayableLastSong();
                     songView.setPlaylist(lastSong, false);
                 }
             }
         });
 
-        //TODO verbuggt beim mehrmaligen aktivieren?
         final Button automaticPlaylistButton = new Button("Playlist Vorschläge");
         automaticPlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
         automaticPlaylistButton.setOnAction(e -> createAutomaticPlaylists());
@@ -184,7 +191,7 @@ public class PlaylistView extends MenuBarView {
         vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton, automaticPlaylistButton);
         showNodes(vbox);
 
-        setDestroyListener(() -> SettingFile.saveMediaLibrary(playlists));
+        //setDestroyListener(() -> SettingFile.saveMediaLibrary(playlists));
     }
 
     public boolean addPlaylist(Playlist createdPlaylist) {
@@ -192,11 +199,10 @@ public class PlaylistView extends MenuBarView {
         if (playlists.contains(createdPlaylist)) {
             return false;
         }
-        // TODO because of this every song in a playlist gets duplicated --> memory?
         System.out.println("added a new playlist " + createdPlaylist.getName());
-        final Playlist copyPlaylist = new Playlist(createdPlaylist);
-        playlists.add(copyPlaylist);
-
+        playlists.add(createdPlaylist);
+        if (saveTaskThread.getState() == TERMINATED)
+           saveTaskThread.start();
         // TODO Asynchron speichern der aktuellen Playlisten
         return true;
     }

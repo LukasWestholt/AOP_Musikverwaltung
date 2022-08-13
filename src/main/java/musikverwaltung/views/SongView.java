@@ -1,11 +1,13 @@
 package musikverwaltung.views;
 
 import java.nio.file.Path;
+
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -81,7 +83,6 @@ public class SongView extends MenuBarView implements StringListenerManager {
         img.fitWidthProperty().bind(getWidthProperty().subtract(30));
         img.fitHeightProperty().bind(getHeightProperty().divide(2));
         img.setOnMouseClicked(event -> {
-            //TODO set correct position
             switchCenterObject.show(img, Side.RIGHT, 0, 0);
             //switchCenterObject.show(img, event.getX(), event.getY());
             //switchCenterObject.setX(event.getSceneX());
@@ -111,7 +112,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
                 }
             }
         });
-        //TODO image ist nicht mittig
+        //TODO image ist nicht mittig!!!!!!
         playImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/icons/play.png", false));
         pauseImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/icons/pause.png", false));
         startStop = new ImageButton(playImage, true, true);
@@ -120,11 +121,6 @@ public class SongView extends MenuBarView implements StringListenerManager {
         startStop.setPrefSize(30, 30);
         startStop.setMaxWidth(Double.MAX_VALUE);
         startStop.maxHeightProperty().bind(startStop.widthProperty());
-        /* TODO wofür ist das?
-        region.setMinWidth(Control.USE_PREF_SIZE);
-        region.setMinHeight(Control.USE_PREF_SIZE);
-        region.setMaxHeight(Double.MAX_VALUE);
-        */
 
         HBox.setHgrow(startStop, Priority.SOMETIMES);
 
@@ -169,12 +165,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
 
         Slider slider = new Slider(0, 1, 0);
         slider.setValue(volume);
-        /*mir gefällt es besser ohne
-        slider.setMinorTickCount(10);
-        slider.setMajorTickUnit(10.0);
-        slider.setShowTickMarks(true);
-        slider.setShowTickLabels(true);
-        */
+
         slider.getStyleClass().add("volume");
         slider.valueProperty().addListener((useless1, useless2, sliderValue) -> {
             volume = sliderValue.doubleValue();
@@ -203,7 +194,6 @@ public class SongView extends MenuBarView implements StringListenerManager {
                 audioData.getData().add(new XYChart.Data<>(Integer.toString(i), magnitudes[i] + dBThreshold));
             }
         };
-        //TODO listener soll aufhören wenn player fenster nicht mehr zusehen ist
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis();
         final BarChart<String, Number> audioBarChart = new BarChart<>(xAxis, yAxis);
@@ -221,12 +211,9 @@ public class SongView extends MenuBarView implements StringListenerManager {
         yAxis.setTickLabelsVisible(false);
         audioBarChart.prefWidthProperty().bind(getWidthProperty().subtract(30));
         audioBarChart.prefHeightProperty().bind(getHeightProperty().divide(2));
-        //audioBarChart.setMaxSize(900, 400);
-        //audioBarChart.setMinSize(900, 400);
         audioData = new XYChart.Series<>();
         audioData.setName("audioData");
         audioBarChart.getData().add(audioData);
-        //TODO set correct position siehe oben
         audioBarChart.setOnMouseClicked(event ->
                 switchCenterObject.show(audioBarChart, Side.RIGHT, 0,0 )
         );
@@ -255,8 +242,17 @@ public class SongView extends MenuBarView implements StringListenerManager {
         playerVBox.setAlignment(Pos.CENTER);
         playerVBox.setSpacing(10);
         showNodes(playerVBox);
+
     }
 
+    @Override
+    public Node get() {
+        stage.setOnCloseRequest(windowEvent -> {
+            chartIsVisible = false;
+            player.setAudioSpectrumListener(null);
+        });
+        return super.get();
+    }
     private void displayImage() {
         img.setImage(defaultImage);
     }
@@ -268,8 +264,6 @@ public class SongView extends MenuBarView implements StringListenerManager {
         if (isPlaying()) {
             player.pause();
             startStop.switchImage(playImage);
-            //TODO soll bei stop einfach graph freezen?
-            //audioData.getData().clear();
             triggerStringListener("Stoppe Musik");
         } else {
             player.play();
@@ -349,7 +343,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         }
     }
 
-    private boolean isPlaying() {
+    public boolean isPlaying() {
         return player != null && player.getStatus() == MediaPlayer.Status.PLAYING;
     }
 

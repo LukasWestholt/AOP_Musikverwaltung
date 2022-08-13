@@ -98,7 +98,7 @@ public class MainView extends MenuBarView {
         reloadButton.setOnAction(e -> {
             actionLabel.setText("Reload");
             uniqueRefreshRunnable.run();
-            /*TODO bug: "Playlist erstellen" button geht nicht weg -> AR: müsste gefixt sein
+            /*geklärt "Playlist erstellen" button geht nicht weg -> AR: müsste gefixt sein
             wenn man von playlistview wieder zur mainview wechselt wird uniquerefreshrunnable ausgeführt (müsste vielleicht gar nicht) da der selct status nicht gespeichert bleibt sind
             alle songs wieder auf unselected (was gut ist), aber der boolwert weiß noch nicht bescheid -> diesen im runnable auf false gesetzt
              */
@@ -123,7 +123,7 @@ public class MainView extends MenuBarView {
             } else {
                 showPlaylistAdd.set(true);
             }
-            table.refresh(); // TODO ist das für weirden übergang verantwortlich?
+            table.refresh(); //
         });
 
         HBox menu = new HBox(customButtonPane, actionLabel, selectAll, reloadButton);
@@ -157,9 +157,10 @@ public class MainView extends MenuBarView {
             if (view instanceof SongView) {
                 SongView songView = (SongView) view;
                 songView.addStringListenerIfNotContains(setActionText);
-                Song lastSong = mediaManager.getPlayableLastSong();
-                songView.setPlaylist(lastSong, false);
-
+                if (!songView.isPlaying()) {
+                    Song lastSong = mediaManager.getPlayableLastSong();
+                    songView.setPlaylist(lastSong, false);
+                }
             }
         });
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton); //Add choiceBox and textField to hBox
@@ -236,19 +237,16 @@ public class MainView extends MenuBarView {
 
         Button makePlaylistButton = new Button("Playlist erstellen");
         makePlaylistButton.setOnAction(action -> {
-            // TODO save playlist to file and don't activate PlaylistView each AR: willst du nicht das Fenster wechseln beim erstellen? ich finde das gut
+            // fast geklärt save playlist to file and don't activate PlaylistView each AR: willst du nicht das Fenster wechseln beim erstellen? ich finde das gut
             final GenericView view = screenController.activate(PlaylistView.class);
             if (view instanceof PlaylistView) {
                 Playlist returnPlaylist = new Playlist();
                 returnPlaylist.setName(playlistNameEntry.getText());
                 returnPlaylist.setAll(getSelectedSongs());
-                //TODO entfernen, weil Knopf nur da wenn getSelectedSongs != empty oder?
-                if (!returnPlaylist.isEmpty()) {
-                    PlaylistView playlistView = (PlaylistView) view;
-                    playlistView.addPlaylist(returnPlaylist);
-                    System.out.println("playlist added: " + returnPlaylist.getAll());
-                    actionLabel.setText("Playlist with " + returnPlaylist.size() + " items added");
-                }
+                PlaylistView playlistView = (PlaylistView) view;
+                playlistView.addPlaylist(returnPlaylist);
+                System.out.println("playlist added: " + returnPlaylist.getAll());
+                actionLabel.setText("Playlist with " + returnPlaylist.size() + " items added");
             }
         });
 
@@ -291,7 +289,6 @@ public class MainView extends MenuBarView {
                 .then(song.getGenre().toLowerCase().contains(search)).otherwise(true)
                 )));
     }
-    //public void unselectAll;
 
     public FilteredList<Song> getSelectedSongs() {
         return flSong.filtered(Song::isSelected);
@@ -358,7 +355,6 @@ public class MainView extends MenuBarView {
         protected void updateItem(Boolean isSelected, boolean empty) {
             super.updateItem(isSelected, empty);
             if (!empty && isSelected != null) {
-                System.out.println("changed");
                 checkBox.setSelected(isSelected);
                 setGraphic(checkBox);
             } else {
