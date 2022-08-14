@@ -28,7 +28,7 @@ public class ScreenController {
 
     public final ListenerInitiator<DestroyListener> listenerInitiator = new ListenerInitiator<>();
 
-    public Stage getMain() {
+    private Stage getMain() {
         Stage stage = stageMap.get(GenericView.class);
         if (stage == null) {
             throw new InternalError("Stage not exists");
@@ -36,15 +36,15 @@ public class ScreenController {
         return stage;
     }
 
-    public Scene getMainScene() {
+    private Scene getMainScene() {
         return getMain().getScene();
     }
 
-    public javafx.collections.ObservableList<javafx.scene.Node> getMainChildren() {
+    private javafx.collections.ObservableList<javafx.scene.Node> getMainChildren() {
         return ((Group) getMainScene().getRoot()).getChildren();
     }
 
-    protected void addScreen(GenericView view) {
+    void addScreen(GenericView view) {
         screenMap.put(view.getClass(), view);
     }
 

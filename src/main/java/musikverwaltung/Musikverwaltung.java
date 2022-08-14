@@ -7,8 +7,8 @@ import javafx.stage.Stage;
 import musikverwaltung.views.*;
 
 public class Musikverwaltung extends Application {
-    ScreenController screenController;
-    final MediaManager mediaManager = new MediaManager();
+    private ScreenController screenController;
+    private final MediaManager mediaManager = new MediaManager();
 
     public static void main(String[] args) {
         System.out.println("Programm Startpunkt");

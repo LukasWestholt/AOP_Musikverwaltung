@@ -109,7 +109,7 @@ public class MediaManager {
         }
     }
 
-    public void checkMediaExtension(Path path) {
+    private void checkMediaExtension(Path path) {
         String pattern = "glob:" + Helper.audioExtensions;
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher(pattern);
         if (matcher.matches(path.getFileName())) {
@@ -122,7 +122,7 @@ public class MediaManager {
      * <a href="https://en.wikipedia.org/wiki/List_of_ID3v1_Genres">Genre ids</a>.
      *
      */
-    public HashMap<Integer, String> loadGenres() {
+    private HashMap<Integer, String> loadGenres() {
         HashMap<Integer, String> genresMap = new HashMap<>();
 
         try (

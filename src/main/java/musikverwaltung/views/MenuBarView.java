@@ -13,7 +13,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import musikverwaltung.ScreenController;
 
-public class MenuBarView extends GenericView {
+public abstract class MenuBarView extends GenericView {
     //doch benutzen!
     private final ToolBar menuToolBar = new ToolBar();
     private final VBox wrapperVBox = new VBox();
@@ -23,7 +23,7 @@ public class MenuBarView extends GenericView {
     final Button settingViewButton = new Button("Einstellungen");
     final Button creditsViewButton = new Button("Credits");
 
-    public MenuBarView(ScreenController sc, double prefWidth, double prefHeight) {
+    MenuBarView(ScreenController sc, double prefWidth, double prefHeight) {
         super(sc, prefWidth, prefHeight);
         addMenuItems(true, mainViewButton, playlistViewButton, settingViewButton, creditsViewButton);
         wrapperVBox.getChildren().addAll(menuToolBar, stackPane);
@@ -36,11 +36,11 @@ public class MenuBarView extends GenericView {
         });
     }
 
-    public MenuBarView(ScreenController sc) {
+    MenuBarView(ScreenController sc) {
         this(sc, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
-    public void addActiveMenuButton(Button button, EventHandler<ActionEvent> eventHandler) {
+    void addActiveMenuButton(Button button, EventHandler<ActionEvent> eventHandler) {
         button.setDisable(false);
         button.setOnAction(eventHandler);
         if (!menuToolBar.getItems().contains(button)) {
@@ -48,7 +48,7 @@ public class MenuBarView extends GenericView {
         }
     }
 
-    public static void setActiveMenuItem(Region region) {
+    static void setActiveMenuItem(Region region) {
         region.setId("active");
     }
 
@@ -61,7 +61,7 @@ public class MenuBarView extends GenericView {
         }
     }
 
-    public void ignoreMenuItems(Region... regions) {
+    void ignoreMenuItems(Region... regions) {
         menuToolBar.getItems().removeAll(regions);
     }
 

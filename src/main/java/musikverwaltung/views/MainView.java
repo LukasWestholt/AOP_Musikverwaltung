@@ -37,13 +37,13 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
 
     private final TableView<Song> table = new TableView<>();
     private final FilteredList<Song> flSong;
-    final MediaManager mediaManager;
+    private final MediaManager mediaManager;
     final Label welcomeLabel;
-    final Label actionLabel;
+    private final Label actionLabel;
     final StackPane customButtonPane = new StackPane();
-    public final ObjectProperty<Predicate<Song>> songFilterForPlaylist = new SimpleObjectProperty<>();
+    final ObjectProperty<Predicate<Song>> songFilterForPlaylist = new SimpleObjectProperty<>();
 
-    protected final SimpleBooleanProperty showPlaylistAdd = new SimpleBooleanProperty();
+    final SimpleBooleanProperty showPlaylistAdd = new SimpleBooleanProperty();
 
     // https://stackoverflow.com/a/47560767/8980073
     public MainView(ScreenController sc, MediaManager mediaManager, boolean includeUnplayableSongs) {
@@ -100,9 +100,11 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
             actionLabel.setText("Reload");
             refresh().run();
             /*geklärt "Playlist erstellen" button geht nicht weg -> AR: müsste gefixt sein
-            wenn man von playlistview wieder zur mainview wechselt wird uniquerefreshrunnable ausgeführt (müsste vielleicht gar nicht) da der selct status nicht gespeichert bleibt sind
-            alle songs wieder auf unselected (was gut ist), aber der boolwert weiß noch nicht bescheid -> diesen im runnable auf false gesetzt
-             */
+            wenn man von playlistview wieder zur mainview wechselt wird uniquerefreshrunnable ausgeführt
+            (müsste vielleicht gar nicht) da der selct status nicht gespeichert bleibt sind
+            alle songs wieder auf unselected (was gut ist), aber der boolwert weiß noch nicht bescheid
+            -> diesen im runnable auf false gesetzt
+            */
         });
 
         Button selectAll = new Button("alle auswählen");
@@ -158,8 +160,8 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
             if (view instanceof SongView) {
                 SongView songView = (SongView) view;
                 songView.listenerInitiator.addListenerIfNotContains(this);
-                if (!songView.isPlaying()) {
-                    songView.setPlaylistLastSong(false);
+                if (!songView.isPlayerPlaying()) {
+                    songView.setPlaylistLastSong();
                 } // TODO Review by LW
             }
         });
@@ -237,7 +239,8 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
 
         Button makePlaylistButton = new Button("Playlist erstellen");
         makePlaylistButton.setOnAction(action -> {
-            // fast geklärt save playlist to file and don't activate PlaylistView each AR: willst du nicht das Fenster wechseln beim erstellen? ich finde das gut
+            // fast geklärt save playlist to file and don't activate PlaylistView each AR: willst du nicht das Fenster
+            // wechseln beim erstellen? ich finde das gut
             GenericView view = screenController.activate(PlaylistView.class);
             if (view instanceof PlaylistView) {
                 Playlist returnPlaylist = new Playlist();
@@ -292,7 +295,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
                 )));
     }
 
-    public FilteredList<Song> getSelectedSongs() {
+    FilteredList<Song> getSelectedSongs() {
         return flSong.filtered(Song::isSelected);
     }
 

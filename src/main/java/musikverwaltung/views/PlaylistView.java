@@ -1,5 +1,7 @@
 package musikverwaltung.views;
 
+import static java.lang.Thread.State.TERMINATED;
+
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -26,17 +28,16 @@ import musikverwaltung.data.SettingFile;
 import musikverwaltung.data.Song;
 import musikverwaltung.handler.DestroyListener;
 
-import static java.lang.Thread.State.TERMINATED;
-
 public class PlaylistView extends MenuBarView implements DestroyListener {
 
     private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
 
-    final FilteredList<Song> flSongs;
+    private final FilteredList<Song> flSongs;
 
     private Playlist contextPlaylist;
 
-    Thread saveTaskThread;
+    private final Thread saveTaskThread;
+
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
         Runnable saveTask = new SettingsSaveTask(playlists);
@@ -207,8 +208,8 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
             if (view instanceof SongView) {
                 SongView songView = (SongView) view;
                 // TODO Review by LW
-                if (!songView.isPlaying()) {
-                    songView.setPlaylistLastSong(false);
+                if (!songView.isPlayerPlaying()) {
+                    songView.setPlaylistLastSong();
                 }
             }
         });

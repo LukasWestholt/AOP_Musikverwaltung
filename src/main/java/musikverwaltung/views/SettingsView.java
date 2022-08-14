@@ -18,8 +18,8 @@ import musikverwaltung.handler.ListenerInitiator;
 import musikverwaltung.handler.RefreshListener;
 
 public class SettingsView extends GenericView {
-    final ObservableList<String> directories = FXCollections.observableArrayList();
-    final CheckBox checkBox;
+    private final ObservableList<String> directories = FXCollections.observableArrayList();
+    private final CheckBox checkBox;
 
     public final ListenerInitiator<RefreshListener> listenerInitiator = new ListenerInitiator<>();
 

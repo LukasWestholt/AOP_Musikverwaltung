@@ -1,4 +1,4 @@
-package musikverwaltung.views;
+package musikverwaltung;
 
 import javafx.collections.ObservableList;
 import musikverwaltung.data.Playlist;
@@ -6,9 +6,9 @@ import musikverwaltung.data.SettingFile;
 
 public class SettingsSaveTask implements Runnable {
 
-    final ObservableList<Playlist> playlists;
+    private final ObservableList<Playlist> playlists;
 
-    SettingsSaveTask(ObservableList<Playlist> playlists) {
+    public SettingsSaveTask(ObservableList<Playlist> playlists) {
         System.out.println("thread initialized");
         this.playlists = playlists;
     }

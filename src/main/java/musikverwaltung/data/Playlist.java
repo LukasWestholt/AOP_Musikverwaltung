@@ -32,6 +32,7 @@ public class Playlist implements Externalizable {
         this.name.setValue("Playlist 1");
     }
 
+    @SuppressWarnings("unused")
     public Playlist(String name, ObservableList<Song> playlist) {
         this.name.setValue(name);
         songs.setAll(playlist);

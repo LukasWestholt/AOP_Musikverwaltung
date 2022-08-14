@@ -6,7 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class ImageButton extends Button {
-    final ImageView imageView = new ImageView();
+    private final ImageView imageView = new ImageView();
 
     public ImageButton(Image image, boolean isCircle, boolean withoutButtonStyle) {
         super();

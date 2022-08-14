@@ -3,7 +3,6 @@ package musikverwaltung.views;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
@@ -31,27 +30,22 @@ import musikverwaltung.handler.ListenerInitiator;
 import musikverwaltung.handler.SetActionLabelListener;
 
 public class SongView extends MenuBarView implements DestroyListener {
-    MediaManager mediaManager;
-    double songLength;
-    double volume = 0.5;
-    boolean chartIsVisible;
-    final Image defaultImage;
-    final ImageView img;
-    final ImageButton startStop;
-    final Image playImage;
-    final Image pauseImage;
-    final Label labelSongName;
-    Media currentSong;
-    MediaPlayer player;
-    final int dbThreshold = 60;
-    XYChart.Series<String, Number> audioData;
-    final AudioSpectrumListener audioSpectrumListener;
-    Playlist playlist;
-    private final SongHistoryList songHistoryStack = new SongHistoryList(10);
+    private final MediaManager mediaManager;
+    private double songLength = Double.MAX_VALUE;
+    private double volume = 0.5;
+    private boolean chartIsVisible; // TODO SimpleBooleanProperty and then listen?
+    private final ImageButton startStop;
+    private final Image playImage;
+    private final Image pauseImage;
+    private final Label labelSongName;
+    private MediaPlayer player;
+    private final int dbThreshold = 60;
+    private XYChart.Series<String, Number> audioData;
+    private final AudioSpectrumListener audioSpectrumListener;
     private final ChangeListener<Duration> playerSongLengthListener;
-
+    private Playlist playlist;
+    private final SongHistoryList songHistoryStack = new SongHistoryList(10);
     private boolean onRepeat = true;
-
     public final ListenerInitiator<SetActionLabelListener> listenerInitiator = new ListenerInitiator<>();
 
     public SongView(ScreenController sc, MediaManager mediaManager) {
@@ -63,8 +57,6 @@ public class SongView extends MenuBarView implements DestroyListener {
         super(sc, 320, 560);
 
         this.mediaManager = mediaManager;
-
-        defaultImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/default_img.jpg", false));
 
         addActiveMenuButton(mainViewButton,
                 e -> screenController.activate(MainView.class)
@@ -88,27 +80,26 @@ public class SongView extends MenuBarView implements DestroyListener {
         VBox.setVgrow(centerContainer, Priority.ALWAYS);
 
         MenuItem headerMenu = new MenuItem("Ansicht wechseln:");
-        headerMenu.setDisable(true);
+        headerMenu.setDisable(true); // TODO show this
         ToggleGroup toggleGroup = new ToggleGroup();
         RadioMenuItem radioImageMenu = new RadioMenuItem("Bild");
         radioImageMenu.setSelected(true);
         radioImageMenu.setToggleGroup(toggleGroup);
         RadioMenuItem radioChartMenu = new RadioMenuItem("Graph");
         radioChartMenu.setToggleGroup(toggleGroup);
-        ContextMenu switchCenterObject = new ContextMenu();
-        switchCenterObject.getItems().addAll(headerMenu, radioImageMenu, radioChartMenu);
-        img = new ImageView();
+        ContextMenu contextMenu = new ContextMenu();
+        contextMenu.getItems().addAll(headerMenu, radioImageMenu, radioChartMenu);
+        ImageView img = new ImageView();
         img.setPreserveRatio(true);
         img.setSmooth(true);
         img.fitWidthProperty().bind(getWidthProperty().subtract(30));
         img.fitHeightProperty().bind(getHeightProperty().divide(2));
         img.setOnMouseClicked(event -> {
-            switchCenterObject.show(img, Side.RIGHT, 0, 0);
-            //switchCenterObject.show(img, event.getX(), event.getY());
-            //switchCenterObject.setX(event.getSceneX());
-            //switchCenterObject.setY(event.getSceneY());
+            System.out.println(event.getX());
+            contextMenu.show(img, event.getScreenX(), event.getScreenY());
         });
-        displayImage();
+        Image defaultImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/default_img.jpg", false));
+        img.setImage(defaultImage);
         centerContainer.getChildren().add(img);
 
         Slider songSlider = new Slider(0, 1, 0);
@@ -209,7 +200,7 @@ public class SongView extends MenuBarView implements DestroyListener {
 
         audioSpectrumListener = (timestamp, duration, magnitudes, phases) -> {
             for (int i = 0; i < magnitudes.length; i++) {
-                System.out.println(i + ": " + (magnitudes[i] + dbthreshold));
+                System.out.println(i + ": " + (magnitudes[i] + dbThreshold));
                 audioData.getData().add(new XYChart.Data<>(Integer.toString(i), magnitudes[i] + dbThreshold));
             }
         };
@@ -234,7 +225,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         audioData.setName("audioData");
         audioBarChart.getData().add(audioData);
         audioBarChart.setOnMouseClicked(event ->
-                switchCenterObject.show(audioBarChart, Side.RIGHT, 0,0 )
+                contextMenu.show(audioBarChart, Side.RIGHT, 0, 0)
         );
 
         toggleGroup.selectedToggleProperty().addListener((observableValue, oldVal, newVal) -> {
@@ -244,13 +235,17 @@ public class SongView extends MenuBarView implements DestroyListener {
                     centerContainer.getChildren().clear();
                     centerContainer.getChildren().add(img);
                     chartIsVisible = false;
-                    player.setAudioSpectrumListener(null);
+                    if (player != null) {
+                        player.setAudioSpectrumListener(null);
+                    }
                     break;
                 case "Graph":
                     centerContainer.getChildren().clear();
                     centerContainer.getChildren().add(audioBarChart);
                     chartIsVisible = true;
-                    player.setAudioSpectrumListener(audioSpectrumListener);
+                    if (player != null) {
+                        player.setAudioSpectrumListener(audioSpectrumListener);
+                    }
                     break;
                 default:
                     centerContainer.getChildren().clear();
@@ -268,12 +263,11 @@ public class SongView extends MenuBarView implements DestroyListener {
     public Node get() {
         stage.setOnCloseRequest(windowEvent -> {
             chartIsVisible = false;
-            player.setAudioSpectrumListener(null);
+            if (player != null) {
+                player.setAudioSpectrumListener(null);
+            }
         });
         return super.get();
-    }
-    private void displayImage() {
-        img.setImage(defaultImage);
     }
 
     private void startStopSong() {
@@ -308,7 +302,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         songHistoryStack.add(nextSong);
         Path path = nextSong.getPath();
         labelSongName.setText(nextSong.getTitle());
-        currentSong = new Media(Helper.p2uris(path));
+        Media currentSong = new Media(Helper.p2uris(path));
         // TODO memory leak on Media/MediaPlayer ? i cant delete music files after they got played
         assert player == null || player.getStatus() == MediaPlayer.Status.DISPOSED;
         player = new MediaPlayer(currentSong);
@@ -319,7 +313,12 @@ public class SongView extends MenuBarView implements DestroyListener {
         if (startPlaying) {
             startStopSong();
         }
-        activateListeners();
+        currentSong.durationProperty().addListener((arg0, arg1, duration) -> songLength = duration.toSeconds());
+        player.currentTimeProperty().addListener(playerSongLengthListener);
+        if (chartIsVisible) {
+            player.setAudioSpectrumListener(audioSpectrumListener);
+            player.setAudioSpectrumThreshold(-dbThreshold);
+        }
         listenerInitiator.getListeners().forEach(l -> l.setActionLabel("Spiele: " + labelSongName.getText()));
     }
 
@@ -350,15 +349,6 @@ public class SongView extends MenuBarView implements DestroyListener {
         player.seek(new Duration(player.getCurrentTime().toMillis() + (timeInSeconds * 1000)));
     }
 
-    private void activateListeners() {
-        currentSong.durationProperty().addListener((arg0, arg1, duration) -> songLength = duration.toSeconds());
-        player.currentTimeProperty().addListener(playerSongLengthListener);
-        if (chartIsVisible) {
-            player.setAudioSpectrumListener(audioSpectrumListener);
-            player.setAudioSpectrumThreshold(-dBThreshold);
-        }
-    }
-
     public boolean isPlayerPlaying() {
         // TODO LW why public?
         return player != null && player.getStatus() == MediaPlayer.Status.PLAYING;
@@ -385,11 +375,11 @@ public class SongView extends MenuBarView implements DestroyListener {
         setPlaylist(singleSongPlaylist, startPlaying);
     }
 
-    void setPlaylistLastSong(boolean startPlaying) {
-        setPlaylist(getLastSong(), startPlaying);
+    void setPlaylistLastSong() {
+        setPlaylist(getLastSong(), false);
     }
 
-    static void setDynamicSize(Region region) {
+    private static void setDynamicSize(Region region) {
         region.setMinWidth(Control.USE_PREF_SIZE);
         region.setMaxWidth(Double.MAX_VALUE);
         region.setMinHeight(Control.USE_PREF_SIZE);

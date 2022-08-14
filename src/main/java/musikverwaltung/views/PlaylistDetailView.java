@@ -11,8 +11,8 @@ import musikverwaltung.data.Playlist;
 public class PlaylistDetailView extends MainView {
     //TODO playlist erstellen menu öffnet sich auch in diesem view
 
-    ObservableList<Playlist> contextPlaylists;
-    Playlist playlist;
+    private ObservableList<Playlist> contextPlaylists;
+    private Playlist playlist;
 
     public PlaylistDetailView(ScreenController sc, MediaManager mediaManager) {
         super(sc, mediaManager, true);
@@ -32,9 +32,10 @@ public class PlaylistDetailView extends MainView {
                     // fallback
                     playlist.removeFirstOccurrence(song);
                 }
-                if (playlist.isEmpty())
+                if (playlist.isEmpty()) {
                     contextPlaylists.remove(playlist);
-                //TODO maybe beenden von window wenn alle gelöscht sind 
+                }
+                //TODO maybe beenden von window wenn alle gelöscht sind
             });
             refresh().run();
         });

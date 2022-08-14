@@ -59,6 +59,22 @@ public class SettingFile implements Externalizable {
         }
     }
 
+    public Path getLastSong() {
+        return lastSong;
+    }
+
+    public ObservableList<Playlist> getMediaLibrary() {
+        return mediaLibrary;
+    }
+
+    public ArrayList<String> getPaths() {
+        return paths;
+    }
+
+    public boolean getShowUnplayableSongs() {
+        return showUnplayableSongs;
+    }
+
     public static SettingFile load() {
         try {
             FileInputStream in = new FileInputStream(filename);
@@ -95,43 +111,9 @@ public class SettingFile implements Externalizable {
         ArrayList<Playlist> temp = (ArrayList<Playlist>) in.readObject();
         ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
         mediaLibrary.addAll(temp);
-        setMediaLibrary(mediaLibrary);
-        setPaths((ArrayList<String>) in.readObject());
-        setLastSong(Helper.uris2p(in.readUTF()));
-        setShowUnplayableSongs(in.readBoolean());
-    }
-
-    public Path getLastSong() {
-        return lastSong;
-    }
-
-    public void setLastSong(Path lastSong) {
-        this.lastSong = lastSong;
-    }
-
-    public ObservableList<Playlist> getMediaLibrary() {
-        return mediaLibrary;
-    }
-
-    public void setMediaLibrary(ObservableList<Playlist> mediaLibrary) {
         this.mediaLibrary = mediaLibrary;
+        this.paths = (ArrayList<String>) in.readObject();
+        this.lastSong = Helper.uris2p(in.readUTF());
+        this.showUnplayableSongs = in.readBoolean();
     }
-
-    public ArrayList<String> getPaths() {
-        return paths;
-    }
-
-    public void setPaths(ArrayList<String> paths) {
-        this.paths = paths;
-    }
-
-    public boolean getShowUnplayableSongs() {
-        return showUnplayableSongs;
-    }
-
-    public void setShowUnplayableSongs(boolean showUnplayableSongs) {
-        this.showUnplayableSongs = showUnplayableSongs;
-    }
-
-
 }
