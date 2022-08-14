@@ -16,19 +16,19 @@ public class SettingFile implements Externalizable {
 
     private static final String filename = "settings.ser";
 
-    private ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
+    private ObservableList<Playlist> playlists = FXCollections.observableArrayList();
 
     private ArrayList<String> paths = new ArrayList<>();
     private Path lastSong;
 
     private boolean showUnplayableSongs;
 
-    public static void saveMediaLibrary(ObservableList<Playlist> mediaLibrary) {
+    public static void savePlaylists(ObservableList<Playlist> playlists) {
         SettingFile setting = load();
-        if (!setting.mediaLibrary.equals(mediaLibrary)) {
-            setting.mediaLibrary = mediaLibrary;
+        if (!setting.playlists.equals(playlists)) {
+            setting.playlists = playlists;
             save(setting);
-            System.out.println("added mediaLibrary " + mediaLibrary + " to SettingFile");
+            System.out.println("added playlists " + playlists + " to SettingFile");
         }
     }
 
@@ -63,8 +63,8 @@ public class SettingFile implements Externalizable {
         return lastSong;
     }
 
-    public ObservableList<Playlist> getMediaLibrary() {
-        return mediaLibrary;
+    public ObservableList<Playlist> getPlaylists() {
+        return playlists;
     }
 
     public ArrayList<String> getPaths() {
@@ -98,7 +98,7 @@ public class SettingFile implements Externalizable {
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        ArrayList<Playlist> temp = new ArrayList<>(mediaLibrary);
+        ArrayList<Playlist> temp = new ArrayList<>(playlists);
         out.writeObject(temp);
         out.writeObject(paths);
         out.writeUTF(Helper.p2uris(lastSong));
@@ -108,10 +108,7 @@ public class SettingFile implements Externalizable {
     @Override
     @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        ArrayList<Playlist> temp = (ArrayList<Playlist>) in.readObject();
-        ObservableList<Playlist> mediaLibrary = FXCollections.observableArrayList();
-        mediaLibrary.addAll(temp);
-        this.mediaLibrary = mediaLibrary;
+        this.playlists = FXCollections.observableArrayList((ArrayList<Playlist>) in.readObject());
         this.paths = (ArrayList<String>) in.readObject();
         this.lastSong = Helper.uris2p(in.readUTF());
         this.showUnplayableSongs = in.readBoolean();

@@ -17,7 +17,7 @@ public class SettingsSaveTask implements Runnable {
     public void run() {
         System.out.println("thread working, saving playlists");
         if (playlists != null) {
-            SettingFile.saveMediaLibrary(playlists);
+            SettingFile.savePlaylists(playlists);
         }
     }
 }

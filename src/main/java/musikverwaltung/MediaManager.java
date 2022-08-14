@@ -92,9 +92,9 @@ public class MediaManager {
             };
             media.getMetadata().addListener(metadataListener);
         }
-        // TODO save mediaLibrary earlier
+        // TODO save playlists earlier
         if (settingFile.getShowUnplayableSongs()) {
-            for (Playlist playlist : settingFile.getMediaLibrary()) {
+            for (Playlist playlist : settingFile.getPlaylists()) {
                 for (Song song : playlist.getAll()) {
                     FilteredList<Song> fl = music.filtered(p -> Objects.equals(p.getPath(), song.getPath()));
                     if (fl.size() > 1) {

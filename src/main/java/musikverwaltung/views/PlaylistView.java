@@ -191,7 +191,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
             }
         });
         //letzte Playlisten werden geladen
-        playlists.addAll(SettingFile.load().getMediaLibrary());
+        playlists.addAll(SettingFile.load().getPlaylists());
 
         ScrollPane sp = new ScrollPane();
         sp.setId("scroll-playlists");
@@ -295,6 +295,6 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
 
     @Override
     public void destroy() {
-        SettingFile.saveMediaLibrary(playlists);
+        SettingFile.savePlaylists(playlists);
     }
 }
