@@ -3,6 +3,7 @@ package musikverwaltung.views;
 import javafx.application.Platform;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -26,6 +27,13 @@ public class MenuBarView extends GenericView {
         super(sc, prefWidth, prefHeight);
         addMenuItems(true, mainViewButton, playlistViewButton, settingViewButton, creditsViewButton);
         wrapperVBox.getChildren().addAll(menuToolBar, stackPane);
+        menuToolBar.getItems().addListener((ListChangeListener<? super Node>) change -> {
+            if (wrapperVBox.getChildren().contains(menuToolBar) && menuToolBar.getItems().size() == 0) {
+                wrapperVBox.getChildren().remove(menuToolBar);
+            } else if (!wrapperVBox.getChildren().contains(menuToolBar) && menuToolBar.getItems().size() > 0) {
+                wrapperVBox.getChildren().add(menuToolBar);
+            }
+        });
     }
 
     public MenuBarView(ScreenController sc) {
