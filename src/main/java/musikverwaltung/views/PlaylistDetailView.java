@@ -1,6 +1,7 @@
 package musikverwaltung.views;
 
 import javafx.beans.binding.Bindings;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import musikverwaltung.MediaManager;
@@ -8,7 +9,9 @@ import musikverwaltung.ScreenController;
 import musikverwaltung.data.Playlist;
 
 public class PlaylistDetailView extends MainView {
+    //TODO playlist erstellen menu öffnet sich auch in diesem view
 
+    ObservableList<Playlist> contextPlaylists;
     Playlist playlist;
 
     public PlaylistDetailView(ScreenController sc, MediaManager mediaManager) {
@@ -29,6 +32,9 @@ public class PlaylistDetailView extends MainView {
                     // fallback
                     playlist.removeFirstOccurrence(song);
                 }
+                if (playlist.isEmpty())
+                    contextPlaylists.remove(playlist);
+                //TODO maybe beenden von window wenn alle gelöscht sind 
             });
             refresh().run();
         });
@@ -42,8 +48,9 @@ public class PlaylistDetailView extends MainView {
         });
     }
 
-    public void showPlaylist(Playlist playlist) {
+    public void showPlaylistInContext(Playlist playlist, ObservableList<Playlist> playlists) {
         this.playlist = playlist;
+        this.contextPlaylists = playlists;
         songFilterForPlaylist.bind(Bindings.createObjectBinding(() -> playlist::contains));
         welcomeLabel.textProperty().bind(playlist.getNameProperty());
     }

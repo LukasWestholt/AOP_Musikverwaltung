@@ -7,7 +7,6 @@ import javafx.scene.layout.BorderPane;
 import musikverwaltung.ScreenController;
 
 public class HelloView extends GenericView {
-
     public HelloView(ScreenController sc) {
         super(sc);
         String javaVersion = System.getProperty("java.version");

@@ -26,6 +26,8 @@ import musikverwaltung.data.SettingFile;
 import musikverwaltung.data.Song;
 import musikverwaltung.handler.DestroyListener;
 
+import static java.lang.Thread.State.TERMINATED;
+
 public class PlaylistView extends MenuBarView implements DestroyListener {
 
     private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
@@ -34,11 +36,13 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
 
     private Playlist contextPlaylist;
 
+    Thread saveTaskThread;
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
         Runnable saveTask = new SettingsSaveTask(playlists);
-        Thread saveTaskThread = new Thread(saveTask);
-        saveTaskThread.start();
+        saveTaskThread = new Thread(saveTask);
+
+        saveTaskThread.setName("savetaskthread");
 
         flSongs = mediaManager.getPlayableMusic();
 
@@ -109,8 +113,12 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
             GenericView view = screenController.activateWindow(PlaylistDetailView.class, false);
             if (view instanceof PlaylistDetailView) {
                 PlaylistDetailView playlistDetailView = (PlaylistDetailView) view;
-                playlistDetailView.showPlaylist(contextPlaylist);
+                playlistDetailView.showPlaylistInContext(contextPlaylist, playlists);
             }
+            /*if (view instanceof PlaylistDetailView2) {
+                PlaylistDetailView2 playlistDetailView2 = (PlaylistDetailView2) view;
+                playlistDetailView2.initializeWithPlaylist(contextPlaylist, playlists);
+            }*/
         });
 
         ContextMenu quickOptions = new ContextMenu();
@@ -198,11 +206,13 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
             GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView) {
                 SongView songView = (SongView) view;
-                songView.setPlaylistLastSong(false);
+                // TODO Review by LW
+                if (!songView.isPlaying()) {
+                    songView.setPlaylistLastSong(false);
+                }
             }
         });
 
-        //TODO verbuggt beim mehrmaligen aktivieren?
         Button automaticPlaylistButton = new Button("Playlist Vorschläge");
         automaticPlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
         automaticPlaylistButton.setOnAction(e -> createAutomaticPlaylists());
@@ -221,7 +231,9 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         }
         System.out.println("added a new playlist " + createdPlaylist.getName());
         playlists.add(createdPlaylist);
-
+        if (saveTaskThread.getState() == TERMINATED) {
+            saveTaskThread.start();
+        } // TODO Review by LW
         // TODO Asynchron speichern der aktuellen Playlisten
         return true;
     }

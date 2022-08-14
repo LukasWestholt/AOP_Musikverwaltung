@@ -33,7 +33,7 @@ public class MediaManager {
             o.getTitleProperty(),
             o.getArtistProperty(),
             o.getGenreProperty()
-            // TODO (LW) is needed?
+
     });
     //TODO einlesen bei Jazzy night und ambient pearls hat Probleme
     private static final String genreFilename = "genres.txt";

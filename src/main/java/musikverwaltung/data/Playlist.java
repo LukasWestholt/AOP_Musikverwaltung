@@ -173,7 +173,7 @@ public class Playlist implements Externalizable {
     }
 
     public boolean isAlmostEqual(Playlist otherPlaylist) {
-        return this.getAll().equals(otherPlaylist.getAll()) && this.getName().equals(otherPlaylist.getName());
+        return this.getAll().equals(otherPlaylist.getAll());
     }
 
     @Override

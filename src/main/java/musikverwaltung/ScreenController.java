@@ -56,7 +56,7 @@ public class ScreenController {
         view.bindSceneDimensions(getMainScene().widthProperty(), getMainScene().heightProperty());
         getMainChildren().clear();
         getMainChildren().add(view.get());
-        return activate(getMain(), view, id.getName()); // TODO (LW) class.getName() or better: String in GenericView
+        return activate(getMain(), view, id.getSimpleName());
     }
 
     // https://genuinecoder.com/javafx-scene-switch-change-animation/
@@ -86,7 +86,7 @@ public class ScreenController {
         //After completing animation, remove first scene
         timeline.setOnFinished(t -> getMainChildren().remove(0, getMainChildren().size() - 1));
         timeline.play();
-        return activate(getMain(), view, id.getName());
+        return activate(getMain(), view, id.getSimpleName());
     }
 
     public void activate(Class<? extends GenericView> id, Boolean animated, Integer millis) {
@@ -133,7 +133,7 @@ public class ScreenController {
         }
         Stage stage = stageMap.get(id);
         if (stage != null) {
-            return activate(stage, view, id.getName(), neighborToMain);
+            return activate(stage, view, id.getSimpleName(), neighborToMain);
         }
         stage = new Stage();
         view.setStage(stage);
@@ -143,7 +143,7 @@ public class ScreenController {
         stage.setScene(scene);
         view.bindSceneDimensions(scene.widthProperty(), scene.heightProperty());
         ((Group) scene.getRoot()).getChildren().add(view.get());
-        return activate(stage, view, id.getName(), neighborToMain);
+        return activate(stage, view, id.getSimpleName(), neighborToMain);
     }
 
     public void triggerDestroyListener() {

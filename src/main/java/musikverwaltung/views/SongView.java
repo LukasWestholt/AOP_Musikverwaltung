@@ -3,10 +3,13 @@ package musikverwaltung.views;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
@@ -31,6 +34,7 @@ public class SongView extends MenuBarView implements DestroyListener {
     MediaManager mediaManager;
     double songLength;
     double volume = 0.5;
+    boolean chartIsVisible;
     final Image defaultImage;
     final ImageView img;
     final ImageButton startStop;
@@ -99,8 +103,8 @@ public class SongView extends MenuBarView implements DestroyListener {
         img.fitWidthProperty().bind(getWidthProperty().subtract(30));
         img.fitHeightProperty().bind(getHeightProperty().divide(2));
         img.setOnMouseClicked(event -> {
-            //TODO set correct position
-            switchCenterObject.show(img, event.getSceneX(), event.getSceneY());
+            switchCenterObject.show(img, Side.RIGHT, 0, 0);
+            //switchCenterObject.show(img, event.getX(), event.getY());
             //switchCenterObject.setX(event.getSceneX());
             //switchCenterObject.setY(event.getSceneY());
         });
@@ -128,7 +132,7 @@ public class SongView extends MenuBarView implements DestroyListener {
                 }
             }
         });
-        //TODO image ist nicht mittig
+        //TODO image ist nicht mittig!!!!!!
         playImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/icons/play.png", false));
         pauseImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/icons/pause.png", false));
         startStop = new ImageButton(playImage, true, true);
@@ -137,11 +141,6 @@ public class SongView extends MenuBarView implements DestroyListener {
         startStop.setPrefSize(30, 30);
         startStop.setMaxWidth(Double.MAX_VALUE);
         startStop.maxHeightProperty().bind(startStop.widthProperty());
-        /* TODO wofür ist das?
-        region.setMinWidth(Control.USE_PREF_SIZE);
-        region.setMinHeight(Control.USE_PREF_SIZE);
-        region.setMaxHeight(Double.MAX_VALUE);
-        */
 
         HBox.setHgrow(startStop, Priority.SOMETIMES);
 
@@ -210,11 +209,10 @@ public class SongView extends MenuBarView implements DestroyListener {
 
         audioSpectrumListener = (timestamp, duration, magnitudes, phases) -> {
             for (int i = 0; i < magnitudes.length; i++) {
-                //System.out.println(i + ": " + (magnitudes[i] + dBthreshold));
+                System.out.println(i + ": " + (magnitudes[i] + dbthreshold));
                 audioData.getData().add(new XYChart.Data<>(Integer.toString(i), magnitudes[i] + dbThreshold));
             }
         };
-        //TODO listener soll aufhören wenn player fenster nicht mehr zusehen ist
         CategoryAxis horizontalAxis = new CategoryAxis();
         NumberAxis verticalAxis = new NumberAxis();
         BarChart<String, Number> audioBarChart = new BarChart<>(horizontalAxis, verticalAxis);
@@ -232,26 +230,27 @@ public class SongView extends MenuBarView implements DestroyListener {
         verticalAxis.setTickLabelsVisible(false);
         audioBarChart.prefWidthProperty().bind(getWidthProperty().subtract(30));
         audioBarChart.prefHeightProperty().bind(getHeightProperty().divide(2));
-        //audioBarChart.setMaxSize(900, 400);
-        //audioBarChart.setMinSize(900, 400);
         audioData = new XYChart.Series<>();
         audioData.setName("audioData");
         audioBarChart.getData().add(audioData);
-        //TODO set correct position siehe oben
         audioBarChart.setOnMouseClicked(event ->
-                switchCenterObject.show(audioBarChart, event.getSceneX(), event.getSceneY())
+                switchCenterObject.show(audioBarChart, Side.RIGHT, 0,0 )
         );
-        //TODO listener nur wenn graph gezeigt wird
+
         toggleGroup.selectedToggleProperty().addListener((observableValue, oldVal, newVal) -> {
             RadioMenuItem selectedMenu = (RadioMenuItem) toggleGroup.getSelectedToggle();
             switch (selectedMenu.getText()) {
                 case "Bild":
                     centerContainer.getChildren().clear();
                     centerContainer.getChildren().add(img);
+                    chartIsVisible = false;
+                    player.setAudioSpectrumListener(null);
                     break;
                 case "Graph":
                     centerContainer.getChildren().clear();
                     centerContainer.getChildren().add(audioBarChart);
+                    chartIsVisible = true;
+                    player.setAudioSpectrumListener(audioSpectrumListener);
                     break;
                 default:
                     centerContainer.getChildren().clear();
@@ -262,8 +261,17 @@ public class SongView extends MenuBarView implements DestroyListener {
         playerVBox.setAlignment(Pos.CENTER);
         playerVBox.setSpacing(10);
         showNodes(playerVBox);
+
     }
 
+    @Override
+    public Node get() {
+        stage.setOnCloseRequest(windowEvent -> {
+            chartIsVisible = false;
+            player.setAudioSpectrumListener(null);
+        });
+        return super.get();
+    }
     private void displayImage() {
         img.setImage(defaultImage);
     }
@@ -275,8 +283,6 @@ public class SongView extends MenuBarView implements DestroyListener {
         if (isPlayerPlaying()) {
             player.pause();
             startStop.switchImage(playImage);
-            //TODO soll bei stop einfach graph freezen?
-            //audioData.getData().clear();
             listenerInitiator.getListeners().forEach(l -> l.setActionLabel("Stoppe Musik"));
         } else {
             player.play();
@@ -308,8 +314,6 @@ public class SongView extends MenuBarView implements DestroyListener {
         player = new MediaPlayer(currentSong);
         player.setOnEndOfMedia(this::skipforwards);
         player.setVolume(volume);
-        //player.setAudioSpectrumNumBands(10);
-        player.setAudioSpectrumThreshold(-dbThreshold);
 
         //next song starts immediately or stops before
         if (startPlaying) {
@@ -349,10 +353,14 @@ public class SongView extends MenuBarView implements DestroyListener {
     private void activateListeners() {
         currentSong.durationProperty().addListener((arg0, arg1, duration) -> songLength = duration.toSeconds());
         player.currentTimeProperty().addListener(playerSongLengthListener);
-        player.setAudioSpectrumListener(audioSpectrumListener);
+        if (chartIsVisible) {
+            player.setAudioSpectrumListener(audioSpectrumListener);
+            player.setAudioSpectrumThreshold(-dBThreshold);
+        }
     }
 
-    private boolean isPlayerPlaying() {
+    public boolean isPlayerPlaying() {
+        // TODO LW why public?
         return player != null && player.getStatus() == MediaPlayer.Status.PLAYING;
     }
 
