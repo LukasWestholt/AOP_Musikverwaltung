@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import javafx.animation.PauseTransition;
 import javafx.beans.binding.When;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -18,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import musikverwaltung.*;
 import musikverwaltung.data.Playlist;
 import musikverwaltung.data.SettingFile;
@@ -85,13 +87,18 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         });
 
         TextField nameField = new TextField();
+        nameField.setOnAction((action) -> {
+            contextPlaylist.setName(nameField.getText());
+            nameField.getParent().requestFocus();
+        });
         ImageButton resetRenameButton = new ImageButton(
-                Helper.getResourcePath(this.getClass(), "/icons/reset.png", false),
+                Helper.getResourcePath(this.getClass(), "/icons/restore.png", false),
                 true, false
         );
         resetRenameButton.setOnAction(e -> nameField.setText(contextPlaylist.getName()));
         resetRenameButton.setPrefSize(30, 30);
         HBox renameBox = new HBox();
+        renameBox.setSpacing(10);
         renameBox.setAlignment(Pos.CENTER);
         renameBox.getChildren().addAll(nameField, resetRenameButton);
         CustomMenuItem renameMenu = new CustomMenuItem(renameBox);
@@ -128,6 +135,30 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
                         playlistButton.setStyle("-fx-font-size:18");
                     }
                 });
+
+                PauseTransition singlePressPause = new PauseTransition(Duration.millis(500));
+                singlePressPause.setOnFinished(e -> {
+                    // single press
+                    GenericView view = screenController.activateWindow(SongView.class, true);
+                    if (view instanceof SongView) {
+                        SongView songView = (SongView) view;
+                        songView.setPlaylist(playlist, true);
+                    }
+                });
+
+                playlistButton.setOnMousePressed(e -> {
+                    if (e.isPrimaryButtonDown() && e.getClickCount() == 1) {
+                        singlePressPause.play();
+                    }
+
+                    if (e.isPrimaryButtonDown() && e.getClickCount() == 2) {
+                        singlePressPause.stop();
+                        // double press
+                        contextPlaylist = playlist;
+                        openMenu.fire();
+                    }
+                });
+
                 playlistButton.setOnMouseClicked(event -> {
                     if (event.isPopupTrigger()) {
                         contextPlaylist = playlist;
@@ -135,14 +166,6 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
                     }
                 });
                 playlistButton.setContextMenu(quickOptions);
-
-                playlistButton.setOnAction((e) -> {
-                    GenericView view = screenController.activateWindow(SongView.class, true);
-                    if (view instanceof SongView) {
-                        SongView songView = (SongView) view;
-                        songView.setPlaylist(playlist, true);
-                    }
-                });
                 ImageView previewView = new ImageView();
                 previewView.imageProperty().bind(playlist.getPreviewImageProperty());
                 previewView.setFitWidth(80);
@@ -174,11 +197,8 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         musicPlayerButton.setOnAction(e -> {
             GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView) {
-                Song lastSong = mediaManager.getPlayableLastSong();
-                if (lastSong != null) {
-                    SongView songView = (SongView) view;
-                    songView.setPlaylist(lastSong, false);
-                }
+                SongView songView = (SongView) view;
+                songView.setPlaylistLastSong(false);
             }
         });
 

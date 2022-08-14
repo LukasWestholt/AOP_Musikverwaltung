@@ -43,7 +43,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
     final StackPane customButtonPane = new StackPane();
     public final ObjectProperty<Predicate<Song>> songFilterForPlaylist = new SimpleObjectProperty<>();
 
-    private final SimpleBooleanProperty showPlaylistAdd = new SimpleBooleanProperty();
+    protected final SimpleBooleanProperty showPlaylistAdd = new SimpleBooleanProperty();
 
     // https://stackoverflow.com/a/47560767/8980073
     public MainView(ScreenController sc, MediaManager mediaManager, boolean includeUnplayableSongs) {
@@ -155,9 +155,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
             if (view instanceof SongView) {
                 SongView songView = (SongView) view;
                 songView.listenerInitiator.addListenerIfNotContains(this);
-                Song lastSong = mediaManager.getPlayableLastSong();
-                songView.setPlaylist(lastSong, false);
-
+                songView.setPlaylistLastSong(false);
             }
         });
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton); //Add choiceBox and textField to hBox
@@ -266,7 +264,10 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
     }
 
     public Runnable refresh() {
-        return () -> mediaManager.clearAndLoadAll(table::refresh);
+        return () -> {
+            mediaManager.clearAndLoadAll(table::refresh);
+            showPlaylistAdd.set(false);
+        };
     }
 
     @Override

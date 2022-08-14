@@ -97,11 +97,11 @@ public class ScreenController {
         timeline.play();
     }
 
-    public GenericView activate(Stage stage, GenericView view, String title) {
+    private GenericView activate(Stage stage, GenericView view, String title) {
         return activate(stage, view, title, false);
     }
 
-    public GenericView activate(Stage stage, GenericView view, String title, boolean neighborToMain) {
+    private GenericView activate(Stage stage, GenericView view, String title, boolean neighborToMain) {
         if (neighborToMain) {
             Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
             Stage mainStage = getMain();

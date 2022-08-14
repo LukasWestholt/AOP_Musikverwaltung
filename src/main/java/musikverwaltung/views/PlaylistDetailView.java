@@ -32,7 +32,14 @@ public class PlaylistDetailView extends MainView {
             });
             refresh().run();
         });
-        customButtonPane.getChildren().add(deleteButton);
+
+        showPlaylistAdd.addListener((obs, oldValue, newValue) -> {
+            if (newValue) {
+                customButtonPane.getChildren().add(deleteButton);
+            } else {
+                customButtonPane.getChildren().remove(deleteButton);
+            }
+        });
     }
 
     public void showPlaylist(Playlist playlist) {

@@ -38,8 +38,6 @@ public class MediaManager {
     //TODO einlesen bei Jazzy night und ambient pearls hat Probleme
     private static final String genreFilename = "genres.txt";
 
-    public Path lastSong;
-
     public void clearAndLoadAll(Runnable refreshCallback) {
         music.clear();
         mediaFiles.clear();
@@ -145,21 +143,6 @@ public class MediaManager {
             System.exit(-1);
         }
         return genresMap;
-    }
-
-    public Song getPlayableLastSong() {
-        if (lastSong != null) {
-            for (Song song : getPlayableMusic()) {
-                try {
-                    if (Files.isSameFile(song.getPath(), lastSong)) {
-                        return song;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return null;
     }
 
     public FilteredList<Song> getPlayableMusic() {

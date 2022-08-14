@@ -1,5 +1,7 @@
 package musikverwaltung.views;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
@@ -17,10 +19,7 @@ import javafx.scene.media.AudioSpectrumListener;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
-import musikverwaltung.Helper;
-import musikverwaltung.ImageButton;
-import musikverwaltung.ScreenController;
-import musikverwaltung.SongHistoryList;
+import musikverwaltung.*;
 import musikverwaltung.data.Playlist;
 import musikverwaltung.data.SettingFile;
 import musikverwaltung.data.Song;
@@ -29,6 +28,7 @@ import musikverwaltung.handler.ListenerInitiator;
 import musikverwaltung.handler.SetActionLabelListener;
 
 public class SongView extends MenuBarView implements DestroyListener {
+    MediaManager mediaManager;
     double songLength;
     double volume = 0.5;
     final Image defaultImage;
@@ -50,13 +50,16 @@ public class SongView extends MenuBarView implements DestroyListener {
 
     public final ListenerInitiator<SetActionLabelListener> listenerInitiator = new ListenerInitiator<>();
 
-    public SongView(ScreenController sc) {
+    public SongView(ScreenController sc, MediaManager mediaManager) {
         /*
         https://www.geeksforgeeks.org/javafx-progressbar/
         https://stackoverflow.com/questions/26850828/how-to-make-a-javafx-button-with-circle-shape-of-3xp-diameter
         http://kenyadevelopers.blogspot.com/2015/06/javafx-audiospectrum-and-barchartbeauty.html
          */
         super(sc, 320, 560);
+
+        this.mediaManager = mediaManager;
+
         defaultImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/default_img.jpg", false));
 
         addActiveMenuButton(mainViewButton,
@@ -374,6 +377,10 @@ public class SongView extends MenuBarView implements DestroyListener {
         setPlaylist(singleSongPlaylist, startPlaying);
     }
 
+    void setPlaylistLastSong(boolean startPlaying) {
+        setPlaylist(getLastSong(), startPlaying);
+    }
+
     static void setDynamicSize(Region region) {
         region.setMinWidth(Control.USE_PREF_SIZE);
         region.setMaxWidth(Double.MAX_VALUE);
@@ -382,9 +389,33 @@ public class SongView extends MenuBarView implements DestroyListener {
         HBox.setHgrow(region, Priority.SOMETIMES);
     }
 
+    public Song getLastSong() {
+        Song lastPlayedSong = songHistoryStack.peekLast();
+        if (lastPlayedSong != null) {
+            return lastPlayedSong;
+        }
+        Path lastPlayedSongPath = SettingFile.load().getLastSong();
+        if (lastPlayedSongPath != null) {
+            for (Song song : mediaManager.getPlayableMusic()) {
+                try {
+                    if (Files.isSameFile(song.getPath(), lastPlayedSongPath)) {
+                        return song;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public void destroy() {
-        // TODO NoSuchElement empty setting
-        SettingFile.saveLastSong(songHistoryStack.getLast().getPath());
+        Song lastSong = getLastSong();
+        if (lastSong != null) {
+            SettingFile.saveLastSong(getLastSong().getPath());
+        } else {
+            SettingFile.saveLastSong(null);
+        }
     }
 }

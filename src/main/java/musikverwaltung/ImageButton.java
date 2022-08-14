@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.shape.Circle;
 
 public class ImageButton extends Button {
     final ImageView imageView = new ImageView();
@@ -15,7 +14,7 @@ public class ImageButton extends Button {
             getStyleClass().clear();
         }
         if (isCircle) {
-            setShape(new Circle(1));
+            getStyleClass().add("circle");
         }
         switchImage(image);
         imageView.setSmooth(true);
