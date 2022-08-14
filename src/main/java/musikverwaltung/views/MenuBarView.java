@@ -40,7 +40,7 @@ public class MenuBarView extends GenericView {
         }
     }
 
-    public void setActiveMenuItem(Region region) {
+    public static void setActiveMenuItem(Region region) {
         region.setId("active");
     }
 

@@ -26,7 +26,7 @@ public class CreditsView extends GenericView {
         webView.setContextMenuEnabled(false);
         WebEngine webEngine = webView.getEngine();
         webEngine.load(Helper.getResourcePathUriString(this.getClass(), "/credits.html", false));
-        // TODO scrollBar hides textspace
+        // TODO scrollBar hides text
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (Worker.State.SUCCEEDED.equals(newValue)) {
                 Document document = webEngine.getDocument();

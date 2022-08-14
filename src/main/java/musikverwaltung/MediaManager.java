@@ -46,7 +46,7 @@ public class MediaManager {
 
         SettingFile settingFile = SettingFile.load();
         ArrayList<String> paths = settingFile.getPaths();
-        for (final String folder : paths) {
+        for (String folder : paths) {
             try (Stream<Path> pathsStream = Files.walk(Helper.s2p(folder))) {
                 pathsStream.filter(Files::isRegularFile).forEach(this::checkMediaExtension);
             } catch (Exception e) {
@@ -55,7 +55,7 @@ public class MediaManager {
         }
 
         MapChangeListener<String, Object> metadataListener;
-        for (final Path mediaFile : mediaFiles) {
+        for (Path mediaFile : mediaFiles) {
             music.add(new Song(mediaFile));
             Media media = new Media(Helper.p2uris(mediaFile));
             metadataListener = metadata -> {
@@ -94,7 +94,7 @@ public class MediaManager {
             };
             media.getMetadata().addListener(metadataListener);
         }
-        // TODO save mediaLibriary earlier
+        // TODO save mediaLibrary earlier
         if (settingFile.getShowUnplayableSongs()) {
             for (Playlist playlist : settingFile.getMediaLibrary()) {
                 for (Song song : playlist.getAll()) {
@@ -149,7 +149,7 @@ public class MediaManager {
 
     public Song getPlayableLastSong() {
         if (lastSong != null) {
-            for (final Song song : getPlayableMusic()) {
+            for (Song song : getPlayableMusic()) {
                 try {
                     if (Files.isSameFile(song.getPath(), lastSong)) {
                         return song;

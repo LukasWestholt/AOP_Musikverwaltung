@@ -181,7 +181,7 @@ public class Song implements Externalizable {
         return text;
     }
 
-    private String notNullString(String str) {
+    private static String notNullString(String str) {
         if (str == null) {
             return "";
         }

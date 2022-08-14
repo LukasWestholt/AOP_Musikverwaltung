@@ -28,7 +28,7 @@ public class ScreenController {
     public final ListenerInitiator<DestroyListener> listenerInitiator = new ListenerInitiator<>();
 
     public Stage getMain() {
-        final Stage stage = stageMap.get(GenericView.class);
+        Stage stage = stageMap.get(GenericView.class);
         if (stage == null) {
             throw new InternalError("Stage not exists");
         }
@@ -48,7 +48,7 @@ public class ScreenController {
     }
 
     public GenericView activate(Class<? extends GenericView> id) {
-        final GenericView view = screenMap.get(id);
+        GenericView view = screenMap.get(id);
         if (view == null) {
             throw new InternalError("View not exists");
         }
@@ -64,7 +64,7 @@ public class ScreenController {
             return activate(id);
         }
 
-        final GenericView view = screenMap.get(id);
+        GenericView view = screenMap.get(id);
         if (view == null) {
             throw new InternalError("View not exists");
         }
@@ -125,7 +125,7 @@ public class ScreenController {
     }
 
     public GenericView activateWindow(Class<? extends GenericView> id, boolean neighborToMain) {
-        final GenericView view = screenMap.get(id);
+        GenericView view = screenMap.get(id);
         if (view == null) {
             throw new InternalError("View not exists");
         }

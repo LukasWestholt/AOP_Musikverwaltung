@@ -53,7 +53,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
 
         addActiveMenuButton(settingViewButton,
                 e -> {
-                    final GenericView view = screenController.activateWindow(SettingsView.class, false);
+                    GenericView view = screenController.activateWindow(SettingsView.class, false);
                     if (view instanceof SettingsView) {
                         SettingsView settingsView = (SettingsView) view;
                         settingsView.listenerInitiator.addListenerIfNotContains(this);
@@ -151,7 +151,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
         musicPlayerButton.setOnAction(e -> {
             actionLabel.setText("Starte Player");
-            final GenericView view = screenController.activateWindow(SongView.class, true);
+            GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView) {
                 SongView songView = (SongView) view;
                 songView.listenerInitiator.addListenerIfNotContains(this);
@@ -203,7 +203,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
             TableRow<Song> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (!row.isEmpty())) {
-                    final GenericView view = screenController.activateWindow(SongView.class, true);
+                    GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView) {
                         SongView songView = (SongView) view;
                         songView.listenerInitiator.addListenerIfNotContains(this);
@@ -215,7 +215,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         });
         VBox.setVgrow(table, Priority.ALWAYS);
 
-        final VBox vbox = new VBox();
+        VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10, 10, 10, 10));
         vbox.getChildren().addAll(welcomeLabel, menu, table, searchHBox);
@@ -235,7 +235,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         Button makePlaylistButton = new Button("Playlist erstellen");
         makePlaylistButton.setOnAction(action -> {
             // TODO save playlist to file and don't activate PlaylistView each
-            final GenericView view = screenController.activate(PlaylistView.class);
+            GenericView view = screenController.activate(PlaylistView.class);
             if (view instanceof PlaylistView) {
                 Playlist returnPlaylist = new Playlist();
                 returnPlaylist.setName(playlistNameEntry.getText());
@@ -249,7 +249,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
             }
         });
 
-        final HBox hbox = new HBox(makePlaylistButton, playlistNameEntry);
+        HBox hbox = new HBox(makePlaylistButton, playlistNameEntry);
 
         //Gibt einem bei Auswahl von Songs die Möglichkeit Playlists zu erstellen und zu benennen
         showPlaylistAdd.addListener((obs, oldValue, newValue) -> {
@@ -275,7 +275,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         return super.get();
     }
 
-    private BooleanBinding generateUserFilter(ChoiceBox<String> choiceBox, Song song, TextField textField) {
+    private static BooleanBinding generateUserFilter(ChoiceBox<String> choiceBox, Song song, TextField textField) {
         String search = textField.getText().toLowerCase().trim();
         return new When(choiceBox.valueProperty().isEqualTo("Überall"))
                 .then(song.searchEverywhere(search)).otherwise(
@@ -343,8 +343,8 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         public CheckboxCell() {
             super();
             checkBox.setOnAction(action -> {
-                final TableRow<Song> row = this.getTableRow();
-                final Song song = row.getItem();
+                TableRow<Song> row = this.getTableRow();
+                Song song = row.getItem();
                 if (song.isSelected()) {
                     song.deselect();
                 } else {

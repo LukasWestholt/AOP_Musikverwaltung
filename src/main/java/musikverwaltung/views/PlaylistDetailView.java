@@ -22,7 +22,7 @@ public class PlaylistDetailView extends MainView {
             getSelectedSongs().forEach(song -> {
                 int i = song.getRowIndex();
                 // TODO theoretisch könnte man hier auch playlist.get(i) == song machen, wenn der song überall
-                //  nur refrenziert wird
+                //  nur referenziert wird
                 if (i != -1 && i < playlist.size() && playlist.get(i).equals(song)) {
                     playlist.remove(i);
                 } else {

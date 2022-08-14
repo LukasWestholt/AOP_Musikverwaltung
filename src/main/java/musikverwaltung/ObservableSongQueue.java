@@ -140,7 +140,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
     public Song remove(int index) {
         beginChange();
         try {
-            final ArrayList<Song> copy = new ArrayList<>(queue);
+            ArrayList<Song> copy = new ArrayList<>(queue);
             Song song = copy.remove(index);
             queue.clear();
             queue.addAll(copy);

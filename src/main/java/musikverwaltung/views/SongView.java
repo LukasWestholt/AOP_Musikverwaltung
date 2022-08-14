@@ -39,7 +39,7 @@ public class SongView extends MenuBarView implements DestroyListener {
     final Label labelSongName;
     Media currentSong;
     MediaPlayer player;
-    final int dBThreshold = 60;
+    final int dbThreshold = 60;
     XYChart.Series<String, Number> audioData;
     final AudioSpectrumListener audioSpectrumListener;
     Playlist playlist;
@@ -80,14 +80,15 @@ public class SongView extends MenuBarView implements DestroyListener {
         centerContainer.setAlignment(Pos.CENTER);
         VBox.setVgrow(centerContainer, Priority.ALWAYS);
 
-        final ContextMenu switchCenterObject = new ContextMenu();
-        final MenuItem headerMenu = new MenuItem("Ansicht wechseln:");
+        MenuItem headerMenu = new MenuItem("Ansicht wechseln:");
+        headerMenu.setDisable(true);
         ToggleGroup toggleGroup = new ToggleGroup();
         RadioMenuItem radioImageMenu = new RadioMenuItem("Bild");
         radioImageMenu.setSelected(true);
         radioImageMenu.setToggleGroup(toggleGroup);
         RadioMenuItem radioChartMenu = new RadioMenuItem("Graph");
         radioChartMenu.setToggleGroup(toggleGroup);
+        ContextMenu switchCenterObject = new ContextMenu();
         switchCenterObject.getItems().addAll(headerMenu, radioImageMenu, radioChartMenu);
         img = new ImageView();
         img.setPreserveRatio(true);
@@ -180,7 +181,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         buttonHBox.setSpacing(10);
         buttonHBox.maxWidthProperty().bind(getHeightProperty().divide(2));
 
-        final Slider slider = new Slider(0, 1, 0);
+        Slider slider = new Slider(0, 1, 0);
         slider.setValue(volume);
         slider.getStyleClass().add("volume");
         slider.valueProperty().addListener((useless1, useless2, sliderValue) -> {
@@ -207,13 +208,13 @@ public class SongView extends MenuBarView implements DestroyListener {
         audioSpectrumListener = (timestamp, duration, magnitudes, phases) -> {
             for (int i = 0; i < magnitudes.length; i++) {
                 //System.out.println(i + ": " + (magnitudes[i] + dBthreshold));
-                audioData.getData().add(new XYChart.Data<>(Integer.toString(i), magnitudes[i] + dBThreshold));
+                audioData.getData().add(new XYChart.Data<>(Integer.toString(i), magnitudes[i] + dbThreshold));
             }
         };
         //TODO listener soll aufhören wenn player fenster nicht mehr zusehen ist
-        CategoryAxis xAxis = new CategoryAxis();
-        NumberAxis yAxis = new NumberAxis();
-        final BarChart<String, Number> audioBarChart = new BarChart<>(xAxis, yAxis);
+        CategoryAxis horizontalAxis = new CategoryAxis();
+        NumberAxis verticalAxis = new NumberAxis();
+        BarChart<String, Number> audioBarChart = new BarChart<>(horizontalAxis, verticalAxis);
         audioBarChart.setBarGap(0);
         audioBarChart.setCategoryGap(0);
         audioBarChart.setLegendVisible(false);
@@ -222,10 +223,10 @@ public class SongView extends MenuBarView implements DestroyListener {
         audioBarChart.setHorizontalGridLinesVisible(false);
         audioBarChart.setHorizontalZeroLineVisible(false);
         audioBarChart.setVerticalZeroLineVisible(false);
-        xAxis.setTickMarkVisible(false);
-        xAxis.setTickLabelsVisible(false);
-        yAxis.setTickMarkVisible(false);
-        yAxis.setTickLabelsVisible(false);
+        horizontalAxis.setTickMarkVisible(false);
+        horizontalAxis.setTickLabelsVisible(false);
+        verticalAxis.setTickMarkVisible(false);
+        verticalAxis.setTickLabelsVisible(false);
         audioBarChart.prefWidthProperty().bind(getWidthProperty().subtract(30));
         audioBarChart.prefHeightProperty().bind(getHeightProperty().divide(2));
         //audioBarChart.setMaxSize(900, 400);
@@ -305,7 +306,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         player.setOnEndOfMedia(this::skipforwards);
         player.setVolume(volume);
         //player.setAudioSpectrumNumBands(10);
-        player.setAudioSpectrumThreshold(-dBThreshold);
+        player.setAudioSpectrumThreshold(-dbThreshold);
 
         //next song starts immediately or stops before
         if (startPlaying) {
@@ -373,7 +374,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         setPlaylist(singleSongPlaylist, startPlaying);
     }
 
-    void setDynamicSize(Region region) {
+    static void setDynamicSize(Region region) {
         region.setMinWidth(Control.USE_PREF_SIZE);
         region.setMaxWidth(Double.MAX_VALUE);
         region.setMinHeight(Control.USE_PREF_SIZE);

@@ -53,10 +53,10 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
 
         screenController.listenerInitiator.addListenerIfNotContains(this);
 
-        final Label welcomeLabel = new Label("Playlisten");
+        Label welcomeLabel = new Label("Playlisten");
         welcomeLabel.getStyleClass().add("header");
 
-        final TilePane tilePane = new TilePane();
+        TilePane tilePane = new TilePane();
         tilePane.setId("playlists");
         tilePane.setHgap(5);
         tilePane.setVgap(5);
@@ -64,28 +64,15 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         tilePane.setPrefColumns(1);
         tilePane.setMaxHeight(Region.USE_PREF_SIZE);
 
-        final MenuItem deleteMenu = new MenuItem("Löschen");
-        final MenuItem selectMenu = new MenuItem("Bild auswählen");
-        final TextField nameField = new TextField();
-        final ImageButton resetRenameButton = new ImageButton(
-                Helper.getResourcePath(this.getClass(), "/icons/reset.png", false),
-                true, false
-        );
-        final HBox renameBox = new HBox();
-
-        resetRenameButton.setOnAction(e -> nameField.setText(contextPlaylist.getName()));
-        resetRenameButton.setPrefSize(30, 30);
-        renameBox.setAlignment(Pos.CENTER);
-        renameBox.getChildren().addAll(nameField, resetRenameButton);
-        CustomMenuItem renameMenu = new CustomMenuItem(renameBox);
-        renameMenu.setHideOnClick(false);
-        final MenuItem openMenu = new MenuItem("Zeige");
+        MenuItem deleteMenu = new MenuItem("Löschen");
         deleteMenu.setOnAction(action -> playlists.remove(contextPlaylist));
+
+        MenuItem selectMenu = new MenuItem("Bild auswählen");
         selectMenu.setOnAction(action -> {
             LinkedHashMap<String, List<String>> extensions = new LinkedHashMap<>();
             extensions.put("Alle Bilddateien", Helper.imageExtensions);
             extensions.put("Alle Dateien", List.of("*.*"));
-            final Path imageFile = CachedPathChooser.showOpenDialog(stage,
+            Path imageFile = CachedPathChooser.showOpenDialog(stage,
                     "Suche dir ein Vorschaubild für die Playlist aus", extensions);
             if (imageFile == null) {
                 return;
@@ -96,18 +83,34 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
                 System.out.println("Problem on loading File");
             }
         });
+
+        TextField nameField = new TextField();
+        ImageButton resetRenameButton = new ImageButton(
+                Helper.getResourcePath(this.getClass(), "/icons/reset.png", false),
+                true, false
+        );
+        resetRenameButton.setOnAction(e -> nameField.setText(contextPlaylist.getName()));
+        resetRenameButton.setPrefSize(30, 30);
+        HBox renameBox = new HBox();
+        renameBox.setAlignment(Pos.CENTER);
+        renameBox.getChildren().addAll(nameField, resetRenameButton);
+        CustomMenuItem renameMenu = new CustomMenuItem(renameBox);
+        renameMenu.setHideOnClick(false);
+
+        MenuItem openMenu = new MenuItem("Zeige");
         openMenu.setOnAction(action -> {
-            final GenericView view = screenController.activateWindow(PlaylistDetailView.class, false);
+            GenericView view = screenController.activateWindow(PlaylistDetailView.class, false);
             if (view instanceof PlaylistDetailView) {
                 PlaylistDetailView playlistDetailView = (PlaylistDetailView) view;
                 playlistDetailView.showPlaylist(contextPlaylist);
             }
         });
-        final ContextMenu quickOptions = new ContextMenu();
+
+        ContextMenu quickOptions = new ContextMenu();
         quickOptions.getItems().addAll(deleteMenu, selectMenu, renameMenu, openMenu);
-        int[] sepIdices = {2, 4};
-        for (int sepIndex : sepIdices) {
-            final SeparatorMenuItem sep = new SeparatorMenuItem();
+        int[] sepIndices = {2, 4};
+        for (int sepIndex : sepIndices) {
+            SeparatorMenuItem sep = new SeparatorMenuItem();
             quickOptions.getItems().add(sepIndex, sep);
         }
         quickOptions.setOnAutoHide(event -> contextPlaylist.setName(nameField.getText()));
@@ -115,7 +118,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         playlists.addListener((ListChangeListener<? super Playlist>) change -> {
             tilePane.getChildren().clear();
             for (Playlist playlist : playlists) {
-                final Button playlistButton = new Button(playlist.getName());
+                Button playlistButton = new Button(playlist.getName());
                 playlistButton.setMinWidth(Region.USE_PREF_SIZE);
                 playlistButton.setWrapText(true);
                 playlistButton.hoverProperty().addListener((obs, oldValue, newValue) -> {
@@ -134,13 +137,13 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
                 playlistButton.setContextMenu(quickOptions);
 
                 playlistButton.setOnAction((e) -> {
-                    final GenericView view = screenController.activateWindow(SongView.class, true);
+                    GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView) {
                         SongView songView = (SongView) view;
                         songView.setPlaylist(playlist, true);
                     }
                 });
-                final ImageView previewView = new ImageView();
+                ImageView previewView = new ImageView();
                 previewView.imageProperty().bind(playlist.getPreviewImageProperty());
                 previewView.setFitWidth(80);
                 previewView.setFitHeight(80);
@@ -158,7 +161,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         //letzte Playlisten werden geladen
         playlists.addAll(SettingFile.load().getMediaLibrary());
 
-        final ScrollPane sp = new ScrollPane();
+        ScrollPane sp = new ScrollPane();
         sp.setId("scroll-playlists");
         sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -166,12 +169,12 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         sp.setContent(tilePane);
         sp.setMaxHeight(Control.USE_PREF_SIZE);
 
-        final Button musicPlayerButton = new Button("Player");
+        Button musicPlayerButton = new Button("Player");
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
         musicPlayerButton.setOnAction(e -> {
-            final GenericView view = screenController.activateWindow(SongView.class, true);
+            GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView) {
-                final Song lastSong = mediaManager.getPlayableLastSong();
+                Song lastSong = mediaManager.getPlayableLastSong();
                 if (lastSong != null) {
                     SongView songView = (SongView) view;
                     songView.setPlaylist(lastSong, false);
@@ -180,11 +183,11 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         });
 
         //TODO verbuggt beim mehrmaligen aktivieren?
-        final Button automaticPlaylistButton = new Button("Playlist Vorschläge");
+        Button automaticPlaylistButton = new Button("Playlist Vorschläge");
         automaticPlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
         automaticPlaylistButton.setOnAction(e -> createAutomaticPlaylists());
 
-        final VBox vbox = new VBox();
+        VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10));
         vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton, automaticPlaylistButton);
@@ -207,8 +210,8 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         final int threshold = 5;
         boolean isCreatedAlready;
         //Criteria: genre and artist
-        final ArrayList<String> genreCriteria = new ArrayList<>();
-        final ArrayList<String> artistCriteria = new ArrayList<>();
+        ArrayList<String> genreCriteria = new ArrayList<>();
+        ArrayList<String> artistCriteria = new ArrayList<>();
         for (Song flSong : flSongs) {
             if (!(genreCriteria.contains(flSong.getGenre())) && !(flSong.getGenre().equals(""))) {
                 genreCriteria.add(flSong.getGenre());
@@ -222,7 +225,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         for (String genre : genreCriteria) {
             flSongs.setPredicate(p -> p.getGenre().contains(genre));
             if (flSongs.size() >= threshold) {
-                final Playlist automaticPlaylist = new Playlist();
+                Playlist automaticPlaylist = new Playlist();
                 automaticPlaylist.setName("Genre: " + genre);
                 automaticPlaylist.setAll(flSongs);
                 isCreatedAlready = false;
@@ -240,7 +243,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         for (String artist : artistCriteria) {
             flSongs.setPredicate(p -> p.getArtist().contains(artist));
             if (flSongs.size() >= threshold) {
-                final Playlist automaticPlaylist = new Playlist();
+                Playlist automaticPlaylist = new Playlist();
                 automaticPlaylist.setName("Artist: " + artist);
                 automaticPlaylist.setAll(flSongs);
                 isCreatedAlready = false;
