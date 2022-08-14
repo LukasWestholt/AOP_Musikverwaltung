@@ -9,6 +9,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -121,6 +122,7 @@ public class ScreenController {
         stage.toFront();
 
         stage.getScene().getStylesheets().add(Helper.getResourcePathUriString(this.getClass(), "/style.css", true));
+        Font.loadFont(Helper.getResourcePathUriString(this.getClass(), "/fonts/Manrope-Light.ttf", true), 14);
         return view;
     }
 

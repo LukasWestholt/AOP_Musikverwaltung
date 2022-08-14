@@ -224,8 +224,8 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         rectangle.setFill(new LinearGradient(
                 0, 0, 1, 1, true, //sizing
                 CycleMethod.NO_CYCLE, //cycling
-                new Stop(0, Color.web("#81c483")), //colors
-                new Stop(1, Color.web("#fcc200")))
+                new Stop(0, Color.web("#808b96")), //colors
+                new Stop(1, Color.web("#873600")))
         );
 
         TextField playlistNameEntry = new TextField("Playlist 1");
