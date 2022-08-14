@@ -19,8 +19,12 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import musikverwaltung.*;
+import musikverwaltung.data.Playlist;
+import musikverwaltung.data.SettingFile;
+import musikverwaltung.data.Song;
+import musikverwaltung.handler.DestroyListener;
 
-public class PlaylistView extends MenuBarView {
+public class PlaylistView extends MenuBarView implements DestroyListener {
 
     private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
 
@@ -46,6 +50,8 @@ public class PlaylistView extends MenuBarView {
                 e -> screenController.activateWindow(CreditsView.class, false)
         );
         setActiveMenuItem(playlistViewButton);
+
+        screenController.listenerInitiator.addListenerIfNotContains(this);
 
         final Label welcomeLabel = new Label("Playlisten");
         welcomeLabel.getStyleClass().add("header");
@@ -183,8 +189,6 @@ public class PlaylistView extends MenuBarView {
         vbox.setPadding(new Insets(10));
         vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton, automaticPlaylistButton);
         showNodes(vbox);
-
-        setDestroyListener(() -> SettingFile.saveMediaLibrary(playlists));
     }
 
     public boolean addPlaylist(Playlist createdPlaylist) {
@@ -192,10 +196,8 @@ public class PlaylistView extends MenuBarView {
         if (playlists.contains(createdPlaylist)) {
             return false;
         }
-        // TODO because of this every song in a playlist gets duplicated --> memory?
         System.out.println("added a new playlist " + createdPlaylist.getName());
-        final Playlist copyPlaylist = new Playlist(createdPlaylist);
-        playlists.add(copyPlaylist);
+        playlists.add(createdPlaylist);
 
         // TODO Asynchron speichern der aktuellen Playlisten
         return true;
@@ -222,9 +224,7 @@ public class PlaylistView extends MenuBarView {
             if (flSongs.size() >= threshold) {
                 final Playlist automaticPlaylist = new Playlist();
                 automaticPlaylist.setName("Genre: " + genre);
-                for (Song song : flSongs) {
-                    automaticPlaylist.add(song);
-                }
+                automaticPlaylist.setAll(flSongs);
                 isCreatedAlready = false;
                 for (Playlist playlist : playlists) {
                     if (playlist.isAlmostEqual(automaticPlaylist)) {
@@ -242,9 +242,7 @@ public class PlaylistView extends MenuBarView {
             if (flSongs.size() >= threshold) {
                 final Playlist automaticPlaylist = new Playlist();
                 automaticPlaylist.setName("Artist: " + artist);
-                for (Song song : flSongs) {
-                    automaticPlaylist.add(song);
-                }
+                automaticPlaylist.setAll(flSongs);
                 isCreatedAlready = false;
                 for (Playlist playlist : playlists) {
                     if (playlist.isAlmostEqual(automaticPlaylist)) {
@@ -257,5 +255,10 @@ public class PlaylistView extends MenuBarView {
             }
         }
         flSongs.setPredicate(null);
+    }
+
+    @Override
+    public void destroy() {
+        SettingFile.saveMediaLibrary(playlists);
     }
 }

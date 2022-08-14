@@ -1,4 +1,4 @@
-package musikverwaltung;
+package musikverwaltung.data;
 
 import static musikverwaltung.views.MainView.HIGHLIGHT_END;
 import static musikverwaltung.views.MainView.HIGHLIGHT_START;
@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import musikverwaltung.Helper;
 
 public class Song implements Externalizable {
 

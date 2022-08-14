@@ -1,6 +1,7 @@
 package musikverwaltung;
 
 import java.util.LinkedList;
+import musikverwaltung.data.Song;
 
 // https://stackoverflow.com/a/14322473/8980073
 public class SongHistoryList extends LinkedList<Song> {

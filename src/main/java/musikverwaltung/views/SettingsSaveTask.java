@@ -1,8 +1,8 @@
 package musikverwaltung.views;
 
 import javafx.collections.ObservableList;
-import musikverwaltung.Playlist;
-import musikverwaltung.SettingFile;
+import musikverwaltung.data.Playlist;
+import musikverwaltung.data.SettingFile;
 
 public class SettingsSaveTask implements Runnable {
 

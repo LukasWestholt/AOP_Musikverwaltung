@@ -1,4 +1,4 @@
-package musikverwaltung;
+package musikverwaltung.data;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import musikverwaltung.Helper;
 
 public class SettingFile implements Externalizable {
 

@@ -4,8 +4,8 @@ import javafx.beans.binding.Bindings;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import musikverwaltung.MediaManager;
-import musikverwaltung.Playlist;
 import musikverwaltung.ScreenController;
+import musikverwaltung.data.Playlist;
 
 public class PlaylistDetailView extends MainView {
 
@@ -26,7 +26,7 @@ public class PlaylistDetailView extends MainView {
                 if (i != -1 && i < playlist.size() && playlist.get(i).equals(song)) {
                     playlist.remove(i);
                 } else {
-                    //System.out.println("Use fallback removeFirstOccurrence");
+                    // fallback
                     playlist.removeFirstOccurrence(song);
                 }
             });

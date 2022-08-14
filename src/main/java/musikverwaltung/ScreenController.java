@@ -12,6 +12,8 @@ import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import musikverwaltung.handler.DestroyListener;
+import musikverwaltung.handler.ListenerInitiator;
 import musikverwaltung.views.GenericView;
 
 // https://stackoverflow.com/a/37276108/8980073
@@ -22,6 +24,8 @@ public class ScreenController {
     public ScreenController(Stage stage) {
         stageMap.put(GenericView.class, stage);
     }
+
+    public final ListenerInitiator<DestroyListener> listenerInitiator = new ListenerInitiator<>();
 
     public Stage getMain() {
         final Stage stage = stageMap.get(GenericView.class);
@@ -130,6 +134,7 @@ public class ScreenController {
             return activate(stage, view, id.getName(), neighborToMain);
         }
         stage = new Stage();
+        view.setStage(stage);
         stageMap.put(id, stage);
         Scene scene = new Scene(new Group(), view.getPrefWidth(),
                 (neighborToMain ? getMainScene().getHeight() : view.getPrefHeight()));
@@ -140,8 +145,6 @@ public class ScreenController {
     }
 
     public void triggerDestroyListener() {
-        for (GenericView view : screenMap.values()) {
-            view.triggerDestroyListener();
-        }
+        listenerInitiator.getListeners().forEach(DestroyListener::destroy);
     }
 }

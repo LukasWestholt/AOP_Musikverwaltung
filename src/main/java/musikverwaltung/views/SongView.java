@@ -17,10 +17,18 @@ import javafx.scene.media.AudioSpectrumListener;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
-import musikverwaltung.*;
-import musikverwaltung.handler.StringListenerManager;
+import musikverwaltung.Helper;
+import musikverwaltung.ImageButton;
+import musikverwaltung.ScreenController;
+import musikverwaltung.SongHistoryList;
+import musikverwaltung.data.Playlist;
+import musikverwaltung.data.SettingFile;
+import musikverwaltung.data.Song;
+import musikverwaltung.handler.DestroyListener;
+import musikverwaltung.handler.ListenerInitiator;
+import musikverwaltung.handler.SetActionLabelListener;
 
-public class SongView extends MenuBarView implements StringListenerManager {
+public class SongView extends MenuBarView implements DestroyListener {
     double songLength;
     double volume = 0.5;
     final Image defaultImage;
@@ -38,7 +46,9 @@ public class SongView extends MenuBarView implements StringListenerManager {
     private final SongHistoryList songHistoryStack = new SongHistoryList(10);
     private final ChangeListener<Duration> playerSongLengthListener;
 
-    private static final boolean onRepeat = true;
+    private boolean onRepeat = true;
+
+    public final ListenerInitiator<SetActionLabelListener> listenerInitiator = new ListenerInitiator<>();
 
     public SongView(ScreenController sc) {
         /*
@@ -52,10 +62,16 @@ public class SongView extends MenuBarView implements StringListenerManager {
         addActiveMenuButton(mainViewButton,
                 e -> screenController.activate(MainView.class)
         );
-        addActiveMenuButton(new Button("Reset"),
-                e -> reset(false)
+        Button onRepeatButton = new Button("Repeat");
+        addActiveMenuButton(onRepeatButton,
+                e -> {
+                    onRepeat = !onRepeat;
+                    onRepeatButton.setText(onRepeat ? "Repeat" : "No Repeat");
+                }
         );
         ignoreMenuItems(settingViewButton, playlistViewButton, creditsViewButton);
+
+        screenController.listenerInitiator.addListenerIfNotContains(this);
 
         labelSongName = new Label("Unbekannt");
         labelSongName.getStyleClass().add("header");
@@ -87,10 +103,10 @@ public class SongView extends MenuBarView implements StringListenerManager {
         displayImage();
         centerContainer.getChildren().add(img);
 
-        final Slider songSlider = new Slider(0, 1, 0);
+        Slider songSlider = new Slider(0, 1, 0);
         songSlider.getStyleClass().add("song");
         songSlider.prefHeightProperty().bind(getHeightProperty().divide(20));
-        final ProgressBar songProgressBar = new ProgressBar(0);
+        ProgressBar songProgressBar = new ProgressBar(0);
         songProgressBar.getStyleClass().add("song");
         songProgressBar.prefHeightProperty().bind(getHeightProperty().divide(20));
         songProgressBar.prefWidthProperty().bind(songSlider.widthProperty());
@@ -103,7 +119,7 @@ public class SongView extends MenuBarView implements StringListenerManager {
         songSlider.valueChangingProperty().addListener((observableValue, wasChanging, changing) -> {
             if (!changing) {
                 System.out.println("slider change finished");
-                if (player != null) {
+                if (!isPlayerUnavailable()) {
                     player.seek(Duration.seconds(songLength * songSlider.getValue()));
                 }
             }
@@ -164,18 +180,12 @@ public class SongView extends MenuBarView implements StringListenerManager {
         buttonHBox.setSpacing(10);
         buttonHBox.maxWidthProperty().bind(getHeightProperty().divide(2));
 
-        Slider slider = new Slider(0, 1, 0);
+        final Slider slider = new Slider(0, 1, 0);
         slider.setValue(volume);
-        /*mir gefällt es besser ohne
-        slider.setMinorTickCount(10);
-        slider.setMajorTickUnit(10.0);
-        slider.setShowTickMarks(true);
-        slider.setShowTickLabels(true);
-        */
         slider.getStyleClass().add("volume");
         slider.valueProperty().addListener((useless1, useless2, sliderValue) -> {
             volume = sliderValue.doubleValue();
-            if (player != null) {
+            if (!isPlayerUnavailable()) {
                 player.setVolume(volume);
             }
         });
@@ -255,45 +265,42 @@ public class SongView extends MenuBarView implements StringListenerManager {
     }
 
     private void startStopSong() {
-        if (player == null) {
+        if (isPlayerUnavailable()) {
             return;
         }
-        if (isPlaying()) {
+        if (isPlayerPlaying()) {
             player.pause();
             startStop.switchImage(playImage);
             //TODO soll bei stop einfach graph freezen?
             //audioData.getData().clear();
-            triggerStringListener("Stoppe Musik");
+            listenerInitiator.getListeners().forEach(l -> l.setActionLabel("Stoppe Musik"));
         } else {
             player.play();
             startStop.switchImage(pauseImage);
-            triggerStringListener("Spiele: " + labelSongName.getText());
+            listenerInitiator.getListeners().forEach(l -> l.setActionLabel("Spiele: " + labelSongName.getText()));
         }
     }
 
-    private void reset(boolean andDispose) {
-        if (player == null) {
+    private void reset() {
+        if (isPlayerUnavailable()) {
             return;
         }
-        player.stop();
-        audioData.getData().clear();
-        if (andDispose) {
-            player.dispose();
-        }
+        player.dispose();
         startStop.switchImage(playImage);
+        audioData.getData().clear();
     }
 
     private void updateSong(Song nextSong, boolean startPlaying) {
+        reset();
         if (nextSong == null) {
             return;
         }
         songHistoryStack.add(nextSong);
-        reset(true);
         Path path = nextSong.getPath();
         labelSongName.setText(nextSong.getTitle());
-        setDestroyListener(() -> SettingFile.saveLastSong(path));
         currentSong = new Media(Helper.p2uris(path));
         // TODO memory leak on Media/MediaPlayer ? i cant delete music files after they got played
+        assert player == null || player.getStatus() == MediaPlayer.Status.DISPOSED;
         player = new MediaPlayer(currentSong);
         player.setOnEndOfMedia(this::skipforwards);
         player.setVolume(volume);
@@ -305,31 +312,31 @@ public class SongView extends MenuBarView implements StringListenerManager {
             startStopSong();
         }
         activateListeners();
-        triggerStringListener("Spiele: " + labelSongName.getText());
+        listenerInitiator.getListeners().forEach(l -> l.setActionLabel("Spiele: " + labelSongName.getText()));
     }
 
     private void skipforwards() {
         if (playlist == null) {
             return;
         }
-        updateSong(playlist.nextSong(onRepeat), true);
+        updateSong(playlist.getRelativeSong(1, onRepeat), true);
     }
 
     private void skipbackwards() {
         if (playlist == null) {
             return;
         }
-        if (player != null && player.getCurrentTime().toSeconds() < 2 && songLength > 10) {
+        if (!isPlayerUnavailable() && player.getCurrentTime().toSeconds() < 2 && songLength > 10) {
             // skip backwards to the song before
-            updateSong(playlist.beforeSong(onRepeat), true);
+            updateSong(playlist.getRelativeSong(-1, onRepeat), true);
         } else {
             // skip backwards to the beginning of the song
-            updateSong(playlist.getLastPlayedSong(), true);
+            updateSong(playlist.getRelativeSong(0, onRepeat), true);
         }
     }
 
     private void skipTime(int timeInSeconds) {
-        if (player == null) {
+        if (isPlayerUnavailable()) {
             return;
         }
         player.seek(new Duration(player.getCurrentTime().toMillis() + (timeInSeconds * 1000)));
@@ -341,13 +348,20 @@ public class SongView extends MenuBarView implements StringListenerManager {
         player.setAudioSpectrumListener(audioSpectrumListener);
     }
 
-    private boolean isPlaying() {
+    private boolean isPlayerPlaying() {
         return player != null && player.getStatus() == MediaPlayer.Status.PLAYING;
+    }
+
+    private boolean isPlayerUnavailable() {
+        return player == null
+                || player.getStatus() == MediaPlayer.Status.DISPOSED
+                || player.getStatus() == MediaPlayer.Status.HALTED;
     }
 
     void setPlaylist(Playlist playlist, boolean startPlaying) {
         this.playlist = playlist;
-        updateSong(playlist.nextSong(onRepeat), startPlaying);
+        this.playlist.resetRemainingSongs();
+        updateSong(playlist.getRelativeSong(1, onRepeat), startPlaying);
     }
 
     void setPlaylist(Song song, boolean startPlaying) {
@@ -365,5 +379,11 @@ public class SongView extends MenuBarView implements StringListenerManager {
         region.setMinHeight(Control.USE_PREF_SIZE);
         region.setMaxHeight(Double.MAX_VALUE);
         HBox.setHgrow(region, Priority.SOMETIMES);
+    }
+
+    @Override
+    public void destroy() {
+        // TODO NoSuchElement empty setting
+        SettingFile.saveLastSong(songHistoryStack.getLast().getPath());
     }
 }

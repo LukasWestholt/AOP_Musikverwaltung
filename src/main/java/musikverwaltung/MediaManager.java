@@ -21,6 +21,9 @@ import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.media.Media;
+import musikverwaltung.data.Playlist;
+import musikverwaltung.data.SettingFile;
+import musikverwaltung.data.Song;
 
 public class MediaManager {
     private final HashSet<Path> mediaFiles = new HashSet<>();

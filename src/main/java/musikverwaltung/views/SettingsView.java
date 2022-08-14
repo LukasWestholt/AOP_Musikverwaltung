@@ -13,12 +13,15 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import musikverwaltung.CachedPathChooser;
 import musikverwaltung.ScreenController;
-import musikverwaltung.SettingFile;
-import musikverwaltung.handler.ActionListenerManager;
+import musikverwaltung.data.SettingFile;
+import musikverwaltung.handler.ListenerInitiator;
+import musikverwaltung.handler.RefreshListener;
 
-public class SettingsView extends GenericView implements ActionListenerManager {
+public class SettingsView extends GenericView {
     final ObservableList<String> directories = FXCollections.observableArrayList();
     final CheckBox checkBox;
+
+    public final ListenerInitiator<RefreshListener> listenerInitiator = new ListenerInitiator<>();
 
     public SettingsView(ScreenController sc) {
         super(sc, 350, 300);
@@ -42,7 +45,7 @@ public class SettingsView extends GenericView implements ActionListenerManager {
             SettingFile.savePaths(new ArrayList<>(directories));
             SettingFile.saveShowUnplayableSongs(checkBox.isSelected());
             stage.close();
-            triggerActionListener();
+            listenerInitiator.getListeners().forEach(l -> l.refresh().run());
         });
         Button buttonCancel = new Button("Cancel");
         buttonCancel.setCancelButton(true);

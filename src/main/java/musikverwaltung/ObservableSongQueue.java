@@ -2,6 +2,7 @@ package musikverwaltung;
 
 import java.util.*;
 import javafx.collections.ObservableListBase;
+import musikverwaltung.data.Song;
 
 /**
  * This data structure builds an observable deque for songs.
@@ -9,9 +10,39 @@ import javafx.collections.ObservableListBase;
  */
 public class ObservableSongQueue extends ObservableListBase<Song> implements Deque<Song> {
     private final ArrayDeque<Song> queue;
+    private int remainingSongs;
 
     public ObservableSongQueue() {
         this.queue = new ArrayDeque<>();
+        this.remainingSongs = 0;
+    }
+
+    public int getRemainingSongs() {
+        return this.remainingSongs;
+    }
+
+    public void resetRemainingSongs() {
+        this.remainingSongs = queue.size();
+    }
+
+    public void addToRemainingSongs(int i) {
+        System.out.println("+" + i);
+        this.remainingSongs += i;
+    }
+
+    private void documentAdd(int i1, int i2) {
+        nextAdd(i1, i2);
+        remainingSongs += i2 - i1;
+    }
+
+    private void documentRemove(int i, Song song) {
+        nextRemove(i, song);
+        remainingSongs--;
+    }
+
+    private void documentSet(int size, List<Song> list) {
+        nextReplace(0, size, list);
+        resetRemainingSongs();
     }
 
     @Override
@@ -24,7 +55,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         beginChange();
         boolean result = queue.offerFirst(song);
         if (result) {
-            nextAdd(0, 1);
+            documentAdd(0, 1);
         }
         endChange();
         return result;
@@ -35,7 +66,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         beginChange();
         boolean result = queue.offerLast(song);
         if (result) {
-            nextAdd(queue.size() - 1, queue.size());
+            documentAdd(queue.size() - 1, queue.size());
         }
         endChange();
         return result;
@@ -52,7 +83,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         beginChange();
         try {
             queue.addFirst(song);
-            nextAdd(0, 1);
+            documentAdd(0, 1);
         } finally {
             endChange();
         }
@@ -63,7 +94,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         beginChange();
         try {
             queue.addLast(song);
-            nextAdd(queue.size() - 1, queue.size());
+            documentAdd(queue.size() - 1, queue.size());
         } finally {
             endChange();
         }
@@ -74,7 +105,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         beginChange();
         try {
             queue.addAll(c);
-            nextAdd(queue.size() - c.size(), queue.size());
+            documentAdd(queue.size() - c.size(), queue.size());
             return true;
         } finally {
             endChange();
@@ -88,7 +119,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         try {
             queue.clear();
             queue.addAll(c);
-            nextReplace(0, queue.size(), new ArrayList<Song>(c));
+            documentSet(queue.size(), new ArrayList<>(c));
             return true;
         } finally {
             endChange();
@@ -113,7 +144,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
             Song song = copy.remove(index);
             queue.clear();
             queue.addAll(copy);
-            nextRemove(index, song);
+            documentRemove(index, song);
             return song;
         } finally {
             endChange();
@@ -130,7 +161,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         beginChange();
         try {
             Song s = queue.removeFirst();
-            nextRemove(0, s);
+            documentRemove(0, s);
             return s;
         } finally {
             endChange();
@@ -142,7 +173,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         beginChange();
         try {
             Song s = queue.removeLast();
-            nextRemove(queue.size() - 1, s);
+            documentRemove(queue.size() - 1, s);
             return s;
         } finally {
             endChange();
@@ -159,7 +190,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
                 if (iterator.next().equals(o)) {
                     boolean success = queue.removeFirstOccurrence(o);
                     if (success) {
-                        nextRemove(i, (Song) o);
+                        documentRemove(i, (Song) o);
                     }
                     return success;
                 }
@@ -180,7 +211,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
                 if (iterator.next().equals(o)) {
                     boolean success = queue.removeLastOccurrence(o);
                     if (success) {
-                        nextRemove(i, (Song) o);
+                        documentRemove(i, (Song) o);
                     }
                     return success;
                 }
@@ -201,7 +232,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         beginChange();
         Song s = queue.pollFirst();
         if (s != null) {
-            nextRemove(0, s);
+            documentRemove(0, s);
         }
         endChange();
         return s;
@@ -212,7 +243,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         beginChange();
         Song s = queue.pollLast();
         if (s != null) {
-            nextRemove(queue.size() - 1, s);
+            documentRemove(queue.size() - 1, s);
         }
         endChange();
         return s;

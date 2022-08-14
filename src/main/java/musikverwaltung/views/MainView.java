@@ -1,6 +1,5 @@
 package musikverwaltung.views;
 
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -25,12 +24,14 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import musikverwaltung.MediaManager;
-import musikverwaltung.Playlist;
 import musikverwaltung.ScreenController;
-import musikverwaltung.Song;
+import musikverwaltung.data.Playlist;
+import musikverwaltung.data.Song;
+import musikverwaltung.handler.RefreshListener;
+import musikverwaltung.handler.SetActionLabelListener;
 
 
-public class MainView extends MenuBarView {
+public class MainView extends MenuBarView implements SetActionLabelListener, RefreshListener {
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
 
@@ -38,6 +39,7 @@ public class MainView extends MenuBarView {
     private final FilteredList<Song> flSong;
     final MediaManager mediaManager;
     final Label welcomeLabel;
+    final Label actionLabel;
     final StackPane customButtonPane = new StackPane();
     public final ObjectProperty<Predicate<Song>> songFilterForPlaylist = new SimpleObjectProperty<>();
 
@@ -49,13 +51,12 @@ public class MainView extends MenuBarView {
 
         this.mediaManager = mediaManager;
 
-        Runnable uniqueRefreshRunnable = refresh();
         addActiveMenuButton(settingViewButton,
                 e -> {
                     final GenericView view = screenController.activateWindow(SettingsView.class, false);
                     if (view instanceof SettingsView) {
                         SettingsView settingsView = (SettingsView) view;
-                        settingsView.addActionListenerIfNotContains(uniqueRefreshRunnable);
+                        settingsView.listenerInitiator.addListenerIfNotContains(this);
                     }
                 }
         );
@@ -66,7 +67,7 @@ public class MainView extends MenuBarView {
                 e -> screenController.activateWindow(CreditsView.class, false)
         );
         setActiveMenuItem(mainViewButton);
-        uniqueRefreshRunnable.run();
+        refresh().run();
 
         songFilterForPlaylist.bind(Bindings.createObjectBinding(() -> song -> true));
         ObjectProperty<Predicate<Song>> userFilter = new SimpleObjectProperty<>();
@@ -82,7 +83,7 @@ public class MainView extends MenuBarView {
         welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.getStyleClass().add("header");
 
-        Label actionLabel = new Label();
+        actionLabel = new Label();
         actionLabel.setAlignment(Pos.CENTER);
         actionLabel.setMaxWidth(Double.MAX_VALUE);
         PauseTransition pause = new PauseTransition(Duration.seconds(20));
@@ -97,7 +98,7 @@ public class MainView extends MenuBarView {
         reloadButton.setMinWidth(Control.USE_PREF_SIZE);
         reloadButton.setOnAction(e -> {
             actionLabel.setText("Reload");
-            uniqueRefreshRunnable.run();
+            refresh().run();
             // TODO bug: "Playlist erstellen" button geht nicht weg
         });
 
@@ -109,6 +110,7 @@ public class MainView extends MenuBarView {
                 Song song = flSong.get(i);
                 if (!song.isSelected()) {
                     wasAllSelect = false;
+                    // TODO quick-and-dirty
                     song.select(new SimpleIntegerProperty(i));
                 }
             }
@@ -145,7 +147,6 @@ public class MainView extends MenuBarView {
                 textSearchField.setText("");
             }
         });
-        Consumer<String> setActionText = actionLabel::setText;
         Button musicPlayerButton = new Button("Player");
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
         musicPlayerButton.setOnAction(e -> {
@@ -153,7 +154,7 @@ public class MainView extends MenuBarView {
             final GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView) {
                 SongView songView = (SongView) view;
-                songView.addStringListenerIfNotContains(setActionText);
+                songView.listenerInitiator.addListenerIfNotContains(this);
                 Song lastSong = mediaManager.getPlayableLastSong();
                 songView.setPlaylist(lastSong, false);
 
@@ -205,7 +206,7 @@ public class MainView extends MenuBarView {
                     final GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView) {
                         SongView songView = (SongView) view;
-                        songView.addStringListenerIfNotContains(setActionText);
+                        songView.listenerInitiator.addListenerIfNotContains(this);
                         songView.setPlaylist(row.getItem(), true);
                     }
                 }
@@ -329,6 +330,11 @@ public class MainView extends MenuBarView {
                 };
             }
         };
+    }
+
+    @Override
+    public void setActionLabel(String text) {
+        actionLabel.setText(text);
     }
 
     class CheckboxCell extends TableCell<Song, Boolean> {
