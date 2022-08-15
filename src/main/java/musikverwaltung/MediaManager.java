@@ -36,7 +36,7 @@ public class MediaManager {
             o.getGenreProperty()
 
     });
-    //TODO einlesen bei Jazzy night und ambient pearls hat Probleme
+    // TODO einlesen bei Jazzy night und ambient pearls hat Probleme
     private static final String genreFilename = "genres.txt";
 
     public void clearAndLoadAll(Runnable refreshCallback) {

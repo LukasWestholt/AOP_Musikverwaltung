@@ -14,8 +14,8 @@ import javafx.scene.layout.VBox;
 import musikverwaltung.CachedPathChooser;
 import musikverwaltung.ScreenController;
 import musikverwaltung.data.SettingFile;
-import musikverwaltung.handler.ListenerInitiator;
-import musikverwaltung.handler.RefreshListener;
+import musikverwaltung.handlers.ListenerInitiator;
+import musikverwaltung.handlers.RefreshListener;
 
 public class SettingsView extends GenericView {
     private final ObservableList<String> directories = FXCollections.observableArrayList();

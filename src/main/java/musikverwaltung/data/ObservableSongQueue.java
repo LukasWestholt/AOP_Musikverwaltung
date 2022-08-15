@@ -1,8 +1,7 @@
-package musikverwaltung;
+package musikverwaltung.data;
 
 import java.util.*;
 import javafx.collections.ObservableListBase;
-import musikverwaltung.data.Song;
 
 /**
  * This data structure builds an observable deque for songs.

@@ -15,7 +15,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import musikverwaltung.Helper;
-import musikverwaltung.ObservableSongQueue;
 
 public class Playlist implements Externalizable {
 

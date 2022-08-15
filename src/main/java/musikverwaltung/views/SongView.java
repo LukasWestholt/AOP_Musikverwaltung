@@ -24,13 +24,18 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import musikverwaltung.*;
+import musikverwaltung.GradientBackground;
+import musikverwaltung.Helper;
+import musikverwaltung.MediaManager;
+import musikverwaltung.ScreenController;
 import musikverwaltung.data.Playlist;
 import musikverwaltung.data.SettingFile;
 import musikverwaltung.data.Song;
-import musikverwaltung.handler.DestroyListener;
-import musikverwaltung.handler.ListenerInitiator;
-import musikverwaltung.handler.SetActionLabelListener;
+import musikverwaltung.data.SongHistoryList;
+import musikverwaltung.handlers.DestroyListener;
+import musikverwaltung.handlers.ListenerInitiator;
+import musikverwaltung.handlers.SetActionLabelListener;
+import musikverwaltung.nodes.ImageButton;
 
 //TODO einzelsong bei repeat hin und her wechseln sehr verbuggt
 public class SongView extends MenuBarView implements DestroyListener {

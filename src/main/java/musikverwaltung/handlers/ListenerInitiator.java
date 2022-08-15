@@ -1,4 +1,4 @@
-package musikverwaltung.handler;
+package musikverwaltung.handlers;
 
 import java.util.ArrayList;
 import java.util.List;

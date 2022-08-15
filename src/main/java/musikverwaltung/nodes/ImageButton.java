@@ -1,9 +1,10 @@
-package musikverwaltung;
+package musikverwaltung.nodes;
 
 import java.nio.file.Path;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import musikverwaltung.Helper;
 
 public class ImageButton extends Button {
     private final ImageView imageView = new ImageView();

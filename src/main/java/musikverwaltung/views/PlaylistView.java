@@ -26,7 +26,9 @@ import musikverwaltung.*;
 import musikverwaltung.data.Playlist;
 import musikverwaltung.data.SettingFile;
 import musikverwaltung.data.Song;
-import musikverwaltung.handler.DestroyListener;
+import musikverwaltung.handlers.DestroyListener;
+import musikverwaltung.nodes.ImageButton;
+import musikverwaltung.nodes.OpenSongViewButton;
 
 public class PlaylistView extends MenuBarView implements DestroyListener {
 
@@ -192,24 +194,24 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         sp.setContent(tilePane);
         sp.setMaxHeight(Control.USE_PREF_SIZE);
 
-        Button musicPlayerButton = new Button("Player");
-        musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
-        musicPlayerButton.setOnAction(e -> {
-            GenericView view = screenController.activateWindow(SongView.class, true);
-            if (view instanceof SongView) {
-                SongView songView = (SongView) view;
-                songView.setPlaylistLastSong();
-            }
-        });
-
         Button automaticPlaylistButton = new Button("Playlist Vorschläge");
         automaticPlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
         automaticPlaylistButton.setOnAction(e -> createAutomaticPlaylists());
 
+        OpenSongViewButton openSongViewButton = new OpenSongViewButton(
+                e -> {
+                    GenericView view = screenController.activateWindow(SongView.class, true);
+                    if (view instanceof SongView) {
+                        SongView songView = (SongView) view;
+                        songView.setPlaylistLastSong();
+                    }
+                }
+        );
+
         VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10));
-        vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton, automaticPlaylistButton);
+        vbox.getChildren().addAll(welcomeLabel, sp, openSongViewButton, automaticPlaylistButton);
         GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
         Rectangle background = gradientMaker.getDefaultRectangle();
 

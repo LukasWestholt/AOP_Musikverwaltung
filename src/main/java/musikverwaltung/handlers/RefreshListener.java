@@ -1,4 +1,4 @@
-package musikverwaltung.handler;
+package musikverwaltung.handlers;
 
 public interface RefreshListener {
     Runnable refresh();

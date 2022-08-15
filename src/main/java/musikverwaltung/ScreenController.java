@@ -13,8 +13,8 @@ import javafx.scene.text.Font;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-import musikverwaltung.handler.DestroyListener;
-import musikverwaltung.handler.ListenerInitiator;
+import musikverwaltung.handlers.DestroyListener;
+import musikverwaltung.handlers.ListenerInitiator;
 import musikverwaltung.views.GenericView;
 
 // https://stackoverflow.com/a/37276108/8980073

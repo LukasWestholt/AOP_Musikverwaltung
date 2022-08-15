@@ -24,8 +24,9 @@ import musikverwaltung.MediaManager;
 import musikverwaltung.ScreenController;
 import musikverwaltung.data.Playlist;
 import musikverwaltung.data.Song;
-import musikverwaltung.handler.RefreshListener;
-import musikverwaltung.handler.SetActionLabelListener;
+import musikverwaltung.handlers.RefreshListener;
+import musikverwaltung.handlers.SetActionLabelListener;
+import musikverwaltung.nodes.OpenSongViewButton;
 
 
 public class MainView extends MenuBarView implements SetActionLabelListener, RefreshListener {
@@ -150,19 +151,18 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
             }
         });
 
-        // TODO this button is duplicated (here and PlaylistView). We should outsource it.
-        Button musicPlayerButton = new Button("Player");
-        musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
-        musicPlayerButton.setOnAction(e -> {
-            actionLabel.setText("Starte Player");
-            GenericView view = screenController.activateWindow(SongView.class, true);
-            if (view instanceof SongView) {
-                SongView songView = (SongView) view;
-                songView.listenerInitiator.addListenerIfNotContains(this);
-                songView.setPlaylistLastSong();
-            }
-        });
-        HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton); //Add choiceBox and textField to hBox
+        OpenSongViewButton openSongViewButton = new OpenSongViewButton(
+                e -> {
+                    actionLabel.setText("Starte Player");
+                    GenericView view = screenController.activateWindow(SongView.class, true);
+                    if (view instanceof SongView) {
+                        SongView songView = (SongView) view;
+                        songView.listenerInitiator.addListenerIfNotContains(this);
+                        songView.setPlaylistLastSong();
+                    }
+                }
+        );
+        HBox searchHBox = new HBox(choiceBox, textSearchField, openSongViewButton); //Add choiceBox and textField to hBox
         searchHBox.setAlignment(Pos.CENTER); //Center HBox
 
         TableColumn<Song, Boolean> checkCol = new TableColumn<>();
