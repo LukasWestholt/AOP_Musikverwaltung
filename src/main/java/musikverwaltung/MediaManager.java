@@ -67,6 +67,7 @@ public class MediaManager {
                 }
                 Song song = fl.get(0);
 
+                // TODO big error some music dont get
                 Object titel = metadata.getMap().get("title");
                 if (titel != null && song.getTitle().isEmpty()) {
                     song.setTitle(titel.toString());

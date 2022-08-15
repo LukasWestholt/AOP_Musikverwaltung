@@ -275,7 +275,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
     }
 
     @Override
-    public Node get() {
+    public Node get() { // TODO Pane
         Platform.runLater(refresh());
         return super.get();
     }
