@@ -38,6 +38,10 @@ public class SongView extends MenuBarView implements DestroyListener {
     private final Image playImage;
     private final Image pauseImage;
     private final Label labelSongName;
+    ImageView imageView = new ImageView();
+    private final Image defaultImage = new Image(
+            Helper.getResourcePathUriString(this.getClass(), "/default_img.jpg", false)
+    );
     private MediaPlayer player;
     private final int dbThreshold = 60;
     private XYChart.Series<String, Number> audioData;
@@ -89,18 +93,16 @@ public class SongView extends MenuBarView implements DestroyListener {
         radioChartMenu.setToggleGroup(toggleGroup);
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().addAll(headerMenu, radioImageMenu, radioChartMenu);
-        ImageView img = new ImageView();
-        img.setPreserveRatio(true);
-        img.setSmooth(true);
-        img.fitWidthProperty().bind(getWidthProperty().subtract(30));
-        img.fitHeightProperty().bind(getHeightProperty().divide(2));
-        img.setOnMouseClicked(event -> {
+        imageView.setPreserveRatio(true);
+        imageView.setSmooth(true);
+        imageView.fitWidthProperty().bind(getWidthProperty().subtract(30));
+        imageView.fitHeightProperty().bind(getHeightProperty().divide(2));
+        imageView.setOnMouseClicked(event -> {
             System.out.println(event.getX());
-            contextMenu.show(img, event.getScreenX(), event.getScreenY());
+            contextMenu.show(imageView, event.getScreenX(), event.getScreenY());
         });
-        Image defaultImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/default_img.jpg", false));
-        img.setImage(defaultImage);
-        centerContainer.getChildren().add(img);
+        imageView.setImage(defaultImage);
+        centerContainer.getChildren().add(imageView);
 
         Slider songSlider = new Slider(0, 1, 0);
         songSlider.getStyleClass().add("song");
@@ -233,7 +235,7 @@ public class SongView extends MenuBarView implements DestroyListener {
             switch (selectedMenu.getText()) {
                 case "Bild":
                     centerContainer.getChildren().clear();
-                    centerContainer.getChildren().add(img);
+                    centerContainer.getChildren().add(imageView);
                     chartIsVisible = false;
                     if (player != null) {
                         player.setAudioSpectrumListener(null);
@@ -302,6 +304,12 @@ public class SongView extends MenuBarView implements DestroyListener {
         songHistoryStack.add(nextSong);
         Path path = nextSong.getPath();
         labelSongName.setText(nextSong.getTitle());
+        Image cover = nextSong.getCover();
+        if (cover != null && !cover.isError()) {
+            imageView.setImage(cover);
+        } else {
+            imageView.setImage(defaultImage);
+        }
         Media currentSong = new Media(Helper.p2uris(path));
         // TODO memory leak on Media/MediaPlayer ? i cant delete music files after they got played
         assert player == null || player.getStatus() == MediaPlayer.Status.DISPOSED;

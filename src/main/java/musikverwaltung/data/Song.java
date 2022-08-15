@@ -11,7 +11,9 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.image.Image;
 import musikverwaltung.Helper;
 
 public class Song implements Externalizable {
@@ -23,17 +25,10 @@ public class Song implements Externalizable {
     private final SimpleStringProperty title = new SimpleStringProperty();
     private final SimpleStringProperty artist = new SimpleStringProperty();
     private final SimpleStringProperty genre = new SimpleStringProperty();
+    private final SimpleObjectProperty<Image> cover = new SimpleObjectProperty<>();
     private ReadOnlyIntegerProperty rowIndex;
     private Path path;
     private boolean isPlayable = true;
-
-    @SuppressWarnings("unused")
-    public Song(String titel, String artist, String genre, Path path) {
-        this.title.setValue(titel);
-        this.artist.setValue(artist);
-        this.genre.setValue(genre);
-        this.path = path;
-    }
 
     public Song(Path path) {
         this.path = path;
@@ -81,6 +76,19 @@ public class Song implements Externalizable {
 
     public SimpleStringProperty getGenreProperty() {
         return genre;
+    }
+
+    public Image getCover() {
+        return cover.get();
+    }
+
+    public void setCover(Image cover) {
+        this.cover.set(cover);
+    }
+
+    @SuppressWarnings("unused")
+    public SimpleObjectProperty<Image> getCoverProperty() {
+        return cover;
     }
 
     public boolean isSelected() {

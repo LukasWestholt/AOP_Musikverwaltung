@@ -20,6 +20,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import musikverwaltung.data.Playlist;
 import musikverwaltung.data.SettingFile;
@@ -57,7 +58,8 @@ public class MediaManager {
             music.add(new Song(mediaFile));
             Media media = new Media(Helper.p2uris(mediaFile));
             metadataListener = metadata -> {
-                //System.out.println(currentSong.getMetadata());
+                // TODO there are some more metadata like albums, year
+                //System.out.println(metadata.getMap());
                 FilteredList<Song> fl = music.filtered(
                         p -> p.isPlayable() && Objects.equals(p.getPath(), mediaFile));
                 if (fl.size() != 1) {
@@ -87,6 +89,10 @@ public class MediaManager {
                         }
                     }
                     song.setGenre(genreStr);
+                }
+                Object image = metadata.getMap().get("image");
+                if (image != null && song.getCover() == null && image instanceof Image) {
+                    song.setCover((Image) image);
                 }
                 refreshCallback.run();
             };
