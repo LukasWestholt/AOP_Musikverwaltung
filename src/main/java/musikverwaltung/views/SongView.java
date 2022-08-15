@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
-
 import javafx.beans.binding.When;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -32,6 +31,7 @@ import musikverwaltung.data.Song;
 import musikverwaltung.handler.DestroyListener;
 import musikverwaltung.handler.ListenerInitiator;
 import musikverwaltung.handler.SetActionLabelListener;
+
 //TODO einzelsong bei repeat hin und her wechseln sehr verbuggt
 public class SongView extends MenuBarView implements DestroyListener {
     private final MediaManager mediaManager;
@@ -42,7 +42,7 @@ public class SongView extends MenuBarView implements DestroyListener {
     private final Image playImage;
     private final Image pauseImage;
     private final Label labelSongName;
-    ImageView imageView = new ImageView();
+    final ImageView imageView = new ImageView();
     private final Image defaultImage = new Image(
             Helper.getResourcePathUriString(this.getClass(), "/default_img.jpg", false)
     );
@@ -82,7 +82,8 @@ public class SongView extends MenuBarView implements DestroyListener {
 
         labelSongName = new Label("Unbekannt");
         labelSongName.getStyleClass().add("songViewHeader");
-        labelSongName.setStyle("-fx-font-size: 25pt; -fx-font-family: Manrope-Light; -fx-text-fill: rgb(225, 228, 203);");
+        labelSongName.setStyle("-fx-font-size: 25pt; -fx-font-family: Manrope-Light;"
+                + "-fx-text-fill: rgb(225, 228, 203);");
 
         StackPane centerContainer = new StackPane();
         centerContainer.setAlignment(Pos.CENTER);
@@ -227,18 +228,21 @@ public class SongView extends MenuBarView implements DestroyListener {
         audioData = new XYChart.Series<>();
         audioData.setName("audioData");
         audioBarChart.getData().add(audioData);
-        audioBarChart.setOnMouseClicked(event -> contextMenu.show(audioBarChart, event.getScreenX(), event.getScreenY()));
+        audioBarChart.setOnMouseClicked(event ->
+                contextMenu.show(audioBarChart, event.getScreenX(), event.getScreenY())
+        );
 
         chartIsVisible.addListener((observableValue, oldVal, newVal) -> {
-           if (newVal) {
-               if ((!isPlayerUnavailable()))
+            if (newVal) {
+                if ((!isPlayerUnavailable())) {
                     player.setAudioSpectrumListener(audioSpectrumListener);
-           } else {
-               if ((!isPlayerUnavailable()))
+                }
+            } else {
+                if ((!isPlayerUnavailable())) {
                     player.setAudioSpectrumListener(null);
-           }
+                }
+            }
         });
-
 
         toggleGroup.selectedToggleProperty().addListener((observableValue, oldVal, newVal) -> {
             RadioMenuItem selectedMenu = (RadioMenuItem) toggleGroup.getSelectedToggle();
@@ -259,7 +263,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         });
 
         GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
-        List<String> colours = Arrays.asList("#222A35","#203864","#4472C4");
+        List<String> colours = Arrays.asList("#222A35", "#203864", "#4472C4");
         Rectangle background = gradientMaker.getCustomRectangle(colours);
 
 

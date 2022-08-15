@@ -2,8 +2,10 @@ package musikverwaltung.views;
 
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.shape.Rectangle;
 import musikverwaltung.MediaManager;
 import musikverwaltung.ScreenController;
 import musikverwaltung.data.Playlist;
@@ -11,10 +13,17 @@ import musikverwaltung.data.Playlist;
 public class PlaylistDetailView extends MainView {
     private ObservableList<Playlist> contextPlaylists;
     private Playlist playlist;
-    //TODO weg finden den hintergrund zu ändern
+
     public PlaylistDetailView(ScreenController sc, MediaManager mediaManager) {
         super(sc, mediaManager, true);
         ignoreMenuItems(mainViewButton, settingViewButton, playlistViewButton, creditsViewButton);
+
+        for (Node node : stackPane.getChildren()) {
+            if (node instanceof Rectangle) {
+                Rectangle rectangle = (Rectangle) node;
+                //rectangle.setFill();
+            }
+        }
 
         Button deleteButton = new Button("Löschen");
         deleteButton.setMinWidth(Control.USE_PREF_SIZE);

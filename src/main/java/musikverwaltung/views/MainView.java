@@ -222,9 +222,6 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         centerVbox.setPadding(new Insets(10, 10, 10, 10));
         centerVbox.getChildren().addAll(welcomeLabel, menu, table, searchHBox);
 
-        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
-        Rectangle background = gradientMaker.getDefaultRectangle();
-
         TextField playlistNameEntry = new TextField("Playlist 1");
 
         Button makePlaylistButton = new Button("Playlist erstellen");
@@ -252,6 +249,9 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
             }
         });
 
+        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
+        Rectangle background = gradientMaker.getDefaultRectangle();
+
         StackPane.setAlignment(centerVbox, Pos.TOP_LEFT);
         StackPane.setAlignment(background, Pos.TOP_LEFT);
         showNodes(background, centerVbox);
@@ -265,7 +265,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
     }
 
     @Override
-    public Node get() { // TODO Pane
+    public Node get() {
         Platform.runLater(refresh());
         return super.get();
     }

@@ -89,9 +89,6 @@ public class HelloView extends GenericView {
                 new Quote("Miami ist eine fantastische Stadt, um eine Banane zu essen.", "Iggy Pop")
         );
         Quote quote = quotes.get(new Random().nextInt(quotes.size()));
-        quote = new Quote("Ich möchte die Welt mit unserer Musik nicht verändern. In unseren Songs sind keine "
-                + "Nachrichten versteckt. Ich schreibe gerne Songs für den modernen Konsum.",
-                "Freddy Mercury");
         return "\"" + quote.getText() + "\"\n- " + quote.getAuthor();
     }
 }

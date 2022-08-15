@@ -1,13 +1,12 @@
 package musikverwaltung;
 
+import java.util.List;
 import javafx.beans.binding.DoubleBinding;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
-
-import java.util.List;
 
 public class GradientBackground {
 
@@ -33,11 +32,15 @@ public class GradientBackground {
     }
 
     public Rectangle getCustomRectangle(List<String> colours) {
-        if (colours.size() == 2)
+        if (colours.size() == 2) {
             return getCustom2ColourRectangle(colours);
-        if (colours.size() == 3)
+        }
+
+        if (colours.size() == 3) {
             return getCustom3ColourRectangle(colours);
-        else return getDefaultRectangle();
+        } else {
+            return getDefaultRectangle();
+        }
     }
 
     private Rectangle getCustom2ColourRectangle(List<String> colours) {

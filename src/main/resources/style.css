@@ -36,7 +36,7 @@
     -fx-text-fill: black;
 }
 /*noinspection CssUnusedSymbol*/
-./songViewHeader {
+.songViewHeader {
     -fx-font-size: 25pt;
     -fx-font-family: Manrope-Light;
     -fx-text-fill: rgb(225, 228, 203);

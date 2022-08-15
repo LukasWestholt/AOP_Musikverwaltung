@@ -206,13 +206,13 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         automaticPlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
         automaticPlaylistButton.setOnAction(e -> createAutomaticPlaylists());
 
-        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
-        Rectangle background = gradientMaker.getDefaultRectangle();
-
         VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10));
         vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton, automaticPlaylistButton);
+        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
+        Rectangle background = gradientMaker.getDefaultRectangle();
+
         showNodes(background, vbox);
     }
 
