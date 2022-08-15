@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -102,14 +103,7 @@ public class Playlist implements Externalizable {
     }
 
     public boolean contains(Song searchSong) {
-        //return songs.contains(searchSong);
-        // TODO quick-and-diry
-        for (Song song : songs) {
-            if (searchSong.getPath().equals(song.getPath())) {
-                return true;
-            }
-        }
-        return false;
+        return songs.contains(searchSong);
     }
 
     public boolean isEmpty() {
@@ -204,6 +198,11 @@ public class Playlist implements Externalizable {
         return this.getName().equals(otherPlaylist.getName())
                 && this.getAll().equals(otherPlaylist.getAll())
                 && this.getPreviewImageUrl().equals(otherPlaylist.getPreviewImageUrl());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, songs, previewImage);
     }
 
     //https://www.geeksforgeeks.org/externalizable-interface-java/

@@ -22,12 +22,14 @@ public class Song implements Externalizable {
     @SuppressWarnings("unused")
     private static final long SerialVersionUID = 30L;
 
+    // path is identifier
+    private Path path;
+
     private final SimpleStringProperty title = new SimpleStringProperty();
     private final SimpleStringProperty artist = new SimpleStringProperty();
     private final SimpleStringProperty genre = new SimpleStringProperty();
     private final SimpleObjectProperty<Image> cover = new SimpleObjectProperty<>();
     private ReadOnlyIntegerProperty rowIndex;
-    private Path path;
     private boolean isPlayable = true;
 
     public Song(Path path) {
@@ -35,8 +37,7 @@ public class Song implements Externalizable {
     }
 
     // Externalizable needs a public no-args constructor
-    public Song() {
-    }
+    public Song() {}
 
     public String getPrimaryKey() {
         return title.get() != null ? title.get() : path.getFileName().toString();
@@ -112,10 +113,6 @@ public class Song implements Externalizable {
 
     public Path getPath() {
         return path;
-    }
-
-    public void setPath(Path path) {
-        this.path = path;
     }
 
     public boolean isPlayable() {
@@ -205,6 +202,7 @@ public class Song implements Externalizable {
         attributes.put("genre", getGenre());
         attributes.put("path", getPath());
         attributes.put("rowIndex", getRowIndex());
+        attributes.put("cover", getCover() != null);
         return Helper.toString(this, attributes);
     }
 
@@ -217,15 +215,12 @@ public class Song implements Externalizable {
             return false;
         }
         Song otherSong = (Song) other;
-        return this.getTitle().equals(otherSong.getTitle())
-                && this.getArtist().equals(otherSong.getArtist())
-                && this.getGenre().equals(otherSong.getGenre())
-                && this.getPath().equals(otherSong.getPath());
+        return Objects.equals(path, otherSong.getPath());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, artist, genre, path);
+        return Objects.hash(path);
     }
 
     //https://www.geeksforgeeks.org/externalizable-interface-java/
@@ -242,6 +237,6 @@ public class Song implements Externalizable {
         setTitle(in.readUTF());
         setGenre(in.readUTF());
         setArtist(in.readUTF());
-        setPath(Helper.s2p(in.readUTF()));
+        this.path = Helper.s2p(in.readUTF());
     }
 }

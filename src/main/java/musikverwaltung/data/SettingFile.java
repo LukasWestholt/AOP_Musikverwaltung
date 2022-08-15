@@ -26,6 +26,7 @@ public class SettingFile implements Externalizable {
 
     public static void savePlaylists(ObservableList<Playlist> playlists) {
         SettingFile setting = load();
+        // TODO save only paths
         if (!setting.playlists.equals(playlists)) {
             setting.playlists = playlists;
             save(setting);
@@ -44,7 +45,7 @@ public class SettingFile implements Externalizable {
 
     public static void savePaths(ArrayList<String> paths) {
         SettingFile setting = load();
-        if (!Objects.equals(setting.paths, paths)) {
+        if (!setting.paths.equals(paths)) {
             setting.paths = paths;
             save(setting);
             System.out.println("added paths " + paths + " to SettingFile");
