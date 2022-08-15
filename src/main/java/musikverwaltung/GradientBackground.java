@@ -7,7 +7,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class GradientBackground {
 
@@ -32,7 +32,15 @@ public class GradientBackground {
         return rectangle;
     }
 
-    public Rectangle getCustomRectangle(ArrayList<String> colours) {
+    public Rectangle getCustomRectangle(List<String> colours) {
+        if (colours.size() == 2)
+            return getCustom2ColourRectangle(colours);
+        if (colours.size() == 3)
+            return getCustom3ColourRectangle(colours);
+        else return getDefaultRectangle();
+    }
+
+    private Rectangle getCustom2ColourRectangle(List<String> colours) {
         Rectangle rectangle = new Rectangle();
         rectangle.widthProperty().bind(width);
         rectangle.heightProperty().bind(height);
@@ -41,6 +49,20 @@ public class GradientBackground {
                 CycleMethod.NO_CYCLE,
                 new Stop(0, Color.web(colours.get(0))),
                 new Stop(1, Color.web(colours.get(1))))
+        );
+        return rectangle;
+    }
+
+    private Rectangle getCustom3ColourRectangle(List<String> colours) {
+        Rectangle rectangle = new Rectangle();
+        rectangle.widthProperty().bind(width);
+        rectangle.heightProperty().bind(height);
+        rectangle.setFill(new LinearGradient(
+                0, 0, 1, 1, true,
+                CycleMethod.NO_CYCLE,
+                new Stop(0, Color.web(colours.get(0))),
+                new Stop(1, Color.web(colours.get(1))),
+                new Stop(1, Color.web(colours.get(2))))
         );
         return rectangle;
     }
