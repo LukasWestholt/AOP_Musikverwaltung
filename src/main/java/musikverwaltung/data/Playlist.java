@@ -101,8 +101,15 @@ public class Playlist implements Externalizable {
         return songs.removeFirstOccurrence(song);
     }
 
-    public boolean contains(Song song) {
-        return songs.contains(song);
+    public boolean contains(Song searchSong) {
+        //return songs.contains(searchSong);
+        // TODO quick-and-diry
+        for (Song song : songs) {
+            if (searchSong.getPath().equals(song.getPath())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isEmpty() {
