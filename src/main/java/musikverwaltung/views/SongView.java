@@ -3,11 +3,14 @@ package musikverwaltung.views;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+
 import javafx.beans.binding.When;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -20,6 +23,7 @@ import javafx.scene.layout.*;
 import javafx.scene.media.AudioSpectrumListener;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import musikverwaltung.*;
 import musikverwaltung.data.Playlist;
@@ -28,12 +32,12 @@ import musikverwaltung.data.Song;
 import musikverwaltung.handler.DestroyListener;
 import musikverwaltung.handler.ListenerInitiator;
 import musikverwaltung.handler.SetActionLabelListener;
-
+//TODO einzelsong bei repeat hin und her wechseln sehr verbuggt
 public class SongView extends MenuBarView implements DestroyListener {
     private final MediaManager mediaManager;
     private double songLength = Double.MAX_VALUE;
     private double volume = 0.5;
-    private boolean chartIsVisible; // TODO SimpleBooleanProperty and then listen?
+    private final SimpleBooleanProperty chartIsVisible = new SimpleBooleanProperty();
     private final ImageButton startStop;
     private final Image playImage;
     private final Image pauseImage;
@@ -77,14 +81,15 @@ public class SongView extends MenuBarView implements DestroyListener {
         screenController.listenerInitiator.addListenerIfNotContains(this);
 
         labelSongName = new Label("Unbekannt");
-        labelSongName.getStyleClass().add("header");
+        labelSongName.getStyleClass().add("songViewHeader");
+        labelSongName.setStyle("-fx-font-size: 25pt; -fx-font-family: Manrope-Light; -fx-text-fill: rgb(225, 228, 203);");
 
         StackPane centerContainer = new StackPane();
         centerContainer.setAlignment(Pos.CENTER);
         VBox.setVgrow(centerContainer, Priority.ALWAYS);
 
         MenuItem headerMenu = new MenuItem("Ansicht wechseln:");
-        headerMenu.setDisable(true); // TODO show this
+        headerMenu.getStyleClass().add("header-menu-item");
         ToggleGroup toggleGroup = new ToggleGroup();
         RadioMenuItem radioImageMenu = new RadioMenuItem("Bild");
         radioImageMenu.setSelected(true);
@@ -97,10 +102,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         imageView.setSmooth(true);
         imageView.fitWidthProperty().bind(getWidthProperty().subtract(30));
         imageView.fitHeightProperty().bind(getHeightProperty().divide(2));
-        imageView.setOnMouseClicked(event -> {
-            System.out.println(event.getX());
-            contextMenu.show(imageView, event.getScreenX(), event.getScreenY());
-        });
+        imageView.setOnMouseClicked(event -> contextMenu.show(imageView, event.getScreenX(), event.getScreenY()));
         imageView.setImage(defaultImage);
         centerContainer.getChildren().add(imageView);
 
@@ -130,7 +132,6 @@ public class SongView extends MenuBarView implements DestroyListener {
         pauseImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/icons/pause.png", false));
         startStop = new ImageButton(playImage, true, true);
         startStop.setOnAction(e -> startStopSong());
-        //startStop.prefHeightProperty().bind(startStop.widthProperty());
         startStop.setPrefSize(30, 30);
         startStop.setMaxWidth(Double.MAX_VALUE);
         startStop.maxHeightProperty().bind(startStop.widthProperty());
@@ -202,7 +203,7 @@ public class SongView extends MenuBarView implements DestroyListener {
 
         audioSpectrumListener = (timestamp, duration, magnitudes, phases) -> {
             for (int i = 0; i < magnitudes.length; i++) {
-                System.out.println(i + ": " + (magnitudes[i] + dbThreshold));
+                System.out.println("doing");
                 audioData.getData().add(new XYChart.Data<>(Integer.toString(i), magnitudes[i] + dbThreshold));
             }
         };
@@ -226,9 +227,18 @@ public class SongView extends MenuBarView implements DestroyListener {
         audioData = new XYChart.Series<>();
         audioData.setName("audioData");
         audioBarChart.getData().add(audioData);
-        audioBarChart.setOnMouseClicked(event ->
-                contextMenu.show(audioBarChart, Side.RIGHT, 0, 0)
-        );
+        audioBarChart.setOnMouseClicked(event -> contextMenu.show(audioBarChart, event.getScreenX(), event.getScreenY()));
+
+        chartIsVisible.addListener((observableValue, oldVal, newVal) -> {
+           if (newVal) {
+               if ((!isPlayerUnavailable()))
+                    player.setAudioSpectrumListener(audioSpectrumListener);
+           } else {
+               if ((!isPlayerUnavailable()))
+                    player.setAudioSpectrumListener(null);
+           }
+        });
+
 
         toggleGroup.selectedToggleProperty().addListener((observableValue, oldVal, newVal) -> {
             RadioMenuItem selectedMenu = (RadioMenuItem) toggleGroup.getSelectedToggle();
@@ -236,36 +246,39 @@ public class SongView extends MenuBarView implements DestroyListener {
                 case "Bild":
                     centerContainer.getChildren().clear();
                     centerContainer.getChildren().add(imageView);
-                    chartIsVisible = false;
-                    if (player != null) {
-                        player.setAudioSpectrumListener(null);
-                    }
+                    chartIsVisible.set(false);
                     break;
                 case "Graph":
                     centerContainer.getChildren().clear();
                     centerContainer.getChildren().add(audioBarChart);
-                    chartIsVisible = true;
-                    if (player != null) {
-                        player.setAudioSpectrumListener(audioSpectrumListener);
-                    }
+                    chartIsVisible.set(true);
                     break;
                 default:
                     centerContainer.getChildren().clear();
             }
         });
 
+        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
+        List<String> colours = Arrays.asList("#222A35","#203864","#4472C4");
+        Rectangle background = gradientMaker.getCustomRectangle(colours);
+
+
+
         VBox playerVBox = new VBox(labelSongName, centerContainer, mediaControlVBox);
         playerVBox.setAlignment(Pos.CENTER);
         playerVBox.setSpacing(10);
-        showNodes(playerVBox);
+        showNodes(background, playerVBox);
 
     }
 
     @Override
     public Node get() {
-        stage.setOnCloseRequest(windowEvent -> {
-            chartIsVisible = false;
-            if (player != null) {
+        // on exit the automatic graph updates will stop
+        // if stage shown and graph was last activated, it gets activated again
+        stage.showingProperty().addListener((observableValue, oldVal, isShowing) -> {
+            if (chartIsVisible.get() && isShowing) {
+                player.setAudioSpectrumListener(audioSpectrumListener);
+            } else {
                 player.setAudioSpectrumListener(null);
             }
         });
@@ -323,7 +336,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         }
         currentSong.durationProperty().addListener((arg0, arg1, duration) -> songLength = duration.toSeconds());
         player.currentTimeProperty().addListener(playerSongLengthListener);
-        if (chartIsVisible) {
+        if (chartIsVisible.get()) {
             player.setAudioSpectrumListener(audioSpectrumListener);
             player.setAudioSpectrumThreshold(-dbThreshold);
         }

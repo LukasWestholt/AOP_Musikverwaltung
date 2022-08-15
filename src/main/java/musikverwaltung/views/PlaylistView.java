@@ -1,6 +1,5 @@
 package musikverwaltung.views;
 
-import static java.lang.Thread.State.TERMINATED;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -21,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import musikverwaltung.*;
 import musikverwaltung.data.Playlist;
@@ -36,14 +36,8 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
 
     private Playlist contextPlaylist;
 
-    private final Thread saveTaskThread;
-
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
-        Runnable saveTask = new SettingsSaveTask(playlists);
-        saveTaskThread = new Thread(saveTask);
-
-        saveTaskThread.setName("savetaskthread");
 
         flSongs = mediaManager.getPlayableMusic();
 
@@ -116,10 +110,6 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
                 PlaylistDetailView playlistDetailView = (PlaylistDetailView) view;
                 playlistDetailView.showPlaylistInContext(contextPlaylist, playlists);
             }
-            /*if (view instanceof PlaylistDetailView2) {
-                PlaylistDetailView2 playlistDetailView2 = (PlaylistDetailView2) view;
-                playlistDetailView2.initializeWithPlaylist(contextPlaylist, playlists);
-            }*/
         });
 
         ContextMenu quickOptions = new ContextMenu();
@@ -137,11 +127,12 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
                 Button playlistButton = new Button(playlist.getName());
                 playlistButton.setMinWidth(Region.USE_PREF_SIZE);
                 playlistButton.setWrapText(true);
+                playlistButton.setStyle("-fx-font-size:18; -fx-background-color: rgb(44, 90, 118)");
                 playlistButton.hoverProperty().addListener((obs, oldValue, newValue) -> {
                     if (newValue) {
-                        playlistButton.setStyle("-fx-font-size:14");
+                        playlistButton.setStyle("-fx-font-size:14; -fx-background-color: rgb(129, 140, 48)");
                     } else {
-                        playlistButton.setStyle("-fx-font-size:18");
+                        playlistButton.setStyle("-fx-font-size:18; -fx-background-color: rgb(44, 90, 118)");
                     }
                 });
 
@@ -215,11 +206,14 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         automaticPlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
         automaticPlaylistButton.setOnAction(e -> createAutomaticPlaylists());
 
+        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
+        Rectangle background = gradientMaker.getDefaultRectangle();
+
         VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10));
         vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton, automaticPlaylistButton);
-        showNodes(vbox);
+        showNodes(background, vbox);
     }
 
     public void addPlaylist(Playlist createdPlaylist) {
@@ -232,10 +226,6 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         }
         System.out.println("added a new playlist " + createdPlaylist.getName());
         playlists.add(createdPlaylist);
-        if (saveTaskThread.getState() == TERMINATED) {
-            saveTaskThread.start();
-        } // TODO Review by LW
-        // TODO Asynchron speichern der aktuellen Playlisten
     }
 
     private void createAutomaticPlaylists() {
@@ -297,3 +287,5 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         SettingFile.savePlaylists(playlists);
     }
 }
+
+
