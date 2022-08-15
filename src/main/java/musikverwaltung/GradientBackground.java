@@ -35,7 +35,6 @@ public class GradientBackground {
         if (colours.size() == 2) {
             return getCustom2ColourRectangle(colours);
         }
-
         if (colours.size() == 3) {
             return getCustom3ColourRectangle(colours);
         } else {
@@ -64,7 +63,7 @@ public class GradientBackground {
                 0, 0, 1, 1, true,
                 CycleMethod.NO_CYCLE,
                 new Stop(0, Color.web(colours.get(0))),
-                new Stop(1, Color.web(colours.get(1))),
+                new Stop(0.6, Color.web(colours.get(1))),
                 new Stop(1, Color.web(colours.get(2))))
         );
         return rectangle;

@@ -5,6 +5,10 @@ import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import musikverwaltung.MediaManager;
 import musikverwaltung.ScreenController;
@@ -21,13 +25,19 @@ public class PlaylistDetailView extends MainView {
         for (Node node : stackPane.getChildren()) {
             if (node instanceof Rectangle) {
                 Rectangle rectangle = (Rectangle) node;
-                //rectangle.setFill();
+                rectangle.setFill(new LinearGradient(
+                        0, 0, 1, 1, true,
+                        CycleMethod.NO_CYCLE,
+                        new Stop(0, Color.web("#067457")),
+                        new Stop(0.6, Color.web("#0EC47F")),
+                        new Stop(1, Color.web("#5799D5"))) //#4DD393
+                );
             }
         }
 
         Button deleteButton = new Button("Löschen");
         deleteButton.setMinWidth(Control.USE_PREF_SIZE);
-        deleteButton.setStyle("-fx-text-fill: #ef0505");
+        //deleteButton.setStyle("-fx-text-fill: #ef0505");
         deleteButton.setOnAction(e -> {
             getSelectedSongs().forEach(song -> {
                 int i = song.getRowIndex();
@@ -39,7 +49,6 @@ public class PlaylistDetailView extends MainView {
                     // fallback
                     playlist.removeFirstOccurrence(song);
                 }
-                //TODO stage schließt sich jetzt am Ende -> bugs verhindern, player macht mit einzelsong korrekt weiter
                 if (playlist.isEmpty()) {
                     contextPlaylists.remove(playlist);
                     stage.close();
