@@ -2,7 +2,7 @@
 .root {
     -fx-font-size: 14pt;
     -fx-font-family: Manrope-Light;
-    -fx-base: rgb(213, 216, 220);
+    -fx-base: rgb(132, 145, 47);
     -fx-background: rgb(225, 228, 203);
 }
 
@@ -33,6 +33,13 @@
 .header {
     -fx-font-size: 25pt;
     -fx-font-family: Manrope-Light;
+    -fx-text-fill: black;
+}
+/*noinspection CssUnusedSymbol*/
+./songViewHeader {
+    -fx-font-size: 25pt;
+    -fx-font-family: Manrope-Light;
+    -fx-text-fill: rgb(225, 228, 203);
 }
 
 /*noinspection CssUnusedSymbol*/
@@ -50,19 +57,30 @@
 }
 
 #playlists > * {
-    -fx-background-color: lightblue;
+    -fx-background-color: rgb(44, 90, 118);
     -fx-text-fill: white;
     -fx-text-overrun: clip;
 }
 
 #playlists > *:hover {
-    -fx-background-color: yellow;
+    -fx-background-color: rgb(129, 140, 48);
     -fx-text-fill: black;
 }
 
 #active {
     -fx-background-color: lightblue;
     -fx-border-color: grey;
+}
+
+/*noinspection CssUnusedSymbol*/
+.header-menu-item:focused {
+    -fx-background-color: rgb(219, 224, 181);
+
+}
+/*noinspection CssUnusedSymbol*/
+.header-menu-item:focused .label
+{
+  -fx-text-fill: black;
 }
 
 /*noinspection CssUnusedSymbol*/
@@ -122,3 +140,6 @@
 .chart-bar {
     -fx-background-color:linear-gradient(to top,#C00000, #F2700E,#D33503);
 }
+
+
+
