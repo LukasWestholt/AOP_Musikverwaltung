@@ -122,3 +122,8 @@
 .chart-bar {
     -fx-bar-fill: rgb(97, 195, 148);
 }
+
+/*noinspection CssUnusedSymbol*/
+.quote {
+    -fx-font-style: italic;
+}
