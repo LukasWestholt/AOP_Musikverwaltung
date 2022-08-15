@@ -103,7 +103,7 @@
 
 /*noinspection CssUnusedSymbol*/
 .song.progress-bar .bar {
-    -fx-background-color: rgb(97, 195, 148);
+    -fx-background-color:linear-gradient(to right, #81c483,#fcc200);
     -fx-background-insets: 0;
     -fx-background-radius: 0;
 }
@@ -120,5 +120,5 @@
 
 /*noinspection CssUnusedSymbol*/
 .chart-bar {
-    -fx-bar-fill: rgb(97, 195, 148);
+    -fx-background-color:linear-gradient(to top,#C00000, #F2700E,#D33503);
 }

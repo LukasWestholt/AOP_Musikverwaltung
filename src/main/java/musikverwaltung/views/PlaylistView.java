@@ -21,6 +21,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import musikverwaltung.*;
 import musikverwaltung.data.Playlist;
@@ -215,11 +216,14 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         automaticPlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
         automaticPlaylistButton.setOnAction(e -> createAutomaticPlaylists());
 
+        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
+        Rectangle background = gradientMaker.getDefaultRectangle();
+
         VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10));
         vbox.getChildren().addAll(welcomeLabel, sp, musicPlayerButton, automaticPlaylistButton);
-        showNodes(vbox);
+        showNodes(background, vbox);
     }
 
     public void addPlaylist(Playlist createdPlaylist) {
@@ -297,3 +301,5 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         SettingFile.savePlaylists(playlists);
     }
 }
+
+

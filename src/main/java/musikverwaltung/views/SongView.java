@@ -7,7 +7,6 @@ import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
@@ -28,7 +27,7 @@ import musikverwaltung.data.Song;
 import musikverwaltung.handler.DestroyListener;
 import musikverwaltung.handler.ListenerInitiator;
 import musikverwaltung.handler.SetActionLabelListener;
-
+//TODO einzelsong bei repeat hin und her wechseln sehr verbuggt
 public class SongView extends MenuBarView implements DestroyListener {
     private final MediaManager mediaManager;
     private double songLength = Double.MAX_VALUE;
@@ -94,10 +93,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         img.setSmooth(true);
         img.fitWidthProperty().bind(getWidthProperty().subtract(30));
         img.fitHeightProperty().bind(getHeightProperty().divide(2));
-        img.setOnMouseClicked(event -> {
-            System.out.println(event.getX());
-            contextMenu.show(img, event.getScreenX(), event.getScreenY());
-        });
+        img.setOnMouseClicked(event -> contextMenu.show(img, event.getScreenX(), event.getScreenY()));
         Image defaultImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/default_img.jpg", false));
         img.setImage(defaultImage);
         centerContainer.getChildren().add(img);
@@ -128,7 +124,6 @@ public class SongView extends MenuBarView implements DestroyListener {
         pauseImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/icons/pause.png", false));
         startStop = new ImageButton(playImage, true, true);
         startStop.setOnAction(e -> startStopSong());
-        //startStop.prefHeightProperty().bind(startStop.widthProperty());
         startStop.setPrefSize(30, 30);
         startStop.setMaxWidth(Double.MAX_VALUE);
         startStop.maxHeightProperty().bind(startStop.widthProperty());
@@ -224,9 +219,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         audioData = new XYChart.Series<>();
         audioData.setName("audioData");
         audioBarChart.getData().add(audioData);
-        audioBarChart.setOnMouseClicked(event ->
-                contextMenu.show(audioBarChart, Side.RIGHT, 0, 0)
-        );
+        audioBarChart.setOnMouseClicked(event -> contextMenu.show(audioBarChart, event.getScreenX(), event.getScreenY()));
 
         toggleGroup.selectedToggleProperty().addListener((observableValue, oldVal, newVal) -> {
             RadioMenuItem selectedMenu = (RadioMenuItem) toggleGroup.getSelectedToggle();
@@ -235,7 +228,7 @@ public class SongView extends MenuBarView implements DestroyListener {
                     centerContainer.getChildren().clear();
                     centerContainer.getChildren().add(img);
                     chartIsVisible = false;
-                    if (player != null) {
+                    if (!isPlayerUnavailable()) {
                         player.setAudioSpectrumListener(null);
                     }
                     break;
@@ -243,7 +236,7 @@ public class SongView extends MenuBarView implements DestroyListener {
                     centerContainer.getChildren().clear();
                     centerContainer.getChildren().add(audioBarChart);
                     chartIsVisible = true;
-                    if (player != null) {
+                    if (!isPlayerUnavailable()) {
                         player.setAudioSpectrumListener(audioSpectrumListener);
                     }
                     break;
@@ -261,9 +254,12 @@ public class SongView extends MenuBarView implements DestroyListener {
 
     @Override
     public Node get() {
-        stage.setOnCloseRequest(windowEvent -> {
-            chartIsVisible = false;
-            if (player != null) {
+        // on exit the automatic graph updates will stop
+        // if stage shown and graph was last activated, it gets activated again
+        stage.showingProperty().addListener((observableValue, oldVal, isShowing) -> {
+            if (chartIsVisible && isShowing) {
+                player.setAudioSpectrumListener(audioSpectrumListener);
+            } else {
                 player.setAudioSpectrumListener(null);
             }
         });

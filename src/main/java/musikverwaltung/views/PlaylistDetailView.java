@@ -11,7 +11,7 @@ import musikverwaltung.data.Playlist;
 public class PlaylistDetailView extends MainView {
     private ObservableList<Playlist> contextPlaylists;
     private Playlist playlist;
-
+    //TODO weg finden den hintergrund zu ändern
     public PlaylistDetailView(ScreenController sc, MediaManager mediaManager) {
         super(sc, mediaManager, true);
         ignoreMenuItems(mainViewButton, settingViewButton, playlistViewButton, creditsViewButton);
@@ -30,10 +30,11 @@ public class PlaylistDetailView extends MainView {
                     // fallback
                     playlist.removeFirstOccurrence(song);
                 }
+                //TODO stage schließt sich jetzt am Ende -> bugs verhindern, player macht mit einzelsong korrekt weiter
                 if (playlist.isEmpty()) {
                     contextPlaylists.remove(playlist);
+                    stage.close();
                 }
-                //TODO maybe beenden von window wenn alle gelöscht sind
             });
             refresh().run();
         });

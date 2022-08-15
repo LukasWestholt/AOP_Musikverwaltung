@@ -16,13 +16,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import musikverwaltung.GradientBackground;
 import musikverwaltung.MediaManager;
 import musikverwaltung.ScreenController;
 import musikverwaltung.data.Playlist;
@@ -40,6 +37,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
     private final MediaManager mediaManager;
     final Label welcomeLabel;
     private final Label actionLabel;
+    final VBox centerVbox;
     final StackPane customButtonPane = new StackPane();
     final ObjectProperty<Predicate<Song>> songFilterForPlaylist = new SimpleObjectProperty<>();
 
@@ -74,7 +72,6 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         userFilter.bind(Bindings.createObjectBinding(() -> song -> true));
 
         //Pass the data to a filtered list
-        // TODO is the new FilteredList here necessary?
         flSong = new FilteredList<>(mediaManager.music.filtered(s -> includeUnplayableSongs || s.isPlayable()));
         flSong.predicateProperty().bind(Bindings.createObjectBinding(
                 () -> songFilterForPlaylist.get().and(userFilter.get()),
@@ -220,20 +217,13 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         });
         VBox.setVgrow(table, Priority.ALWAYS);
 
-        VBox vbox = new VBox();
-        vbox.setSpacing(5);
-        vbox.setPadding(new Insets(10, 10, 10, 10));
-        vbox.getChildren().addAll(welcomeLabel, menu, table, searchHBox);
+        centerVbox = new VBox();
+        centerVbox.setSpacing(5);
+        centerVbox.setPadding(new Insets(10, 10, 10, 10));
+        centerVbox.getChildren().addAll(welcomeLabel, menu, table, searchHBox);
 
-        Rectangle rectangle = new Rectangle();
-        rectangle.widthProperty().bind(getWidthProperty());
-        rectangle.heightProperty().bind(getHeightProperty());
-        rectangle.setFill(new LinearGradient(
-                0, 0, 1, 1, true, //sizing
-                CycleMethod.NO_CYCLE, //cycling
-                new Stop(0, Color.web("#808b96")), //colors
-                new Stop(1, Color.web("#873600")))
-        );
+        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
+        Rectangle background = gradientMaker.getDefaultRectangle();
 
         TextField playlistNameEntry = new TextField("Playlist 1");
 
@@ -256,15 +246,15 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         //Gibt einem bei Auswahl von Songs die Möglichkeit Playlists zu erstellen und zu benennen
         showPlaylistAdd.addListener((obs, oldValue, newValue) -> {
             if (newValue) {
-                vbox.getChildren().add(hbox);
+                centerVbox.getChildren().add(hbox);
             } else {
-                vbox.getChildren().remove(hbox);
+                centerVbox.getChildren().remove(hbox);
             }
         });
 
-        StackPane.setAlignment(vbox, Pos.TOP_LEFT);
-        StackPane.setAlignment(rectangle, Pos.TOP_LEFT);
-        showNodes(rectangle, vbox);
+        StackPane.setAlignment(centerVbox, Pos.TOP_LEFT);
+        StackPane.setAlignment(background, Pos.TOP_LEFT);
+        showNodes(background, centerVbox);
     }
 
     public Runnable refresh() {
