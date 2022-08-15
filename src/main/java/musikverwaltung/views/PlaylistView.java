@@ -207,10 +207,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
             GenericView view = screenController.activateWindow(SongView.class, true);
             if (view instanceof SongView) {
                 SongView songView = (SongView) view;
-                // TODO Review by LW
-                if (!songView.isPlayerPlaying()) {
-                    songView.setPlaylistLastSong();
-                }
+                songView.setPlaylistLastSong();
             }
         });
 
@@ -225,10 +222,13 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         showNodes(vbox);
     }
 
-    public boolean addPlaylist(Playlist createdPlaylist) {
+    public void addPlaylist(Playlist createdPlaylist) {
+        if (createdPlaylist == null) {
+            return;
+        }
         //damit nicht mehrere Playlisten selben inhalts erstellt werden
         if (playlists.contains(createdPlaylist)) {
-            return false;
+            return;
         }
         System.out.println("added a new playlist " + createdPlaylist.getName());
         playlists.add(createdPlaylist);
@@ -236,7 +236,6 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
             saveTaskThread.start();
         } // TODO Review by LW
         // TODO Asynchron speichern der aktuellen Playlisten
-        return true;
     }
 
     private void createAutomaticPlaylists() {

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -190,13 +191,13 @@ public class Song implements Externalizable {
 
     @Override
     public String toString() {
-        // TODO this toString to every important custom class
-        return "<" + this.getClass().getSimpleName() + "@" + Integer.toHexString(System.identityHashCode(this)) + "> "
-                + "title: " + getTitle() + ", "
-                + "artist: " + getArtist() + ", "
-                + "genre: " + getGenre() + ", "
-                + "path: " + getPath() + ", "
-                + "rowIndex: " + getRowIndex();
+        LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
+        attributes.put("title", getTitle());
+        attributes.put("artist", getArtist());
+        attributes.put("genre", getGenre());
+        attributes.put("path", getPath());
+        attributes.put("rowIndex", getRowIndex());
+        return Helper.toString(this, attributes);
     }
 
     @Override

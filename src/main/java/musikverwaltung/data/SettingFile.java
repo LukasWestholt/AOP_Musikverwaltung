@@ -3,6 +3,7 @@ package musikverwaltung.data;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -112,5 +113,15 @@ public class SettingFile implements Externalizable {
         this.paths = (ArrayList<String>) in.readObject();
         this.lastSong = Helper.uris2p(in.readUTF());
         this.showUnplayableSongs = in.readBoolean();
+    }
+
+    @Override
+    public String toString() {
+        LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
+        attributes.put("paths", getPaths());
+        attributes.put("playlists", getPlaylists());
+        attributes.put("lastSong", getLastSong());
+        attributes.put("showUnplayableSongs", getShowUnplayableSongs());
+        return Helper.toString(this, attributes);
     }
 }

@@ -115,7 +115,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
                 Song song = flSong.get(i);
                 if (!song.isSelected()) {
                     wasAllSelected = false;
-                    // TODO quick-and-dirty
+                    // quick-and-dirty
                     song.select(new SimpleIntegerProperty(i));
                 }
             }
@@ -152,6 +152,8 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
                 textSearchField.setText("");
             }
         });
+
+        // TODO this button is duplicated (here and PlaylistView). We should outsource it.
         Button musicPlayerButton = new Button("Player");
         musicPlayerButton.setMinWidth(Control.USE_PREF_SIZE);
         musicPlayerButton.setOnAction(e -> {
@@ -160,9 +162,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
             if (view instanceof SongView) {
                 SongView songView = (SongView) view;
                 songView.listenerInitiator.addListenerIfNotContains(this);
-                if (!songView.isPlayerPlaying()) {
-                    songView.setPlaylistLastSong();
-                } // TODO Review by LW
+                songView.setPlaylistLastSong();
             }
         });
         HBox searchHBox = new HBox(choiceBox, textSearchField, musicPlayerButton); //Add choiceBox and textField to hBox
@@ -243,9 +243,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
             // wechseln beim erstellen? ich finde das gut
             GenericView view = screenController.activate(PlaylistView.class);
             if (view instanceof PlaylistView) {
-                Playlist returnPlaylist = new Playlist();
-                returnPlaylist.setName(playlistNameEntry.getText());
-                returnPlaylist.setAll(getSelectedSongs());
+                Playlist returnPlaylist = new Playlist(playlistNameEntry.getText(), getSelectedSongs());
                 PlaylistView playlistView = (PlaylistView) view;
                 playlistView.addPlaylist(returnPlaylist);
                 System.out.println("playlist added: " + returnPlaylist.getAll());

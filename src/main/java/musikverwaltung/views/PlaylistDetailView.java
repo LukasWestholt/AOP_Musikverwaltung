@@ -9,8 +9,6 @@ import musikverwaltung.ScreenController;
 import musikverwaltung.data.Playlist;
 
 public class PlaylistDetailView extends MainView {
-    //TODO playlist erstellen menu öffnet sich auch in diesem view
-
     private ObservableList<Playlist> contextPlaylists;
     private Playlist playlist;
 

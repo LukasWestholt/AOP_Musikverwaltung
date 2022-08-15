@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 import musikverwaltung.ScreenController;
 
 public abstract class MenuBarView extends GenericView {
-    //doch benutzen!
+    //TODO doch benutzen!
     private final ToolBar menuToolBar = new ToolBar();
     private final VBox wrapperVBox = new VBox();
 

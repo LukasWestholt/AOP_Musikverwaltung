@@ -6,6 +6,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleObjectProperty;
@@ -32,7 +33,6 @@ public class Playlist implements Externalizable {
         this.name.setValue("Playlist 1");
     }
 
-    @SuppressWarnings("unused")
     public Playlist(String name, ObservableList<Song> playlist) {
         this.name.setValue(name);
         songs.setAll(playlist);
@@ -47,7 +47,7 @@ public class Playlist implements Externalizable {
     }
 
     public void setName(String name) {
-        this.name.set(name);
+        this.name.setValue(name);
     }
 
     public Image getPreviewImage() {
@@ -170,7 +170,11 @@ public class Playlist implements Externalizable {
 
     @Override
     public String toString() {
-        return "PlayList{" + "name=" + getName() + ", songs=" + songs + ", previewImage: " + getPreviewImage() + '}';
+        LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
+        attributes.put("name", getName());
+        attributes.put("songs", songs);
+        attributes.put("previewImage", getPreviewImage());
+        return Helper.toString(this, attributes);
     }
 
     public boolean isAlmostEqual(Playlist otherPlaylist) {

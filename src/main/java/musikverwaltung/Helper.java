@@ -6,6 +6,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Helper class with static methods.
@@ -75,5 +76,15 @@ public class Helper {
             }
         }
         return null;
+    }
+
+    public static String toString(Object o, Map<String, Object> attributes) {
+        StringBuilder builder = new StringBuilder();
+        String sep = ", ";
+        attributes.forEach((key, value) -> builder.append(key).append(": ").append(value).append(sep));
+        String endString = builder.toString();
+        endString = endString.substring(0, endString.length() - sep.length());
+        return "<" + o.getClass().getSimpleName() + "@" + Integer.toHexString(System.identityHashCode(o)) + "> "
+                + endString;
     }
 }

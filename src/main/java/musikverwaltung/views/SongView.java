@@ -349,8 +349,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         player.seek(new Duration(player.getCurrentTime().toMillis() + (timeInSeconds * 1000)));
     }
 
-    public boolean isPlayerPlaying() {
-        // TODO LW why public?
+    private boolean isPlayerPlaying() {
         return player != null && player.getStatus() == MediaPlayer.Status.PLAYING;
     }
 
@@ -376,7 +375,9 @@ public class SongView extends MenuBarView implements DestroyListener {
     }
 
     void setPlaylistLastSong() {
-        setPlaylist(getLastSong(), false);
+        if (!isPlayerPlaying()) {
+            setPlaylist(getLastSong(), false);
+        }
     }
 
     private static void setDynamicSize(Region region) {
