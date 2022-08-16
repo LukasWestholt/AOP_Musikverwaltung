@@ -4,46 +4,76 @@ import java.util.*;
 import javafx.collections.ObservableListBase;
 
 /**
- * This data structure builds an observable deque for songs.
- * https://stackoverflow.com/a/28468340/8980073
+ * data structure functions as an observable deque for songs.
+ * holds information about songs it contains and the number of songs there is
+ *
  */
+//https://stackoverflow.com/a/28468340/8980073
 public class ObservableSongQueue extends ObservableListBase<Song> implements Deque<Song> {
     private final ArrayDeque<Song> queue;
     private int remainingSongs;
 
+    /**
+     * created with an empty ArrayDeque and therefor no songs
+     */
     public ObservableSongQueue() {
         this.queue = new ArrayDeque<>();
         this.remainingSongs = 0;
     }
 
+    /**
+     * @return number of songs in deque
+     */
     public int getRemainingSongs() {
         return this.remainingSongs;
     }
 
+    /**
+     * number of songs in deque gets set to size of deque
+     */
     public void resetRemainingSongs() {
         this.remainingSongs = queue.size();
     }
 
+    /**
+     * @param i = number of songs that get added to deque
+     */
     public void addToRemainingSongs(int i) {
         System.out.println("+" + i);
         this.remainingSongs += i;
     }
-
+    //TODO
+    /**
+     * @param i1
+     * @param i2
+     */
     private void documentAdd(int i1, int i2) {
         nextAdd(i1, i2);
         remainingSongs += i2 - i1;
     }
-
+    //TODO
+    /**
+     * @param i
+     * @param song
+     */
     private void documentRemove(int i, Song song) {
         nextRemove(i, song);
         remainingSongs--;
     }
-
+    //TODO
+    /**
+     * @param size
+     * @param list
+     */
     private void documentSet(int size, List<Song> list) {
         nextReplace(0, size, list);
         resetRemainingSongs();
     }
-
+    //TODO ... ->
+    /**
+     * @param s the element to add
+     * @return
+     */
     @Override
     public boolean offer(Song s) {
         return offerLast(s);

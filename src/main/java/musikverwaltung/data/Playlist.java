@@ -11,6 +11,11 @@ import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import musikverwaltung.Helper;
 
+/**
+ * Representation of the playlists in our Musikverwaltung
+ * holds information about name, songs and preview Image as properties
+ * also holds the last played Song of the Playlist
+ */
 public class Playlist {
     private final SimpleStringProperty name = new SimpleStringProperty();
 
@@ -19,37 +24,67 @@ public class Playlist {
 
     private Song lastPlayedSong;
 
+    /**
+     * gets created with default name for every Playlist: Playlist 1
+     */
     public Playlist() {
         this.name.setValue("Playlist 1");
     }
 
+    /**
+     * gets created with name, and list of songs
+     *
+     * @param name = name of Playlist
+     * @param playlist = list of songs in the playlist
+     */
     public Playlist(String name, List<Song> playlist) {
         this.name.setValue(name);
         this.songs.setAll(playlist);
     }
-
+    /**
+     * gets created with name, list of songs and oath to preview image
+     *
+     * @param name = name of Playlist
+     * @param playlist = list of songs in the playlist
+     * @param previewImagePath = path of preview image of Playlist
+     */
     public Playlist(String name, List<Song> playlist, String previewImagePath) {
         this.name.setValue(name);
         this.songs.setAll(playlist);
         setPreviewImage(previewImagePath);
     }
 
+    /**
+     * @return name of playlist
+     */
     public String getName() {
         return name.get();
     }
 
+    /**
+     * @return property of name
+     */
     public SimpleStringProperty getNameProperty() {
         return name;
     }
 
+    /**
+     * @param name = name of playlist
+     */
     public void setName(String name) {
         this.name.setValue(name);
     }
 
+    /**
+     * @return Image object of Playlist
+     */
     public Image getPreviewImage() {
         return previewImage.get();
     }
 
+    /**
+     * @return url as String from Image object of Playlist
+     */
     public String getPreviewImageUrl() {
         Image image = getPreviewImage();
         if (image == null) {
@@ -58,57 +93,101 @@ public class Playlist {
         return image.getUrl();
     }
 
+    /**
+     * @param string = path (as String) to preview image
+     */
     public void setPreviewImage(String string) {
         if (string != null && !string.isEmpty()) {
             previewImage.set(new Image(string));
         }
     }
 
+    /**
+     * @param path = path (as Path object) to preview image
+     */
     public void setPreviewImage(Path path) {
         String string = Helper.p2uris(path);
         setPreviewImage(string);
     }
 
+    /**
+     * @return property if preview image
+     */
     public SimpleObjectProperty<Image> getPreviewImageProperty() {
         return previewImage;
     }
 
+    /**
+     * @param index = index
+     * @return position of Song in playlist
+     */
     public Song get(int index) {
         return songs.get(index);
     }
 
+    /**
+     * @return observable list containing all songs
+     */
     public ObservableList<Song> getAll() {
         return songs;
     }
 
+    /**
+     * @param playlist = list containing all songs
+     */
     public void setAll(List<Song> playlist) {
         songs.setAll(playlist);
     }
 
+    /**
+     * @param song = new song that will be added to playlist
+     */
     public void add(Song song) {
         songs.add(song);
     }
 
+    /**
+     * @param index = index of song that will be removed from playlist
+     */
     public void remove(int index) {
         songs.remove(index);
     }
 
+    /**
+     * @param song = song in playlist
+     * @return information whether first occurence of the song was successfully removed or not
+     */
     public boolean removeFirstOccurrence(Song song) {
         return songs.removeFirstOccurrence(song);
     }
 
+    /**
+     * @param searchSong = any Song object
+     * @return true of song is part of Playlist, else: false
+     */
     public boolean contains(Song searchSong) {
         return songs.contains(searchSong);
     }
 
+    /**
+     * @return true of playlist contains no songs, else: false
+     */
     public boolean isEmpty() {
         return songs.isEmpty();
     }
 
+    /**
+     * @return length of Playlist
+     */
     public int size() {
         return songs.size();
     }
-
+    //TODO:
+    /**
+     * @param index
+     * @param onRepeat
+     * @return
+     */
     public Song getRelativeSong(int index, boolean onRepeat) {
         System.out.println("Queue(" + index + "/" + songs.getRemainingSongs() + "): "
                 + songs.stream().map(Song::getPrimaryKey).collect(Collectors.toList()));
@@ -159,11 +238,19 @@ public class Playlist {
             return lastPlayedSong;
         }
     }
-
+    //TODO
+    /**
+     *
+     */
     public void resetRemainingSongs() {
         songs.resetRemainingSongs();
     }
 
+    /**
+     *
+     *
+     * @return the String representation of the Playlist object
+     */
     @Override
     public String toString() {
         LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
@@ -173,10 +260,20 @@ public class Playlist {
         return Helper.toString(this, attributes);
     }
 
+    /**
+     * @param otherPlaylist = any playlist object
+     * @return true if both playlists have the same songs, else: false
+     */
     public boolean isAlmostEqual(Playlist otherPlaylist) {
         return this.getAll().equals(otherPlaylist.getAll());
     }
 
+    /**
+     * two Playlist objects are defined identical if they share the same name, songs and preview image url
+     *
+     * @param other = any object
+     * @return true if both Playlist are identical, else: false
+     */
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -195,6 +292,9 @@ public class Playlist {
                 && this.getPreviewImageUrl().equals(otherPlaylist.getPreviewImageUrl());
     }
 
+    /**
+     * @return hashCode of Playlist object
+     */
     @Override
     public int hashCode() {
         return Objects.hash(name, songs, previewImage);

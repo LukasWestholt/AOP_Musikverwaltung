@@ -127,7 +127,7 @@ public class Song {
     }
 
     /**
-     * @return true if rowIndex assigned (which means song selected), else false
+     * @return true if rowIndex assigned (which means song selected), else: false
      */
     public boolean isSelected() {
         return this.rowIndex != null;
@@ -181,7 +181,7 @@ public class Song {
      * Searches the user given search word throughout the Song object categories (name, artist, genre)
      *
      * @param searchKey = search Word from the user
-     * @return if searchKey is in any search category (name, artist, genre) of the Song -> true, else false
+     * @return if searchKey is in any search category (name, artist, genre) of the Song -> true, else: false
      */
     public boolean searchEverywhere(String searchKey) {
         return getPrimaryKey().toLowerCase().contains(searchKey.toLowerCase().trim())
@@ -274,10 +274,11 @@ public class Song {
     }
 
     /**
+     * two Song objects are defined identical if their path is the same
      * we only need to compare the paths of any given two songs because it is the songs unique identifier
      *
      * @param other any given object
-     * @return two Song objects are defined identical if their path is the same
+     * @return true if both songs have same path, else: false
      */
     @Override
     public boolean equals(Object other) {
