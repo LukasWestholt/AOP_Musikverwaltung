@@ -121,7 +121,6 @@ public class ScreenController {
             }
         }
         stage.setTitle(title);
-        //TODO setted immer die main stage bzw null fehler?
         view.setStage(stage);
         stage.show();
         stage.toFront();

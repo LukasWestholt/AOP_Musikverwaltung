@@ -51,7 +51,7 @@ public class CreditsView extends GenericView {
             }
         });
 
-        Button buttonCancel = new Button("Close");
+        Button buttonCancel = new Button("Beenden");
         buttonCancel.setCancelButton(true);
         buttonCancel.setOnAction(e -> stage.close());
         HBox buttonHBox = new HBox(buttonCancel);

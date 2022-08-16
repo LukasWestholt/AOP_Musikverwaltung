@@ -241,8 +241,9 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
                     actionLabel.setText("Playlist with " + returnPlaylist.size() + " items added");
                 } else {
                     actionLabel.setText("Playlist existiert bereits");
+                    //TODO das Fenster der Playlisten öffnet sich trotzdem (nutzer könnte verwirrt sein)
                 }
-                // TODO reset all checkboxes
+                refresh();
             }
         });
 
@@ -264,11 +265,17 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         StackPane.setAlignment(background, Pos.TOP_LEFT);
         showNodes(background, centerVbox);
     }
+    public void unselectAllSongs() {
+        for (Song song:flSong) {
+            song.deselect();
+        }
+    }
 
     public Runnable refresh() {
         return () -> {
             mediaManager.update(table::refresh);
             showPlaylistAdd.set(false);
+            unselectAllSongs();
         };
     }
 

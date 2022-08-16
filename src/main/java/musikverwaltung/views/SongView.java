@@ -63,8 +63,6 @@ public class SongView extends MenuBarView implements DestroyListener {
 
     public SongView(ScreenController sc, MediaManager mediaManager) {
         /*
-        https://www.geeksforgeeks.org/javafx-progressbar/
-        https://stackoverflow.com/questions/26850828/how-to-make-a-javafx-button-with-circle-shape-of-3xp-diameter
         http://kenyadevelopers.blogspot.com/2015/06/javafx-audiospectrum-and-barchartbeauty.html
          */
         super(sc, 320, 560);
@@ -209,7 +207,6 @@ public class SongView extends MenuBarView implements DestroyListener {
 
         audioSpectrumListener = (timestamp, duration, magnitudes, phases) -> {
             for (int i = 0; i < magnitudes.length; i++) {
-                System.out.println("doing");
                 audioData.getData().add(new XYChart.Data<>(Integer.toString(i), magnitudes[i] + dbThreshold));
             }
         };
@@ -279,14 +276,13 @@ public class SongView extends MenuBarView implements DestroyListener {
     public Node get() {
         // on exit the automatic graph updates will stop
         // if stage shown and graph was last activated, it gets activated again
-
-        // TODO kann das in den Konstruktor? Sonst wird das jedes mal aufgerufen
-        // TODO lieber noch ein check auf player != null oder?
         stage.showingProperty().addListener((observableValue, oldVal, isShowing) -> {
-            if (chartIsVisible.get() && isShowing) {
-                player.setAudioSpectrumListener(audioSpectrumListener);
-            } else {
-                player.setAudioSpectrumListener(null);
+            if (player != null) {
+                if (chartIsVisible.get() && isShowing) {
+                    player.setAudioSpectrumListener(audioSpectrumListener);
+                } else {
+                    player.setAudioSpectrumListener(null);
+                }
             }
         });
         return super.get();

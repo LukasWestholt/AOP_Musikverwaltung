@@ -26,7 +26,7 @@ public class SettingsView extends GenericView {
     public SettingsView(ScreenController sc) {
         super(sc, 350, 300);
 
-        Button selectDirectory = new Button("Select Directory");
+        Button selectDirectory = new Button("Ordner auswählen");
         selectDirectory.setOnAction(e -> {
             Path selectedDirectory = CachedPathChooser.showDialog(stage, null);
             if (selectedDirectory != null) {
@@ -38,16 +38,16 @@ public class SettingsView extends GenericView {
         listDirectory.setFocusTraversable(false);
         VBox.setVgrow(listDirectory, Priority.ALWAYS);
 
-        checkBox = new CheckBox("Show unplayable songs");
+        checkBox = new CheckBox("Zeige unabspielbare Songs");
 
-        Button buttonSave = new Button("Save");
+        Button buttonSave = new Button("Speichern");
         buttonSave.setOnAction(e -> {
             SettingFile.savePaths(new ArrayList<>(directories));
             SettingFile.saveShowUnplayableSongs(checkBox.isSelected());
             stage.close();
             listenerInitiator.getListeners().forEach(l -> l.refresh().run());
         });
-        Button buttonCancel = new Button("Cancel");
+        Button buttonCancel = new Button("Abbruch");
         buttonCancel.setCancelButton(true);
         buttonCancel.setOnAction(e -> stage.close());
         HBox buttonHBox = new HBox(buttonSave, buttonCancel);
@@ -65,7 +65,7 @@ public class SettingsView extends GenericView {
     static class DirectoryCell extends ListCell<String> {
         final HBox hbox = new HBox();
         final Label label = new Label("");
-        final Button button = new Button("(Del)");
+        final Button button = new Button("Löschen");
 
         public DirectoryCell(DoubleBinding widthProperty) {
             super();
