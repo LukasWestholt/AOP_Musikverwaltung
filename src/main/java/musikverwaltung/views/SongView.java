@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import javafx.beans.binding.When;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -26,7 +25,6 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import musikverwaltung.nodes.GradientBackground;
 import musikverwaltung.Helper;
 import musikverwaltung.MediaManager;
 import musikverwaltung.ScreenController;
@@ -34,6 +32,7 @@ import musikverwaltung.data.*;
 import musikverwaltung.handlers.DestroyListener;
 import musikverwaltung.handlers.ListenerInitiator;
 import musikverwaltung.handlers.SetActionLabelListener;
+import musikverwaltung.nodes.GradientBackground;
 import musikverwaltung.nodes.ImageButton;
 
 public class SongView extends MenuBarView implements DestroyListener {

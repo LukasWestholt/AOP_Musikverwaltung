@@ -12,7 +12,8 @@ import musikverwaltung.Helper;
 /**
  * externalizable object that saves the settings of the Musikverwaltung
  * it holds the name of the file all information gets saved to
- * information about the directories where the audio files from the user are located -> all songs will be visible as long as the directory paths are the same
+ * information about the directories where the audio files from the user are located -> all songs will be
+ * visible as long as the directory paths are the same
  * information about the last played song -> can be seen in Player next time the app is opened
  * information about all playlists -> can be seen in PlaylistView next time the app is opened
  */
@@ -79,7 +80,8 @@ public class SettingFile implements Externalizable {
      * compares already saved unplayable songs with UnplayableSong
      * if there are the same, nothing happens, else: new UnplayableSong will be saved as part of SettingsFile
      *
-     * @param showUnplayableSongs = information whether unplayable songs (wrong path or wrong format) should be saved too
+     * @param showUnplayableSongs = information whether unplayable songs
+     *                            (wrong path or wrong format) should be saved too
      */
     public static void saveShowUnplayableSongs(boolean showUnplayableSongs) {
         SettingFile setting = load();
@@ -158,12 +160,14 @@ public class SettingFile implements Externalizable {
         out.writeObject(new URIS(lastSong));
         out.writeBoolean(showUnplayableSongs);
     }
+
     /**
      * overrides the readExternal method of Externalizable
      * reads in externalizes playlist object (playlists, paths, lastSong, showUnplayableSongs)
      *
      * @param in the stream to read data from in order to restore the object
-     * @throws IOException, ClassNotFoundException
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     @Override
     @SuppressWarnings("unchecked")

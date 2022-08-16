@@ -103,7 +103,8 @@ public class PlaylistExternalizable implements Externalizable {
      * reads in externalizes playlist object (name, song paths, image path)
      *
      * @param in the stream to read data from in order to restore the object
-     * @throws IOException, ClassNotFoundException
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     @Override
     @SuppressWarnings("unchecked")

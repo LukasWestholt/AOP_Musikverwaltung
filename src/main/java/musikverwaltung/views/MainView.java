@@ -20,13 +20,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 import javafx.util.Duration;
-import musikverwaltung.nodes.GradientBackground;
 import musikverwaltung.MediaManager;
 import musikverwaltung.ScreenController;
 import musikverwaltung.data.Playlist;
 import musikverwaltung.data.Song;
 import musikverwaltung.handlers.RefreshListener;
 import musikverwaltung.handlers.SetActionLabelListener;
+import musikverwaltung.nodes.GradientBackground;
 import musikverwaltung.nodes.OpenSongViewButton;
 
 public class MainView extends MenuBarView implements SetActionLabelListener, RefreshListener {
@@ -259,8 +259,9 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
 
         showNodes(background, centerVbox);
     }
+
     public void unselectAllSongs() {
-        for (Song song:flSong) {
+        for (Song song : flSong) {
             song.deselect();
         }
     }
@@ -276,7 +277,6 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
     @Override
     public Node get() {
         Platform.runLater(refresh());
-        // TODO checkbox unselect
         return super.get();
     }
 

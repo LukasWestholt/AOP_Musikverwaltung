@@ -96,6 +96,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
     public void addToRemainingSongs(int i) {
         this.remainingSongs += i;
     }
+
     //TODO
     /**
      * @param i1
@@ -108,6 +109,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
             firstSong = get(i1);
         }
     }
+
     //TODO
     /**
      * @param i
@@ -124,6 +126,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
             }
         }
     }
+
     //TODO
     /**
      * @param size
@@ -136,6 +139,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
             firstSong = list.get(0);
         }
     }
+
     //TODO ... ->
     /**
      * @param s the element to add

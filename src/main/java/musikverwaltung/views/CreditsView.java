@@ -69,6 +69,6 @@ public class CreditsView extends GenericView {
         StackPane.setAlignment(background, Pos.TOP_LEFT);
         StackPane.setAlignment(creditsVbox, Pos.TOP_LEFT);
 
-        showNodes(background,creditsVbox);
+        showNodes(background, creditsVbox);
     }
 }

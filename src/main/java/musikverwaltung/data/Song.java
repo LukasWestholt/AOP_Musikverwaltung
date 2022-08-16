@@ -16,7 +16,8 @@ import musikverwaltung.Helper;
  * Representation of the songs in our Musikverwaltung
  * gets created with path information of audio file
  * all other information will  be loaded in later, via the mediaManager (which extracts the metadata of the files)
- * holds information about title, artist, genre, cover image, playability and selection-status/table-position as properties
+ * holds information about title, artist, genre, cover image, playability and
+ * selection-status/table-position as properties
  */
 public class Song {
     private final Path path;
@@ -139,6 +140,7 @@ public class Song {
     public void deselect() {
         this.rowIndex = null;
     }
+
     /**
      * defines rowIndex (selects song)
      */
