@@ -37,6 +37,9 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         this.remainingSongs = queue.size();
     }
 
+    /**
+     * @return realative position of first Song
+     */
     public int getRelativePositionOfFirstSong() {
         if (firstSong == null) {
             return -1;
@@ -53,10 +56,16 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         return r;
     }
 
+    /**
+     * @param i = remaining songs
+     */
     public void setRemainingSongs(int i) {
         this.remainingSongs = i;
     }
 
+    /**
+     * resets to ObservableSongQueue to default settings
+     */
     public void reset() {
         this.remainingSongs = queue.size();
         while (firstSong != null && queue.peekFirst() != firstSong) {
@@ -64,7 +73,9 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
         assert firstSong == null || queue.peekFirst() == firstSong;
     }
-
+    /**
+     * @return changes direction of ObservableSongQueue -> forwards
+     */
     public Song circleForwards() {
         beginChange();
         try {
@@ -78,6 +89,9 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
     }
 
+    /**
+     * @return changes direction of ObservableSongQueue -> backwards
+     */
     public Song circleBackwards() {
         beginChange();
         try {
@@ -141,16 +155,19 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
     }
 
-    //TODO ... ->
     /**
      * @param s the element to add
-     * @return
+     * @return whether adding the Song was successful
      */
     @Override
     public boolean offer(Song s) {
         return offerLast(s);
     }
 
+    /**
+     * @param song the element to add
+     * @return whether adding the Song was successful
+     */
     @Override
     public boolean offerFirst(Song song) {
         beginChange();
@@ -162,6 +179,10 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         return result;
     }
 
+    /**
+     * @param song the element to add
+     * @return whether adding the Song was successful
+     */
     @Override
     public boolean offerLast(Song song) {
         beginChange();
@@ -173,12 +194,19 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         return result;
     }
 
+    /**
+     * @param s element whose presence in this collection is to be ensured
+     * @return whether adding the Song was successful
+     */
     @Override
     public boolean add(Song s) {
         addLast(s);
         return true;
     }
 
+    /**
+     * @param song the element to add
+     */
     @Override
     public void addFirst(Song song) {
         beginChange();
@@ -190,6 +218,9 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
     }
 
+    /**
+     * @param song the element to add
+     */
     @Override
     public void addLast(Song song) {
         beginChange();
@@ -201,6 +232,10 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
     }
 
+    /**
+     * @param c collection containing elements to be added to this collection
+     * @return whether adding the songs was successful
+     */
     @Override
     public boolean addAll(Collection<? extends Song> c) {
         beginChange();
@@ -214,6 +249,10 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
     }
 
 
+    /**
+     * @param c collection containing elements that will be the new contents
+     * @return whether setting the songs was successful
+     */
     @Override
     public boolean setAll(Collection<? extends Song> c) {
         beginChange();
@@ -227,16 +266,26 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
     }
 
+    /**
+     * @param song the element to push
+     */
     @Override
     public void push(Song song) {
         addFirst(song);
     }
 
+    /**
+     * @return first element of ObservableSongQueue (no longer contained)
+     */
     @Override
     public Song pop() {
         return removeFirst();
     }
 
+    /**
+     * @param index the index of the element to be removed
+     * @return element at index position (no longer contained)
+     */
     @Override
     public Song remove(int index) {
         beginChange();
@@ -252,11 +301,17 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
     }
 
+    /**
+     * @return first element of ObservableSongQueue (no longer contained)
+     */
     @Override
     public Song remove() {
         return removeFirst();
     }
 
+    /**
+     * @return first element of ObservableSongQueue (no longer contained)
+     */
     @Override
     public Song removeFirst() {
         beginChange();
@@ -269,6 +324,9 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
     }
 
+    /**
+     * @return last element of ObservableSongQueue (no longer contained)
+     */
     @Override
     public Song removeLast() {
         beginChange();
@@ -281,6 +339,13 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
     }
 
+
+    /**
+     * Removes the first occurrence of the specified element in this deque (when traversing the deque from head to tail). If the deque does not contain the element, it is unchanged
+     *
+     * @param o element to be removed from this deque, if present
+     * @return true if the deque contained the specified element, else: false
+     */
     @Override
     public boolean removeFirstOccurrence(Object o) {
         beginChange();
@@ -303,6 +368,12 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
     }
 
+    /**
+     * Removes the last occurrence of the specified element in this deque (when traversing the deque from head to tail). If the deque does not contain the element, it is unchanged
+     *
+     * @param o element to be removed from this deque, if present
+     * @return if the deque contained the specified element, else: false
+     */
     @Override
     public boolean removeLastOccurrence(Object o) {
         beginChange();
@@ -325,11 +396,17 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
     }
 
+    /**
+     * @return pollFirst
+     */
     @Override
     public Song poll() {
         return pollFirst();
     }
 
+    /**
+     * @return pollFirst
+     */
     @Override
     public Song pollFirst() {
         beginChange();
@@ -341,6 +418,9 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         return s;
     }
 
+    /**
+     * @return pollLast
+     */
     @Override
     public Song pollLast() {
         beginChange();
@@ -352,11 +432,17 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         return s;
     }
 
+    /**
+     * @return first element of ObservableSongQueue
+     */
     @Override
     public Song element() {
         return getFirst();
     }
 
+    /**
+     * @return first element of ObservableSongQueue
+     */
     @Override
     public Song getFirst() {
         return queue.getFirst();
@@ -367,21 +453,34 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         return queue.getLast();
     }
 
+    /**
+     * @return peekFirst
+     */
     @Override
     public Song peek() {
         return peekFirst();
     }
 
+    /**
+     * @return peekFirst
+     */
     @Override
     public Song peekFirst() {
         return queue.peekFirst();
     }
 
+    /**
+     * @return peekLast
+     */
     @Override
     public Song peekLast() {
         return queue.peekLast();
     }
 
+    /**
+     * @param index index of the element to return
+     * @return next element of Iterator
+     */
     @Override
     public Song get(int index) {
         if (index < 0) {
@@ -394,11 +493,17 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         return iterator.next();
     }
 
+    /**
+     * @return Iterator over songs
+     */
     @Override
     public Iterator<Song> descendingIterator() {
         return queue.descendingIterator();
     }
 
+    /**
+     * @return size of ObservableSongQueue
+     */
     @Override
     public int size() {
         return queue.size();
