@@ -77,7 +77,7 @@ public class SongView extends MenuBarView implements DestroyListener {
                     }
                 }
         );
-        ignoreMenuItems(settingViewButton, playlistViewButton, creditsViewButton);
+        ignoreMenuItems(settingViewButton, playlistViewButton, songViewButton, creditsViewButton);
 
         screenController.listenerInitiator.addListenerIfNotContains(this);
 

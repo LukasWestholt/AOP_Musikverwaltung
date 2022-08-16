@@ -27,8 +27,9 @@ import musikverwaltung.data.Song;
 import musikverwaltung.handlers.RefreshListener;
 import musikverwaltung.handlers.SetActionLabelListener;
 import musikverwaltung.nodes.GradientBackgroundRectangle;
-import musikverwaltung.nodes.OpenSongViewButton;
 
+
+// https://stackoverflow.com/a/47560767/8980073
 public class MainView extends MenuBarView implements SetActionLabelListener, RefreshListener {
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";
@@ -37,14 +38,13 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
     private final FilteredList<Song> flSong;
     private final MediaManager mediaManager;
     final Label welcomeLabel;
-    private final Label actionLabel;
+    private final Label actionLabel = new Label();
     final VBox centerVbox;
     final StackPane customButtonPane = new StackPane();
     final ObjectProperty<Predicate<Song>> songFilterForPlaylist = new SimpleObjectProperty<>();
 
     final SimpleBooleanProperty showPlaylistAdd = new SimpleBooleanProperty();
 
-    // https://stackoverflow.com/a/47560767/8980073
     public MainView(ScreenController sc, MediaManager mediaManager, boolean includeUnplayableSongs) {
         super(sc);
 
@@ -62,6 +62,18 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         addActiveMenuButton(playlistViewButton,
                 e -> screenController.activate(PlaylistView.class)
         );
+
+        addActiveMenuButton(songViewButton, e -> {
+                    actionLabel.setText("Öffne Player");
+                    GenericView view = screenController.activateWindow(SongView.class, true);
+                    if (view instanceof SongView) {
+                        SongView songView = (SongView) view;
+                        songView.listenerInitiator.addListenerIfNotContains(this);
+                        songView.setPlaylistLastSong();
+                    }
+                }
+        );
+
         addActiveMenuButton(creditsViewButton,
                 e -> screenController.activateWindow(CreditsView.class, false)
         );
@@ -82,7 +94,6 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.getStyleClass().add("header");
 
-        actionLabel = new Label();
         actionLabel.setAlignment(Pos.CENTER);
         actionLabel.setMaxWidth(Double.MAX_VALUE);
         PauseTransition pause = new PauseTransition(Duration.seconds(15));
@@ -146,19 +157,8 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
             }
         });
 
-        OpenSongViewButton openSongViewButton = new OpenSongViewButton(
-                e -> {
-                    actionLabel.setText("Öffne Player");
-                    GenericView view = screenController.activateWindow(SongView.class, true);
-                    if (view instanceof SongView) {
-                        SongView songView = (SongView) view;
-                        songView.listenerInitiator.addListenerIfNotContains(this);
-                        songView.setPlaylistLastSong();
-                    }
-                }
-        );
         // Add choiceBox and textField to hBox
-        HBox searchHBox = new HBox(choiceBox, textSearchField, openSongViewButton);
+        HBox searchHBox = new HBox(choiceBox, textSearchField);
         searchHBox.setAlignment(Pos.CENTER); //Center HBox
 
         TableColumn<Song, Boolean> checkCol = new TableColumn<>();
@@ -233,7 +233,6 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
                     actionLabel.setText("Playlist mit " + returnPlaylist.size() + " Songs hinzugefügt");
                 } else {
                     actionLabel.setText("Playlist existiert bereits");
-                    //TODO das Fenster der Playlisten öffnet sich trotzdem (nutzer könnte verwirrt sein)
                 }
                 refresh();
             }
