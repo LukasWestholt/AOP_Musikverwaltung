@@ -13,11 +13,11 @@ import javafx.scene.image.Image;
 import musikverwaltung.Helper;
 
 /**
- * Representation of the songs in our Musikverwaltung
- * gets created with path information of audio file
- * all other information will  be loaded in later, via the mediaManager (which extracts the metadata of the files)
- * holds information about title, artist, genre, cover image, playability and
- * selection-status/table-position as properties
+ * Representation of the songs in our Musikverwaltung.
+ * Gets created with path information of audio file.
+ * All other information will be loaded in later, via the mediaManager (which extracts the metadata of the files).
+ * Holds information about title, artist, genre, cover image, playability and
+ * selection-status/table-position as properties.
  */
 public class Song {
     private final Path path;
@@ -50,7 +50,7 @@ public class Song {
     }
 
     /**
-     * @param titel = title of song
+     * @param titel title of song
      */
     public void setTitle(String titel) {
         this.title.set(titel);
@@ -71,7 +71,7 @@ public class Song {
     }
 
     /**
-     * @param artist = artist of the song
+     * @param artist artist of the song
      */
     public void setArtist(String artist) {
         this.artist.set(artist);
@@ -93,7 +93,7 @@ public class Song {
 
 
     /**
-     * @param genre = genre of Song
+     * @param genre genre of Song
      */
     public void setGenre(String genre) {
         this.genre.set(genre);
@@ -114,7 +114,7 @@ public class Song {
     }
 
     /**
-     * @param cover = cover of Song
+     * @param cover cover of Song
      */
     public void setCover(Image cover) {
         this.cover.set(cover);
@@ -173,7 +173,7 @@ public class Song {
     }
 
     /**
-     * @param isPlayable =  sets the information that Song can be played
+     * @param isPlayable  sets the information that Song can be played
      */
     public void setPlayable(boolean isPlayable) {
         this.isPlayable = isPlayable;
@@ -182,7 +182,7 @@ public class Song {
     /**
      * Searches the user given search word throughout the Song object categories (name, artist, genre)
      *
-     * @param searchKey = search Word from the user
+     * @param searchKey search Word from the user
      * @return if searchKey is in any search category (name, artist, genre) of the Song -> true, else: false
      */
     public boolean searchEverywhere(String searchKey) {
@@ -250,7 +250,7 @@ public class Song {
     }
 
     /**
-     * @param str = any given String object
+     * @param str any given String object
      * @return str or "" if String is undefined
      */
     private static String notNullString(String str) {

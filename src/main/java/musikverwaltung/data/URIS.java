@@ -9,11 +9,17 @@ import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 
 /**
- * URL string.
+ * URI string data structure
  */
 public class URIS implements Serializable {
     private final String underlyingString;
 
+
+    /**
+     * Constructs a URIS based on a Path
+     *
+     * @param path a Path object
+     */
     public URIS(Path path) {
         if (path == null) {
             this.underlyingString = "";
@@ -22,6 +28,11 @@ public class URIS implements Serializable {
         }
     }
 
+    /**
+     * Constructs a URIS based on a Image
+     *
+     * @param image an Image object
+     */
     public URIS(Image image) {
         if (image == null) {
             this.underlyingString = "";
@@ -30,7 +41,13 @@ public class URIS implements Serializable {
         }
     }
 
-    public Path getPath() {
+
+    /**
+     * Convert to Path
+     *
+     * @return a Path object
+     */
+    public Path toPath() {
         if (underlyingString.isEmpty()) {
             return null;
         }
@@ -41,10 +58,21 @@ public class URIS implements Serializable {
         }
     }
 
+    /**
+     * Convert to Image
+     *
+     * @param backgroundLoading indicates whether the image is being loaded in the background
+     * @return an Image object
+     */
     public Image toImage(boolean backgroundLoading) {
         return new Image(underlyingString, backgroundLoading);
     }
 
+    /**
+     * Convert to Media
+     *
+     * @return an Media object
+     */
     public Media toMedia() {
         return new Media(underlyingString);
     }

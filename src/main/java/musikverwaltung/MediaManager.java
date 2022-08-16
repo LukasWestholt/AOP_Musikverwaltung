@@ -51,7 +51,7 @@ public class MediaManager {
 
             for (Song song : music) {
                 for (URIS uris : playlistExt.getPaths()) {
-                    Path path = uris.getPath();
+                    Path path = uris.toPath();
                     if (path == null) {
                         continue;
                     }
@@ -67,7 +67,7 @@ public class MediaManager {
             }
 
             for (URIS uris : playlistExt.getPaths()) {
-                Path path = uris.getPath();
+                Path path = uris.toPath();
                 if (path == null) {
                     continue;
                 }
@@ -137,7 +137,6 @@ public class MediaManager {
         for (Song song : getMusic(Whitelist.PLAYABLE)) {
             Media media = new URIS(song.getPath()).toMedia();
             media.getMetadata().addListener((MapChangeListener<String, Object>) metadata -> {
-                // TODO there are some more metadata like albums, year etc. we could use
                 //System.out.println(metadata.getMap());
                 FilteredList<Song> fl = music.filtered(
                         s -> s.isPlayable() && Objects.equals(s, song));

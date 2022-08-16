@@ -4,9 +4,9 @@ import java.util.*;
 import javafx.collections.ObservableListBase;
 
 /**
- * data structure functions as an observable deque for songs.
- * holds information about songs it contains and the number of songs there is
- *
+ * Data structure functions as an observable deque for songs.
+ * Holds information about songs and keeps the order.
+ * Circular song output possible.
  */
 //https://stackoverflow.com/a/28468340/8980073
 public class ObservableSongQueue extends ObservableListBase<Song> implements Deque<Song> {
@@ -15,7 +15,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
     private int remainingSongs;
 
     /**
-     * created with an empty ArrayDeque and therefor no songs
+     * Constructs an empty ObservableSongQueue
      */
     public ObservableSongQueue() {
         this.queue = new ArrayDeque<>();
@@ -23,19 +23,15 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
     }
 
     /**
-     * @return number of songs in deque
+     * @return number of remaining songs in queue
      */
     public int getRemainingSongs() {
         return this.remainingSongs;
     }
 
     /**
-     * number of songs in deque gets set to size of deque
+     * @return Number of songs to play until the first song is back
      */
-    private void resetRemainingSongs() {
-        this.remainingSongs = queue.size();
-    }
-
     public int getRelativePositionOfFirstSong() {
         if (firstSong == null) {
             return -1;
@@ -52,10 +48,23 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         return r;
     }
 
+    /**
+     * Sets number of remaining songs
+     */
     public void setRemainingSongs(int i) {
         this.remainingSongs = i;
     }
 
+    /**
+     * Adds number of remaining songs
+     */
+    public void addToRemainingSongs(int i) {
+        this.remainingSongs += i;
+    }
+
+    /**
+     * Resets queue. Everything will be the same as it was in the beginning.
+     */
     public void reset() {
         this.remainingSongs = queue.size();
         while (firstSong != null && queue.peekFirst() != firstSong) {
@@ -64,6 +73,11 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         assert firstSong == null || queue.peekFirst() == firstSong;
     }
 
+    /**
+     * Gets next Song in the circle
+     *
+     * @return Next Song
+     */
     public Song circleForwards() {
         beginChange();
         try {
@@ -77,6 +91,11 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
     }
 
+    /**
+     * Gets the previous song in the circle
+     *
+     * @return Next Song
+     */
     public Song circleBackwards() {
         beginChange();
         try {
@@ -91,29 +110,24 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
     }
 
     /**
-     * @param i = number of songs that get added to deque
+     * Documents an add operation.
+     *
+     * @param from marks the beginning (inclusive) of the range that was added
+     * @param to marks the end (exclusive) of the range that was added
      */
-    public void addToRemainingSongs(int i) {
-        this.remainingSongs += i;
-    }
-
-    //TODO
-    /**
-     * @param i1
-     * @param i2
-     */
-    private void documentAdd(int i1, int i2) {
-        nextAdd(i1, i2);
-        remainingSongs += i2 - i1;
+    private void documentAdd(int from, int to) {
+        nextAdd(from, to);
+        remainingSongs += to - from;
         if (firstSong == null) {
-            firstSong = get(i1);
+            firstSong = get(from);
         }
     }
 
-    //TODO
     /**
-     * @param i
-     * @param song
+     * Documents a remove operation.
+     *
+     * @param i the index where the item was removed
+     * @param song the item that was removed
      */
     private void documentRemove(int i, Song song) {
         nextRemove(i, song);
@@ -127,24 +141,21 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         }
     }
 
-    //TODO
     /**
-     * @param size
-     * @param list
+     * Documents a set operation.
+     *
+     * @param size the size of the new queue
+     * @param newList the new queue
+     * @param oldList the old queue
      */
-    private void documentSet(int size, List<Song> list) {
-        nextReplace(0, size, list);
-        resetRemainingSongs();
-        if (firstSong == null && !list.isEmpty()) {
-            firstSong = list.get(0);
+    private void documentSet(int size, List<Song> newList, List<Song> oldList) {
+        nextReplace(0, size, oldList);
+        this.remainingSongs = queue.size();
+        if (firstSong == null && !newList.isEmpty()) {
+            firstSong = newList.get(0);
         }
     }
 
-    //TODO ... ->
-    /**
-     * @param s the element to add
-     * @return
-     */
     @Override
     public boolean offer(Song s) {
         return offerLast(s);
@@ -217,9 +228,10 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
     public boolean setAll(Collection<? extends Song> c) {
         beginChange();
         try {
+            ArrayList<Song> old  = new ArrayList<>(queue);
             queue.clear();
             queue.addAll(c);
-            documentSet(queue.size(), new ArrayList<>(c));
+            documentSet(queue.size(), new ArrayList<>(c), old);
             return true;
         } finally {
             endChange();
@@ -286,9 +298,9 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         try {
             Iterator<Song> iterator = queue.iterator();
             for (int i = 0; i < queue.size(); i++) {
-                Song temp = iterator.next(); // TODO
-                assert (temp == o) == temp.equals(o);
-                if (temp == o) {
+                Song song = iterator.next();
+                assert (song == o) == song.equals(o);
+                if (song == o) {
                     boolean success = queue.removeFirstOccurrence(o);
                     if (success) {
                         documentRemove(i, (Song) o);
@@ -308,9 +320,9 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         try {
             Iterator<Song> iterator = queue.descendingIterator();
             for (int i = 0; i < queue.size(); i++) {
-                Song temp = iterator.next(); // TODO
-                assert (temp == o) == temp.equals(o);
-                if (temp == o) {
+                Song song = iterator.next();
+                assert (song == o) == song.equals(o);
+                if (song == o) {
                     boolean success = queue.removeLastOccurrence(o);
                     if (success) {
                         documentRemove(i, (Song) o);

@@ -49,7 +49,7 @@ public class PlaylistExternalizable implements Externalizable {
     }
 
     /**
-     * @param name = name of Playlist
+     * @param name name of Playlist
      */
     public void setName(String name) {
         this.name = name;
@@ -63,7 +63,7 @@ public class PlaylistExternalizable implements Externalizable {
     }
 
     /**
-     * @param uris = identifier for preview image
+     * @param uris identifier for preview image
      */
     public void setPreviewImagePath(URIS uris) {
         this.previewImagePath = uris;
@@ -77,7 +77,7 @@ public class PlaylistExternalizable implements Externalizable {
     }
 
     /**
-     * @param songs = adds all identifiers for songs in PlaylistExternalizable -> adds new songs
+     * @param songs adds all identifiers for songs in PlaylistExternalizable -> adds new songs
      */
     public void addPaths(ArrayList<URIS> songs) {
         this.songs.addAll(songs);

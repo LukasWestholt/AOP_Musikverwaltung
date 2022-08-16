@@ -8,8 +8,8 @@ public class Quote {
     private final String author;
 
     /**
-     * @param text = the quote itself
-     * @param author = author of quote
+     * @param text the quote itself
+     * @param author author of quote
      */
     public Quote(String text, String author) {
         this.text = text;

@@ -10,12 +10,12 @@ import musikverwaltung.Helper;
 
 
 /**
- * externalizable object that saves the settings of the Musikverwaltung
- * it holds the name of the file all information gets saved to
- * information about the directories where the audio files from the user are located -> all songs will be
- * visible as long as the directory paths are the same
- * information about the last played song -> can be seen in Player next time the app is opened
- * information about all playlists -> can be seen in PlaylistView next time the app is opened
+ * Externalizable object that saves the settings of the Musikverwaltung.
+ * It holds the name of the file all information gets saved to
+ * Information about the directories where the audio files from the user are located -> all songs will be
+ * Visible as long as the directory paths are the same.
+ * Information about the last played song -> can be seen in Player next time the app is opened.
+ * Information about all playlists -> can be seen in PlaylistView next time the app is opened.
  */
 public class SettingFile implements Externalizable {
     // explicitly
@@ -31,7 +31,7 @@ public class SettingFile implements Externalizable {
      * creates array of PlaylistExternalizable and compares it to the already saved playlists
      * if there are the same, nothing happens, else: new playlist will be saved as part of SettingsFile
      *
-     * @param playlists = playlists from the user
+     * @param playlists playlists from the user
      */
     public static void savePlaylists(ObservableList<Playlist> playlists) {
         SettingFile setting = load();
@@ -50,7 +50,7 @@ public class SettingFile implements Externalizable {
      * compares already saved paths with paths
      * if there are the same, nothing happens, else: new paths will be saved as part of SettingsFile
      *
-     * @param paths = paths to the directories where the audio files from the user are located
+     * @param paths paths to the directories where the audio files from the user are located
      */
     public static void savePaths(ArrayList<String> paths) {
         SettingFile setting = load();
@@ -65,7 +65,7 @@ public class SettingFile implements Externalizable {
      * compares already saved last played Song with lastSong
      * if there are the same, nothing happens, else: new lastSong will be saved as part of SettingsFile
      *
-     * @param lastSong = last played Song
+     * @param lastSong last played Song
      */
     public static void saveLastSong(Path lastSong) {
         SettingFile setting = load();
@@ -80,7 +80,7 @@ public class SettingFile implements Externalizable {
      * compares already saved unplayable songs with UnplayableSong
      * if there are the same, nothing happens, else: new UnplayableSong will be saved as part of SettingsFile
      *
-     * @param showUnplayableSongs = information whether unplayable songs
+     * @param showUnplayableSongs information whether unplayable songs
      *                            (wrong path or wrong format) should be saved too
      */
     public static void saveShowUnplayableSongs(boolean showUnplayableSongs) {
@@ -174,7 +174,7 @@ public class SettingFile implements Externalizable {
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         this.playlists = (ArrayList<PlaylistExternalizable>) in.readObject();
         this.paths = (ArrayList<String>) in.readObject();
-        this.lastSong = ((URIS) in.readObject()).getPath();
+        this.lastSong = ((URIS) in.readObject()).toPath();
         this.showUnplayableSongs = in.readBoolean();
     }
 

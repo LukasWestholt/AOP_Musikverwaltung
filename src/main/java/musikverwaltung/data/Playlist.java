@@ -21,8 +21,8 @@ public class Playlist {
     /**
      * gets created with name, and list of songs
      *
-     * @param name = name of Playlist
-     * @param playlist = list of songs in the playlist
+     * @param name name of Playlist
+     * @param playlist list of songs in the playlist
      */
     public Playlist(String name, List<Song> playlist) {
         this.name.setValue(name);
@@ -31,9 +31,9 @@ public class Playlist {
 
     /**
      * gets created with name, and list of songs and identifier for preview image
-     * @param name = name of Playlist
-     * @param playlist = list of songs in the playlist
-     * @param previewImagePath = identifier for preview image
+     * @param name name of Playlist
+     * @param playlist list of songs in the playlist
+     * @param previewImagePath identifier for preview image
      */
     public Playlist(String name, List<Song> playlist, URIS previewImagePath) {
         this.name.setValue(name);
@@ -56,7 +56,7 @@ public class Playlist {
     }
 
     /**
-     * @param name = name of playlist
+     * @param name name of playlist
      */
     public void setName(String name) {
         this.name.setValue(name);
@@ -81,12 +81,13 @@ public class Playlist {
     }
 
     /**
-     * @param uris = identifier for preview image
+     * async load of image
+     * @param uris identifier for preview image
      */
     public void setPreviewImage(URIS uris) {
         String string = uris.toString();
         if (string != null && !string.isEmpty()) {
-            previewImage.set(new Image(string));
+            previewImage.set(new Image(string, true));
         }
     }
 
@@ -98,7 +99,7 @@ public class Playlist {
     }
 
     /**
-     * @param index = index
+     * @param index index
      * @return position of Song in playlist
      */
     public Song get(int index) {
@@ -113,14 +114,14 @@ public class Playlist {
     }
 
     /**
-     * @param index = index of song that will be removed from playlist
+     * @param index index of song that will be removed from playlist
      */
     public void remove(int index) {
         songs.remove(index);
     }
 
     /**
-     * @param song = song in playlist
+     * @param song song in playlist
      * @return information whether first occurence of the song was successfully removed or not
      */
     public boolean removeFirstOccurrence(Song song) {
@@ -128,7 +129,7 @@ public class Playlist {
     }
 
     /**
-     * @param searchSong = any Song object
+     * @param searchSong any Song object
      * @return true of song is part of Playlist, else: false
      */
     public boolean contains(Song searchSong) {
@@ -238,7 +239,7 @@ public class Playlist {
     }
 
     /**
-     * @param otherPlaylist = any playlist object
+     * @param otherPlaylist any playlist object
      * @return true if both playlists have the same songs, else: false
      */
     public boolean isAlmostEqual(Playlist otherPlaylist) {
@@ -248,7 +249,7 @@ public class Playlist {
     /**
      * two Playlist objects are defined identical if they share the same name, songs and preview image url
      *
-     * @param other = any object
+     * @param other any object
      * @return true if both Playlist are identical, else: false
      */
     @Override

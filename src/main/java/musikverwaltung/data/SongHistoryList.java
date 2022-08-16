@@ -11,7 +11,7 @@ public class SongHistoryList extends LinkedList<Song> {
     private final int limit;
 
     /**
-     * @param limit = the length of songs the SongHistoryList will hold
+     * @param limit the length of songs the SongHistoryList will hold
      */
     public SongHistoryList(int limit) {
         this.limit = limit;
@@ -19,7 +19,7 @@ public class SongHistoryList extends LinkedList<Song> {
 
     /** overrides ...
      *
-     * @param s = Song that will be added to SongHistoryList
+     * @param s Song that will be added to SongHistoryList
      * @return the information whether a song has been added successfully
      */
     @Override

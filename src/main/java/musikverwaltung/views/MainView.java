@@ -74,7 +74,6 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         //Pass the data to a filtered list
         flSong = new FilteredList<>(mediaManager.getMusic(
                 includeUnplayableSongs ? MediaManager.Whitelist.RESPECT : MediaManager.Whitelist.PLAYABLE));
-        //flSong = new FilteredList<>(mediaManager.music.filtered(s -> includeUnplayableSongs || s.isPlayable()));
         flSong.predicateProperty().bind(Bindings.createObjectBinding(
                 () -> songFilterForPlaylist.get().and(userFilter.get()),
                 songFilterForPlaylist, userFilter));
