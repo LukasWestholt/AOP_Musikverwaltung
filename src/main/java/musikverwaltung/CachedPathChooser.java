@@ -28,7 +28,6 @@ public class CachedPathChooser {
         validateDirectory();
 
         //Set the FileExtensions you want to allow
-        System.out.println(fileChooser.getExtensionFilters());
         fileChooser.getExtensionFilters().setAll(extensionFilters);
         return fileChooser;
     }

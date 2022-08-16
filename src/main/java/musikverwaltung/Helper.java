@@ -45,6 +45,7 @@ public class Helper {
         return p2uris(getResourcePath(c, resourcePath, exitOnFailure));
     }
 
+    // TODO own datastructure for uris
     public static String p2uris(Path path) {
         if (path == null) {
             return "";

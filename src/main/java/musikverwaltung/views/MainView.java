@@ -162,7 +162,8 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
                     }
                 }
         );
-        HBox searchHBox = new HBox(choiceBox, textSearchField, openSongViewButton); //Add choiceBox and textField to hBox
+        // Add choiceBox and textField to hBox
+        HBox searchHBox = new HBox(choiceBox, textSearchField, openSongViewButton);
         searchHBox.setAlignment(Pos.CENTER); //Center HBox
 
         TableColumn<Song, Boolean> checkCol = new TableColumn<>();
@@ -232,9 +233,12 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
             if (view instanceof PlaylistView) {
                 Playlist returnPlaylist = new Playlist(playlistNameEntry.getText(), getSelectedSongs());
                 PlaylistView playlistView = (PlaylistView) view;
-                playlistView.addPlaylist(returnPlaylist);
-                System.out.println("playlist added: " + returnPlaylist.getAll());
-                actionLabel.setText("Playlist with " + returnPlaylist.size() + " items added");
+                boolean success = playlistView.addPlaylist(returnPlaylist);
+                if (success) {
+                    actionLabel.setText("Playlist with " + returnPlaylist.size() + " items added");
+                } else {
+                    actionLabel.setText("Playlist existiert bereits");
+                }
             }
         });
 

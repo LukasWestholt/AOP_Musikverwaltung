@@ -3,10 +3,6 @@ package musikverwaltung.data;
 import static musikverwaltung.views.MainView.HIGHLIGHT_END;
 import static musikverwaltung.views.MainView.HIGHLIGHT_START;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Objects;
@@ -16,12 +12,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
 import musikverwaltung.Helper;
 
-public class Song implements Externalizable {
-
-    // explicitly
-    @SuppressWarnings("unused")
-    private static final long SerialVersionUID = 30L;
-
+public class Song {
     // path is identifier
     private Path path;
 
@@ -221,22 +212,5 @@ public class Song implements Externalizable {
     @Override
     public int hashCode() {
         return Objects.hash(path);
-    }
-
-    //https://www.geeksforgeeks.org/externalizable-interface-java/
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        out.writeUTF(getTitle());
-        out.writeUTF(getGenre());
-        out.writeUTF(getArtist());
-        out.writeUTF(getPath().toAbsolutePath().toString());
-    }
-
-    @Override
-    public void readExternal(ObjectInput in) throws IOException {
-        setTitle(in.readUTF());
-        setGenre(in.readUTF());
-        setArtist(in.readUTF());
-        this.path = Helper.s2p(in.readUTF());
     }
 }

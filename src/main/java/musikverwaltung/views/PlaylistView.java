@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import javafx.animation.PauseTransition;
 import javafx.beans.binding.When;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -32,15 +31,19 @@ import musikverwaltung.nodes.OpenSongViewButton;
 
 public class PlaylistView extends MenuBarView implements DestroyListener {
 
-    private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
+    private final ObservableList<Playlist> playlists;
 
     private final FilteredList<Song> flSongs;
 
-    private Playlist contextPlaylist;
+    private Playlist selectedPlaylist;
+
+    private final TilePane tilePane = new TilePane();
+    private final TextField nameField = new TextField();
+    private final ContextMenu quickOptions = new ContextMenu();
 
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
-
+        playlists = mediaManager.playlists;
         flSongs = mediaManager.getPlayableMusic();
 
         addActiveMenuButton(settingViewButton,
@@ -59,7 +62,6 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         Label welcomeLabel = new Label("Playlisten");
         welcomeLabel.getStyleClass().add("header");
 
-        TilePane tilePane = new TilePane();
         tilePane.setId("playlists");
         tilePane.setHgap(5);
         tilePane.setVgap(5);
@@ -68,7 +70,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         tilePane.setMaxHeight(Region.USE_PREF_SIZE);
 
         MenuItem deleteMenu = new MenuItem("Löschen");
-        deleteMenu.setOnAction(action -> playlists.remove(contextPlaylist));
+        deleteMenu.setOnAction(action -> playlists.remove(selectedPlaylist));
 
         MenuItem selectMenu = new MenuItem("Bild auswählen");
         selectMenu.setOnAction(action -> {
@@ -81,22 +83,21 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
                 return;
             }
             try {
-                contextPlaylist.setPreviewImage(imageFile);
+                selectedPlaylist.setPreviewImage(imageFile);
             } catch (InvalidPathException ignored) {
                 System.out.println("Problem on loading File");
             }
         });
 
-        TextField nameField = new TextField();
         nameField.setOnAction((action) -> {
-            contextPlaylist.setName(nameField.getText());
+            selectedPlaylist.setName(nameField.getText());
             nameField.getParent().requestFocus();
         });
         ImageButton resetRenameButton = new ImageButton(
                 Helper.getResourcePath(this.getClass(), "/icons/restore.png", false),
                 true, false
         );
-        resetRenameButton.setOnAction(e -> nameField.setText(contextPlaylist.getName()));
+        resetRenameButton.setOnAction(e -> nameField.setText(selectedPlaylist.getName()));
         resetRenameButton.setPrefSize(30, 30);
         HBox renameBox = new HBox();
         renameBox.setSpacing(10);
@@ -106,85 +107,17 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         renameMenu.setHideOnClick(false);
 
         MenuItem openMenu = new MenuItem("Zeige");
-        openMenu.setOnAction(action -> {
-            GenericView view = screenController.activateWindow(PlaylistDetailView.class, false);
-            if (view instanceof PlaylistDetailView) {
-                PlaylistDetailView playlistDetailView = (PlaylistDetailView) view;
-                playlistDetailView.showPlaylistInContext(contextPlaylist, playlists);
-            }
-        });
+        openMenu.setOnAction(action -> showDetails());
 
-        ContextMenu quickOptions = new ContextMenu();
         quickOptions.getItems().addAll(deleteMenu, selectMenu, renameMenu, openMenu);
         int[] sepIndices = {2, 4};
         for (int sepIndex : sepIndices) {
             SeparatorMenuItem sep = new SeparatorMenuItem();
             quickOptions.getItems().add(sepIndex, sep);
         }
-        quickOptions.setOnAutoHide(event -> contextPlaylist.setName(nameField.getText()));
+        quickOptions.setOnAutoHide(event -> selectedPlaylist.setName(nameField.getText()));
 
-        playlists.addListener((ListChangeListener<? super Playlist>) change -> {
-            tilePane.getChildren().clear();
-            for (Playlist playlist : playlists) {
-                Button playlistButton = new Button(playlist.getName());
-                playlistButton.setMinWidth(Region.USE_PREF_SIZE);
-                playlistButton.setWrapText(true);
-                playlistButton.setStyle("-fx-font-size:18; -fx-background-color: rgb(44, 90, 118)");
-                playlistButton.hoverProperty().addListener((obs, oldValue, newValue) -> {
-                    if (newValue) {
-                        playlistButton.setStyle("-fx-font-size:14; -fx-background-color: rgb(129, 140, 48)");
-                    } else {
-                        playlistButton.setStyle("-fx-font-size:18; -fx-background-color: rgb(44, 90, 118)");
-                    }
-                });
-
-                PauseTransition singlePressPause = new PauseTransition(Duration.millis(500));
-                singlePressPause.setOnFinished(e -> {
-                    // single press
-                    GenericView view = screenController.activateWindow(SongView.class, true);
-                    if (view instanceof SongView) {
-                        SongView songView = (SongView) view;
-                        songView.setPlaylist(playlist, true);
-                    }
-                });
-
-                playlistButton.setOnMousePressed(e -> {
-                    if (e.isPrimaryButtonDown() && e.getClickCount() == 1) {
-                        singlePressPause.play();
-                    }
-
-                    if (e.isPrimaryButtonDown() && e.getClickCount() == 2) {
-                        singlePressPause.stop();
-                        // double press
-                        contextPlaylist = playlist;
-                        openMenu.fire();
-                    }
-                });
-
-                playlistButton.setOnMouseClicked(event -> {
-                    if (event.isPopupTrigger()) {
-                        contextPlaylist = playlist;
-                        nameField.setText(contextPlaylist.getName());
-                    }
-                });
-                playlistButton.setContextMenu(quickOptions);
-                ImageView previewView = new ImageView();
-                previewView.imageProperty().bind(playlist.getPreviewImageProperty());
-                previewView.setFitWidth(80);
-                previewView.setFitHeight(80);
-                previewView.setPreserveRatio(true);
-                playlistButton.graphicProperty().bind(new When(playlist.getPreviewImageProperty().isNull())
-                        .then((ImageView) null).otherwise(previewView));
-                playlistButton.textProperty().bind(playlist.getNameProperty());
-                playlistButton.setAlignment(Pos.BASELINE_CENTER);
-                playlistButton.setStyle("-fx-font-size:20");
-                playlistButton.setPrefHeight(100);
-                playlistButton.setPrefWidth(175);
-                tilePane.getChildren().add(playlistButton);
-            }
-        });
-        //letzte Playlisten werden geladen
-        playlists.addAll(SettingFile.load().getPlaylists());
+        playlists.addListener((ListChangeListener<? super Playlist>) change -> buildTiles());
 
         ScrollPane sp = new ScrollPane();
         sp.setId("scroll-playlists");
@@ -215,19 +148,18 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
         Rectangle background = gradientMaker.getDefaultRectangle();
 
+        buildTiles();
         showNodes(background, vbox);
     }
 
-    public void addPlaylist(Playlist createdPlaylist) {
-        if (createdPlaylist == null) {
-            return;
-        }
+    public boolean addPlaylist(Playlist createdPlaylist) {
         //damit nicht mehrere Playlisten selben inhalts erstellt werden
-        if (playlists.contains(createdPlaylist)) {
-            return;
+        if (createdPlaylist == null || playlists.contains(createdPlaylist)) {
+            return false;
         }
         System.out.println("added a new playlist " + createdPlaylist.getName());
         playlists.add(createdPlaylist);
+        return true;
     }
 
     private void createAutomaticPlaylists() {
@@ -282,6 +214,76 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
             }
         }
         flSongs.setPredicate(null);
+    }
+
+    private void buildTiles() {
+        tilePane.getChildren().clear();
+        for (Playlist playlist : playlists) {
+            Button playlistButton = new Button(playlist.getName());
+            playlistButton.setMinWidth(Region.USE_PREF_SIZE);
+            playlistButton.setWrapText(true);
+            playlistButton.setStyle("-fx-font-size:18; -fx-background-color: rgb(44, 90, 118)");
+            playlistButton.hoverProperty().addListener((obs, oldValue, newValue) -> {
+                if (newValue) {
+                    playlistButton.setStyle("-fx-font-size:14; -fx-background-color: rgb(129, 140, 48)");
+                } else {
+                    playlistButton.setStyle("-fx-font-size:18; -fx-background-color: rgb(44, 90, 118)");
+                }
+            });
+
+            PauseTransition singlePressPause = new PauseTransition(Duration.millis(500));
+            singlePressPause.setOnFinished(e -> {
+                // single press
+                GenericView view = screenController.activateWindow(SongView.class, true);
+                if (view instanceof SongView) {
+                    SongView songView = (SongView) view;
+                    songView.setPlaylist(playlist, true);
+                }
+            });
+
+            playlistButton.setOnMousePressed(e -> {
+                if (e.isPrimaryButtonDown() && e.getClickCount() == 1) {
+                    singlePressPause.play();
+                }
+
+                if (e.isPrimaryButtonDown() && e.getClickCount() == 2) {
+                    singlePressPause.stop();
+                    // double press
+                    selectedPlaylist = playlist;
+                    showDetails();
+                }
+            });
+
+            playlistButton.setOnMouseClicked(event -> {
+                if (event.isPopupTrigger()) {
+                    selectedPlaylist = playlist;
+                    nameField.setText(selectedPlaylist.getName());
+                }
+            });
+            playlistButton.setContextMenu(quickOptions);
+            ImageView previewView = new ImageView();
+            previewView.imageProperty().bind(playlist.getPreviewImageProperty());
+            previewView.setFitWidth(80);
+            previewView.setFitHeight(80);
+            previewView.setPreserveRatio(true);
+            playlistButton.graphicProperty().bind(new When(playlist.getPreviewImageProperty().isNull())
+                    .then((ImageView) null).otherwise(previewView));
+            playlistButton.textProperty().bind(playlist.getNameProperty());
+            playlistButton.setAlignment(Pos.BASELINE_CENTER);
+            playlistButton.setStyle("-fx-font-size:20");
+            playlistButton.setPrefHeight(100);
+            playlistButton.setPrefWidth(175);
+            tilePane.getChildren().add(playlistButton);
+        }
+    }
+
+    private void showDetails() {
+        GenericView view = screenController.activateWindow(PlaylistDetailView.class, false);
+        if (view instanceof PlaylistDetailView) {
+            PlaylistDetailView playlistDetailView = (PlaylistDetailView) view;
+            playlistDetailView.onPlaylistEmpty(() -> playlists.remove(selectedPlaylist));
+            playlistDetailView.showPlaylist(selectedPlaylist);
+        }
     }
 
     @Override

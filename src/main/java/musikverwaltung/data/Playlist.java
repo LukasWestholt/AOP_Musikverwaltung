@@ -1,11 +1,6 @@
 package musikverwaltung.data;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -16,12 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import musikverwaltung.Helper;
 
-public class Playlist implements Externalizable {
-
-    // explicitly
-    @SuppressWarnings("unused")
-    private static final long SerialVersionUID = 20L;
-
+public class Playlist {
     private final SimpleStringProperty name = new SimpleStringProperty();
 
     private final ObservableSongQueue songs = new ObservableSongQueue();
@@ -35,7 +25,13 @@ public class Playlist implements Externalizable {
 
     public Playlist(String name, ObservableList<Song> playlist) {
         this.name.setValue(name);
-        songs.setAll(playlist);
+        this.songs.setAll(playlist);
+    }
+
+    public Playlist(String name, List<Song> playlist, String previewImagePath) {
+        this.name.setValue(name);
+        this.songs.setAll(playlist);
+        setPreviewImage(previewImagePath);
     }
 
     public String getName() {
@@ -202,22 +198,5 @@ public class Playlist implements Externalizable {
     @Override
     public int hashCode() {
         return Objects.hash(name, songs, previewImage);
-    }
-
-    //https://www.geeksforgeeks.org/externalizable-interface-java/
-    @Override
-    public void writeExternal(ObjectOutput out) throws IOException {
-        ArrayList<Song> temp = new ArrayList<>(getAll());
-        out.writeUTF(getName());
-        out.writeObject(temp);
-        out.writeUTF(getPreviewImageUrl());
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        setName(in.readUTF());
-        setAll((ArrayList<Song>) in.readObject());
-        setPreviewImage(in.readUTF());
     }
 }

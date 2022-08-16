@@ -23,6 +23,7 @@ import javafx.collections.transformation.FilteredList;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
 import musikverwaltung.data.Playlist;
+import musikverwaltung.data.PlaylistExternalizable;
 import musikverwaltung.data.SettingFile;
 import musikverwaltung.data.Song;
 
@@ -30,21 +31,77 @@ public class MediaManager {
     private final HashSet<Path> mediaFiles = new HashSet<>();
     private final HashMap<Integer, String> genres = loadGenres();
 
+    // TODO was macht das?
     public final ObservableList<Song> music = FXCollections.observableArrayList(o -> new Observable[]{
             o.getTitleProperty(),
             o.getArtistProperty(),
             o.getGenreProperty()
-
     });
+
+    public final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
+
     // TODO einlesen bei Jazzy night und ambient pearls hat Probleme
     private static final String genreFilename = "genres.txt";
+
+    public MediaManager() {
+        /*playlists.addListener((ListChangeListener<Playlist>) c -> {
+            ArrayList<Playlist> changedPlaylists = new ArrayList<>();
+            while (c.next()) {
+                changedPlaylists.addAll(c.getAddedSubList());
+                if (c.wasPermutated() || c.wasUpdated()) {
+                    throw new UnsupportedOperationException();
+                }
+            }
+            for (Playlist playlist : changedPlaylists) {
+                playlist.getAll().addListener((ListChangeListener<Song>) change -> {
+                    if (playlist.isEmpty()) {
+                        System.out.println("isEmpty");
+                        playlists.remove(playlist);
+                    }
+                });
+            }
+        });*/
+        clearAndLoadAll(() -> {});
+
+        // letzte Playlisten werden geladen
+        SettingFile settingFile = SettingFile.load();
+        for (PlaylistExternalizable playlistExt : settingFile.getPlaylists()) {
+            ArrayList<Song> songs = new ArrayList<>();
+            for (String string : playlistExt.getPaths()) {
+                Path path = Helper.uris2p(string);
+                if (path == null) {
+                    continue;
+                }
+                boolean found = false;
+                for (Song song : music) {
+                    try {
+                        if (Files.isSameFile(song.getPath(), path)) {
+                            songs.add(song);
+                            found = true;
+                            break;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                // TODO settingFile.getShowUnplayableSongs() is wrong here
+                if (!found && settingFile.getShowUnplayableSongs()) {
+                    Song song = new Song(path);
+                    System.out.println("add unplayable: " + song);
+                    song.setPlayable(false);
+                    music.add(song);
+                }
+            }
+            Playlist playlist = new Playlist(playlistExt.getName(), songs, playlistExt.getPreviewImagePath());
+            playlists.add(playlist);
+        }
+    }
 
     public void clearAndLoadAll(Runnable refreshCallback) {
         music.clear();
         mediaFiles.clear();
 
-        SettingFile settingFile = SettingFile.load();
-        ArrayList<String> paths = settingFile.getPaths();
+        ArrayList<String> paths = SettingFile.load().getPaths();
         for (String folder : paths) {
             try (Stream<Path> pathsStream = Files.walk(Helper.s2p(folder))) {
                 pathsStream.filter(Files::isRegularFile).forEach(this::checkMediaExtension);
@@ -100,20 +157,6 @@ public class MediaManager {
             media.getMetadata().addListener(metadataListener);
         }
         // TODO save playlists earlier
-        if (settingFile.getShowUnplayableSongs()) {
-            for (Playlist playlist : settingFile.getPlaylists()) {
-                for (Song song : playlist.getAll()) {
-                    FilteredList<Song> fl = music.filtered(p -> Objects.equals(p.getPath(), song.getPath()));
-                    if (fl.size() > 1) {
-                        throw new InternalError("There is a problem");
-                    } else if (fl.isEmpty()) {
-                        System.out.println("add unplayable: " + song);
-                        song.setPlayable(false);
-                        music.add(song);
-                    }
-                }
-            }
-        }
     }
 
     private void checkMediaExtension(Path path) {

@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Objects;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import musikverwaltung.Helper;
 
@@ -17,29 +16,21 @@ public class SettingFile implements Externalizable {
 
     private static final String filename = "settings.ser";
 
-    private ObservableList<Playlist> playlists = FXCollections.observableArrayList();
-
+    private ArrayList<PlaylistExternalizable> playlists = new ArrayList<>();
     private ArrayList<String> paths = new ArrayList<>();
     private Path lastSong;
-
     private boolean showUnplayableSongs;
 
     public static void savePlaylists(ObservableList<Playlist> playlists) {
         SettingFile setting = load();
-        // TODO save only paths
-        if (!setting.playlists.equals(playlists)) {
-            setting.playlists = playlists;
-            save(setting);
-            System.out.println("added playlists " + playlists + " to SettingFile");
+        ArrayList<PlaylistExternalizable> playlistsExt = new ArrayList<>();
+        for (Playlist playlist : playlists) {
+            playlistsExt.add(new PlaylistExternalizable(playlist));
         }
-    }
-
-    public static void saveLastSong(Path lastSong) {
-        SettingFile setting = load();
-        if (!Objects.equals(setting.lastSong, lastSong)) {
-            setting.lastSong = lastSong;
+        if (!setting.playlists.equals(playlistsExt)) {
+            setting.playlists = playlistsExt;
             save(setting);
-            System.out.println("added lastSong " + lastSong + " to SettingFile");
+            System.out.println("added playlists to SettingFile " + playlists);
         }
     }
 
@@ -48,7 +39,16 @@ public class SettingFile implements Externalizable {
         if (!setting.paths.equals(paths)) {
             setting.paths = paths;
             save(setting);
-            System.out.println("added paths " + paths + " to SettingFile");
+            System.out.println("added paths to SettingFile " + paths);
+        }
+    }
+
+    public static void saveLastSong(Path lastSong) {
+        SettingFile setting = load();
+        if (!Objects.equals(setting.lastSong, lastSong)) {
+            setting.lastSong = lastSong;
+            save(setting);
+            System.out.println("added lastSong to SettingFile " + lastSong);
         }
     }
 
@@ -57,20 +57,20 @@ public class SettingFile implements Externalizable {
         if (setting.showUnplayableSongs != showUnplayableSongs) {
             setting.showUnplayableSongs = showUnplayableSongs;
             save(setting);
-            System.out.println("added showUnplayableSongs " + showUnplayableSongs + " to SettingFile");
+            System.out.println("added showUnplayableSongs to SettingFile " + showUnplayableSongs);
         }
     }
 
-    public Path getLastSong() {
-        return lastSong;
-    }
-
-    public ObservableList<Playlist> getPlaylists() {
+    public ArrayList<PlaylistExternalizable> getPlaylists() {
         return playlists;
     }
 
     public ArrayList<String> getPaths() {
         return paths;
+    }
+
+    public Path getLastSong() {
+        return lastSong;
     }
 
     public boolean getShowUnplayableSongs() {
@@ -100,8 +100,7 @@ public class SettingFile implements Externalizable {
 
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
-        ArrayList<Playlist> temp = new ArrayList<>(playlists);
-        out.writeObject(temp);
+        out.writeObject(playlists);
         out.writeObject(paths);
         out.writeUTF(Helper.p2uris(lastSong));
         out.writeBoolean(showUnplayableSongs);
@@ -110,7 +109,7 @@ public class SettingFile implements Externalizable {
     @Override
     @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        this.playlists = FXCollections.observableArrayList((ArrayList<Playlist>) in.readObject());
+        this.playlists = (ArrayList<PlaylistExternalizable>) in.readObject();
         this.paths = (ArrayList<String>) in.readObject();
         this.lastSong = Helper.uris2p(in.readUTF());
         this.showUnplayableSongs = in.readBoolean();
@@ -119,8 +118,8 @@ public class SettingFile implements Externalizable {
     @Override
     public String toString() {
         LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
-        attributes.put("paths", getPaths());
         attributes.put("playlists", getPlaylists());
+        attributes.put("paths", getPaths());
         attributes.put("lastSong", getLastSong());
         attributes.put("showUnplayableSongs", getShowUnplayableSongs());
         return Helper.toString(this, attributes);

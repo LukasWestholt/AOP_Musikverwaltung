@@ -1,7 +1,6 @@
 package musikverwaltung.views;
 
 import javafx.beans.binding.Bindings;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
@@ -11,8 +10,9 @@ import musikverwaltung.ScreenController;
 import musikverwaltung.data.Playlist;
 
 public class PlaylistDetailView extends MainView {
-    private ObservableList<Playlist> contextPlaylists;
     private Playlist playlist;
+
+    private Runnable onPlaylistEmpty;
 
     public PlaylistDetailView(ScreenController sc, MediaManager mediaManager) {
         super(sc, mediaManager, true);
@@ -41,7 +41,9 @@ public class PlaylistDetailView extends MainView {
                 }
                 //TODO stage schließt sich jetzt am Ende -> bugs verhindern, player macht mit einzelsong korrekt weiter
                 if (playlist.isEmpty()) {
-                    contextPlaylists.remove(playlist);
+                    if (onPlaylistEmpty != null) {
+                        onPlaylistEmpty.run();
+                    }
                     stage.close();
                 }
             });
@@ -57,10 +59,13 @@ public class PlaylistDetailView extends MainView {
         });
     }
 
-    public void showPlaylistInContext(Playlist playlist, ObservableList<Playlist> playlists) {
+    public void showPlaylist(Playlist playlist) {
         this.playlist = playlist;
-        this.contextPlaylists = playlists;
         songFilterForPlaylist.bind(Bindings.createObjectBinding(() -> playlist::contains));
         welcomeLabel.textProperty().bind(playlist.getNameProperty());
+    }
+
+    public void onPlaylistEmpty(Runnable runnable) {
+        this.onPlaylistEmpty = runnable;
     }
 }
