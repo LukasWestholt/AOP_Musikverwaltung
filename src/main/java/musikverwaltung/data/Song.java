@@ -12,10 +12,14 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
 import musikverwaltung.Helper;
 
+/**
+ * Representation of the songs in our Musikverwaltung
+ * gets created with path information of audio file
+ * all other information will  be loaded in later, via the mediaManager (which extracts the metadata of the files)
+ * holds information about title, artist, genre, cover image, playability and selection-status/table-position as properties
+ */
 public class Song {
-    // path is identifier
     private final Path path;
-
     private final SimpleStringProperty title = new SimpleStringProperty();
     private final SimpleStringProperty artist = new SimpleStringProperty();
     private final SimpleStringProperty genre = new SimpleStringProperty();
@@ -23,74 +27,128 @@ public class Song {
     private ReadOnlyIntegerProperty rowIndex;
     private boolean isPlayable = true;
 
+    /**
+     * @param path is going to be the unique identifier for every Song
+     */
     public Song(Path path) {
         this.path = path;
     }
 
+    /**
+     * @return title or name of path depending on whether or the song has a title assigned
+     */
     public String getPrimaryKey() {
         return title.get() != null ? title.get() : path.getFileName().toString();
     }
 
+    /**
+     * @return title of Song or empty String if title is not assigned
+     */
     public String getTitle() {
         return notNullString(title.get());
     }
 
+    /**
+     * @param titel = title of song
+     */
     public void setTitle(String titel) {
         this.title.set(titel);
     }
 
+    /**
+     * @return property of title
+     */
     public SimpleStringProperty getTitleProperty() {
         return title;
     }
 
+    /**
+     * @return artist of Song or empty String if artist is not assigned
+     */
     public String getArtist() {
         return notNullString(artist.get());
     }
 
+    /**
+     * @param artist = artist of the song
+     */
     public void setArtist(String artist) {
         this.artist.set(artist);
     }
 
+    /**
+     * @return property of artist
+     */
     public SimpleStringProperty getArtistProperty() {
         return artist;
     }
 
+    /**
+     * @return gnere of Song or empty String if genre is not assigned
+     */
     public String getGenre() {
         return notNullString(genre.get());
     }
 
+
+    /**
+     * @param genre = genre of Song
+     */
     public void setGenre(String genre) {
         this.genre.set(genre);
     }
 
+    /**
+     * @return property of genre
+     */
     public SimpleStringProperty getGenreProperty() {
         return genre;
     }
 
+    /**
+     * @return Image object
+     */
     public Image getCover() {
         return cover.get();
     }
 
+    /**
+     * @param cover = cover of Song
+     */
     public void setCover(Image cover) {
         this.cover.set(cover);
     }
 
+    /**
+     * @return property of cover image
+     */
     public SimpleObjectProperty<Image> getCoverProperty() {
         return cover;
     }
 
+    /**
+     * @return true if rowIndex assigned (which means song selected), else false
+     */
     public boolean isSelected() {
         return this.rowIndex != null;
     }
 
+    /**
+     * undefines rowIndex (deselects song)
+     */
     public void deselect() {
         this.rowIndex = null;
     }
-
+    /**
+     * defines rowIndex (selects song)
+     */
     public void select(ReadOnlyIntegerProperty rowIndex) {
         this.rowIndex = rowIndex;
     }
 
+    /**
+     * @return rowIndex (row in tableView where song is selected)
+     */
     public int getRowIndex() {
         if (rowIndex == null) {
             return -1;
@@ -98,18 +156,33 @@ public class Song {
         return rowIndex.get();
     }
 
+    /**
+     * @return path to audio file
+     */
     public Path getPath() {
         return path;
     }
 
+    /**
+     * @return isPlayable
+     */
     public boolean isPlayable() {
         return isPlayable;
     }
 
+    /**
+     * @param isPlayable =  sets the information that Song can be played
+     */
     public void setPlayable(boolean isPlayable) {
         this.isPlayable = isPlayable;
     }
 
+    /**
+     * Searches the user given search word throughout the Song object categories (name, artist, genre)
+     *
+     * @param searchKey = search Word from the user
+     * @return if searchKey is in any search category (name, artist, genre) of the Song -> true, else false
+     */
     public boolean searchEverywhere(String searchKey) {
         return getPrimaryKey().toLowerCase().contains(searchKey.toLowerCase().trim())
                 || getArtist().toLowerCase().contains(searchKey.toLowerCase().trim())
@@ -174,6 +247,10 @@ public class Song {
         return text;
     }
 
+    /**
+     * @param str = any given String object
+     * @return str or "" if String is undefined
+     */
     private static String notNullString(String str) {
         if (str == null) {
             return "";
@@ -181,6 +258,9 @@ public class Song {
         return str;
     }
 
+    /**
+     * @return the String representation of the Song object
+     */
     @Override
     public String toString() {
         LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
@@ -193,6 +273,12 @@ public class Song {
         return Helper.toString(this, attributes);
     }
 
+    /**
+     * we only need to compare the paths of any given two songs because it is the songs unique identifier
+     *
+     * @param other any given object
+     * @return two Song objects are defined identical if their path is the same
+     */
     @Override
     public boolean equals(Object other) {
         if (this == other) {
@@ -205,6 +291,9 @@ public class Song {
         return Objects.equals(path, otherSong.getPath());
     }
 
+    /**
+     * @return hashCode of Song object
+     */
     @Override
     public int hashCode() {
         return Objects.hash(path);
