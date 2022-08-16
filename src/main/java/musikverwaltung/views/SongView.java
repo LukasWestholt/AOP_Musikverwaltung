@@ -71,9 +71,11 @@ public class SongView extends MenuBarView implements DestroyListener {
         Button onRepeatButton = new Button("Repeat");
         addActiveMenuButton(onRepeatButton,
                 e -> {
-                    onRepeat = !onRepeat;
-                    onRepeatButton.setText(onRepeat ? "Repeat" : "No Repeat");
-                    playlist.onSwitchRepeat(onRepeat);
+                    if (playlist != null) {
+                        onRepeat = !onRepeat;
+                        onRepeatButton.setText(onRepeat ? "Repeat" : "No Repeat");
+                        playlist.onSwitchRepeat(onRepeat);
+                    }
                 }
         );
         ignoreMenuItems(settingViewButton, playlistViewButton, creditsViewButton);
