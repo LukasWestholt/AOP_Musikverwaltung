@@ -48,6 +48,10 @@ public class ScreenController {
         screenMap.put(view.getClass(), view);
     }
 
+    GenericView deleteScreen(Class<? extends GenericView> id) {
+        return screenMap.remove(id);
+    }
+
     public GenericView activate(Class<? extends GenericView> id) {
         GenericView view = screenMap.get(id);
         if (view == null) {

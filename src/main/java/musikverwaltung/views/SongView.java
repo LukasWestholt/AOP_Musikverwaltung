@@ -87,7 +87,8 @@ public class SongView extends MenuBarView implements DestroyListener {
 
         labelSongName = new Label("Unbekannt");
         labelSongName.getStyleClass().add("header");
-        //labelSongName.setStyle("-fx-font-size: 25pt; -fx-font-family: Manrope-Light;" "-fx-text-fill: rgb(225, 228, 203);");
+        //labelSongName.setStyle("-fx-font-size: 25pt; -fx-font-family: Manrope-Light;"
+        // "-fx-text-fill: rgb(225, 228, 203);");
 
         StackPane centerContainer = new StackPane();
         centerContainer.setAlignment(Pos.CENTER);
@@ -237,12 +238,10 @@ public class SongView extends MenuBarView implements DestroyListener {
         );
 
         chartIsVisible.addListener((observableValue, oldVal, newVal) -> {
-            if (newVal) {
-                if ((!isPlayerUnavailable())) {
+            if ((!isPlayerUnavailable())) {
+                if (newVal) {
                     player.setAudioSpectrumListener(audioSpectrumListener);
-                }
-            } else {
-                if ((!isPlayerUnavailable())) {
+                } else {
                     player.setAudioSpectrumListener(null);
                 }
             }
@@ -270,18 +269,18 @@ public class SongView extends MenuBarView implements DestroyListener {
         List<String> colours = Arrays.asList("#222A35", "#203864", "#4472C4");
         Rectangle background = gradientMaker.getCustomRectangle(colours);
 
-
-                VBox playerVBox = new VBox(labelSongName, centerContainer, mediaControlVBox);
+        VBox playerVBox = new VBox(labelSongName, centerContainer, mediaControlVBox);
         playerVBox.setAlignment(Pos.CENTER);
         playerVBox.setSpacing(10);
         showNodes(background, playerVBox);
-
     }
 
     @Override
     public Node get() {
         // on exit the automatic graph updates will stop
         // if stage shown and graph was last activated, it gets activated again
+
+        // TODO kann das in den Konstruktor? Sonst wird das jedes mal aufgerufen
         stage.showingProperty().addListener((observableValue, oldVal, isShowing) -> {
             if (chartIsVisible.get() && isShowing) {
                 player.setAudioSpectrumListener(audioSpectrumListener);

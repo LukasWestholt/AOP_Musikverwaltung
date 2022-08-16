@@ -44,23 +44,6 @@ public class MediaManager {
     private static final String genreFilename = "genres.txt";
 
     public MediaManager() {
-        /*playlists.addListener((ListChangeListener<Playlist>) c -> {
-            ArrayList<Playlist> changedPlaylists = new ArrayList<>();
-            while (c.next()) {
-                changedPlaylists.addAll(c.getAddedSubList());
-                if (c.wasPermutated() || c.wasUpdated()) {
-                    throw new UnsupportedOperationException();
-                }
-            }
-            for (Playlist playlist : changedPlaylists) {
-                playlist.getAll().addListener((ListChangeListener<Song>) change -> {
-                    if (playlist.isEmpty()) {
-                        System.out.println("isEmpty");
-                        playlists.remove(playlist);
-                    }
-                });
-            }
-        });*/
         clearAndLoadAll(() -> {});
 
         // letzte Playlisten werden geladen

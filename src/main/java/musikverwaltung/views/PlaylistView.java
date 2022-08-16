@@ -131,7 +131,8 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         playlistScrollPane.prefViewportHeightProperty().bind(getHeightProperty().divide(1.25));
         playlistScrollPane.prefViewportWidthProperty().bind(getWidthProperty().divide(1.25));
         playlistScrollPane.setMaxHeight(Control.USE_PREF_SIZE);
-        playlistScrollPane.setStyle("-fx-background-color: rgb(225, 228, 203); -fx-border-color: rgb(103, 100, 78); -fx-border-width: 1.5;");
+        playlistScrollPane.setStyle("-fx-background-color: rgb(225, 228, 203); -fx-border-color: rgb(103, 100, 78);"
+                + "-fx-border-width: 1.5;");
 
 
         Button automaticPlaylistButton = new Button("Playlist Vorschläge");

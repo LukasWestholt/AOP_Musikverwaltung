@@ -14,7 +14,7 @@ import musikverwaltung.Helper;
 
 public class Song {
     // path is identifier
-    private Path path;
+    private final Path path;
 
     private final SimpleStringProperty title = new SimpleStringProperty();
     private final SimpleStringProperty artist = new SimpleStringProperty();
@@ -26,9 +26,6 @@ public class Song {
     public Song(Path path) {
         this.path = path;
     }
-
-    // Externalizable needs a public no-args constructor
-    public Song() {}
 
     public String getPrimaryKey() {
         return title.get() != null ? title.get() : path.getFileName().toString();
