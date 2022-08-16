@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+
 import javafx.beans.binding.When;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -127,12 +128,12 @@ public class SongView extends MenuBarView implements DestroyListener {
                 }
             }
         });
-        //TODO image ist nicht mittig!!!!!!
         playImage = Helper.getResourcePathURIS(this.getClass(), "/icons/play.png", false).toImage(true);
         pauseImage = Helper.getResourcePathURIS(this.getClass(), "/icons/pause.png", false).toImage(true);
         startStop = new ImageButton(playImage, true, true);
         startStop.setOnAction(e -> startStopSong());
-        startStop.setPrefSize(30, 30);
+        startStop.setPrefSize(33, 33);
+        //startStop.setAlignment(Pos.CENTER);
         startStop.setMaxWidth(Double.MAX_VALUE);
         startStop.maxHeightProperty().bind(startStop.widthProperty());
 
@@ -144,7 +145,8 @@ public class SongView extends MenuBarView implements DestroyListener {
         );
         skipForward.setOnAction(e -> skipforwards());
         setDynamicSize(skipForward);
-        skipForward.setPrefSize(30, 30);
+        skipForward.setPrefSize(33, 33);
+        //skipForward.setAlignment(Pos.CENTER);
 
         ImageButton skipBackward = new ImageButton(
                 Helper.getResourcePath(this.getClass(), "/icons/skipback.png", false),
@@ -152,29 +154,32 @@ public class SongView extends MenuBarView implements DestroyListener {
         );
         skipBackward.setOnAction(e -> skipbackwards());
         setDynamicSize(skipBackward);
-        skipBackward.setPrefSize(30, 30);
+        skipBackward.setPrefSize(33, 33);
+        //skipBackward.setAlignment(Pos.CENTER);
 
-        /*startStop.minWidthProperty().bind(
-                Bindings.max(skipBackward.heightProperty(), skipForward.heightProperty())
-        );*/
         ImageButton skipAhead = new ImageButton(
                 Helper.getResourcePath(this.getClass(), "/icons/15sAhead.png", false),
                 false, true
                 );
         skipAhead.setOnAction(e -> skipTime(15));
         setDynamicSize(skipAhead);
-        skipAhead.setPrefSize(30, 30);
+        skipAhead.setPrefSize(33, 33);
+        //skipAhead.setAlignment(Pos.CENTER);
 
         ImageButton skipBehind = new ImageButton(Helper.getResourcePath(
                 this.getClass(), "/icons/15sBack.png", false),
                 false, true);
         skipBehind.setOnAction(e -> skipTime(-15));
         setDynamicSize(skipBehind);
-        skipBehind.setPrefSize(30, 30);
+        skipBehind.setPrefSize(33, 33);
+        //skipBehind.setAlignment(Pos.CENTER);
 
         HBox buttonHBox = new HBox(skipBehind, skipBackward, startStop, skipForward, skipAhead);
         buttonHBox.setAlignment(Pos.CENTER);
-        buttonHBox.setSpacing(10);
+        for (int i = 0; i < buttonHBox.getChildren().size(); i++) {
+            Node button = buttonHBox.getChildren().get(i);
+            ((Button) button).setAlignment(Pos.CENTER);
+        }
         buttonHBox.maxWidthProperty().bind(getHeightProperty().divide(2));
 
         Slider slider = new Slider(0, 1, 0);
@@ -188,6 +193,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         });
 
         HBox sliderHBox = new HBox(slider);
+        sliderHBox.setPadding(new Insets(3));
         sliderHBox.maxWidthProperty().bind(new When(startStop.widthProperty().lessThan(120))
                 .then(120).otherwise(startStop.widthProperty()));
         sliderHBox.setAlignment(Pos.CENTER);
@@ -272,9 +278,6 @@ public class SongView extends MenuBarView implements DestroyListener {
     public Node get() {
         // on exit the automatic graph updates will stop
         // if stage shown and graph was last activated, it gets activated again
-
-        // TODO kann das in den Konstruktor? Sonst wird das jedes mal aufgerufen
-        // TODO lieber noch ein check auf player != null oder?
         stage.showingProperty().addListener((observableValue, oldVal, isShowing) -> {
             if (player != null) {
                 if (chartIsVisible.get() && isShowing) {
