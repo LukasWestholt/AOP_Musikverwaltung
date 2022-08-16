@@ -153,6 +153,7 @@ public class SettingFile implements Externalizable {
      * @param out the stream to write the object to
      * @throws IOException
      */
+
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(playlists);

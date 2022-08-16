@@ -31,6 +31,7 @@ public class Playlist {
 
     /**
      * gets created with name, and list of songs and identifier for preview image
+     *
      * @param name name of Playlist
      * @param playlist list of songs in the playlist
      * @param previewImagePath identifier for preview image
@@ -82,6 +83,7 @@ public class Playlist {
 
     /**
      * async load of image
+     *
      * @param uris identifier for preview image
      */
     public void setPreviewImage(URIS uris) {

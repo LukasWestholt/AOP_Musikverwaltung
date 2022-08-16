@@ -1,5 +1,6 @@
 package musikverwaltung.nodes;
 
+import java.util.List;
 import javafx.beans.binding.DoubleBinding;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
@@ -7,9 +8,7 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.scene.shape.Rectangle;
 
-import java.util.List;
-
-public class GradientBackgroundRectangle extends Rectangle{
+public class GradientBackgroundRectangle extends Rectangle {
 
     public GradientBackgroundRectangle(DoubleBinding width, DoubleBinding height) {
         super();
@@ -28,7 +27,7 @@ public class GradientBackgroundRectangle extends Rectangle{
         int len = colours.size();
         Stop[] listOfStops = new Stop[len];
         for (int i = 0; i < len; i++) {
-            listOfStops[i] = new Stop(1.0/len * i, Color.web(colours.get(i)));
+            listOfStops[i] = new Stop(1.0 / len * i, Color.web(colours.get(i)));
         }
         widthProperty().bind(width);
         heightProperty().bind(height);
