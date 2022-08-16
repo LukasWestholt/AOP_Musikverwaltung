@@ -51,6 +51,7 @@ public abstract class MenuBarView extends GenericView {
         region.setId("active");
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void addMenuItems(boolean disable, Region... regions) {
         for (Region region : regions) {
             region.setDisable(disable);

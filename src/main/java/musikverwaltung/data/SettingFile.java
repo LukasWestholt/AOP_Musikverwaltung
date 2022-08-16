@@ -155,7 +155,7 @@ public class SettingFile implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(playlists);
         out.writeObject(paths);
-        out.writeUTF(Helper.p2uris(lastSong));
+        out.writeObject(new URIS(lastSong));
         out.writeBoolean(showUnplayableSongs);
     }
     /**
@@ -170,7 +170,7 @@ public class SettingFile implements Externalizable {
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         this.playlists = (ArrayList<PlaylistExternalizable>) in.readObject();
         this.paths = (ArrayList<String>) in.readObject();
-        this.lastSong = Helper.uris2p(in.readUTF());
+        this.lastSong = ((URIS) in.readObject()).getPath();
         this.showUnplayableSongs = in.readBoolean();
     }
 

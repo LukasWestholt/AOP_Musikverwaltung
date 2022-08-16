@@ -48,6 +48,7 @@ public class ScreenController {
         screenMap.put(view.getClass(), view);
     }
 
+    @SuppressWarnings("SameParameterValue")
     GenericView deleteScreen(Class<? extends GenericView> id) {
         return screenMap.remove(id);
     }
@@ -125,8 +126,12 @@ public class ScreenController {
         stage.show();
         stage.toFront();
 
-        stage.getScene().getStylesheets().add(Helper.getResourcePathUriString(this.getClass(), "/style.css", true));
-        Font.loadFont(Helper.getResourcePathUriString(this.getClass(), "/fonts/Manrope-Light.ttf", true), 14);
+        stage.getScene().getStylesheets().add(
+                Helper.getResourcePathURIS(this.getClass(), "/style.css", true).toString()
+        );
+        Font.loadFont(
+                Helper.getResourcePathURIS(this.getClass(), "/fonts/Manrope-Light.ttf", true).toString(), 14
+        );
         return view;
     }
 

@@ -11,11 +11,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import musikverwaltung.Helper;
 
-/**
- * Representation of the playlists in our Musikverwaltung
- * holds information about name, songs and preview Image as properties
- * also holds the last played Song of the Playlist
- */
 public class Playlist {
     private final SimpleStringProperty name = new SimpleStringProperty();
 
@@ -24,9 +19,6 @@ public class Playlist {
 
     private Song lastPlayedSong;
 
-    /**
-     * gets created with default name for every Playlist: Playlist 1
-     */
     public Playlist() {
         this.name.setValue("Playlist 1");
     }
@@ -41,14 +33,8 @@ public class Playlist {
         this.name.setValue(name);
         this.songs.setAll(playlist);
     }
-    /**
-     * gets created with name, list of songs and oath to preview image
-     *
-     * @param name = name of Playlist
-     * @param playlist = list of songs in the playlist
-     * @param previewImagePath = path of preview image of Playlist
-     */
-    public Playlist(String name, List<Song> playlist, String previewImagePath) {
+
+    public Playlist(String name, List<Song> playlist, URIS previewImagePath) {
         this.name.setValue(name);
         this.songs.setAll(playlist);
         setPreviewImage(previewImagePath);
@@ -93,26 +79,13 @@ public class Playlist {
         return image.getUrl();
     }
 
-    /**
-     * @param string = path (as String) to preview image
-     */
-    public void setPreviewImage(String string) {
+    public void setPreviewImage(URIS uris) {
+        String string = uris.toString();
         if (string != null && !string.isEmpty()) {
             previewImage.set(new Image(string));
         }
     }
 
-    /**
-     * @param path = path (as Path object) to preview image
-     */
-    public void setPreviewImage(Path path) {
-        String string = Helper.p2uris(path);
-        setPreviewImage(string);
-    }
-
-    /**
-     * @return property if preview image
-     */
     public SimpleObjectProperty<Image> getPreviewImageProperty() {
         return previewImage;
     }

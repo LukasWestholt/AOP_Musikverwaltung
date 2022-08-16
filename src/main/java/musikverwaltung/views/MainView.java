@@ -87,7 +87,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         actionLabel = new Label();
         actionLabel.setAlignment(Pos.CENTER);
         actionLabel.setMaxWidth(Double.MAX_VALUE);
-        PauseTransition pause = new PauseTransition(Duration.seconds(20));
+        PauseTransition pause = new PauseTransition(Duration.seconds(15));
         pause.setOnFinished(e -> actionLabel.setText(""));
         actionLabel.textProperty().addListener((obs, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
@@ -156,7 +156,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
 
         OpenSongViewButton openSongViewButton = new OpenSongViewButton(
                 e -> {
-                    actionLabel.setText("Starte Player");
+                    actionLabel.setText("Öffne Player");
                     GenericView view = screenController.activateWindow(SongView.class, true);
                     if (view instanceof SongView) {
                         SongView songView = (SongView) view;
@@ -238,7 +238,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
                 PlaylistView playlistView = (PlaylistView) view;
                 boolean success = playlistView.addPlaylist(returnPlaylist);
                 if (success) {
-                    actionLabel.setText("Playlist with " + returnPlaylist.size() + " items added");
+                    actionLabel.setText("Playlist mit " + returnPlaylist.size() + " Songs hinzugefügt");
                 } else {
                     actionLabel.setText("Playlist existiert bereits");
                     //TODO das Fenster der Playlisten öffnet sich trotzdem (nutzer könnte verwirrt sein)
@@ -282,6 +282,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
     @Override
     public Node get() {
         Platform.runLater(refresh());
+        // TODO checkbox unselect
         return super.get();
     }
 

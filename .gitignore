@@ -2,6 +2,7 @@
 sources.txt
 settings.ser
 scenicview-win/
+mp3tag/
 *.lnk
 
 # Created by https://www.toptal.com/developers/gitignore/api/intellij

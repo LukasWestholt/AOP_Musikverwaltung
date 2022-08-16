@@ -22,10 +22,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.image.Image;
 import javafx.scene.media.Media;
-import musikverwaltung.data.Playlist;
-import musikverwaltung.data.PlaylistExternalizable;
-import musikverwaltung.data.SettingFile;
-import musikverwaltung.data.Song;
+import musikverwaltung.data.*;
 
 public class MediaManager {
     private final HashMap<Integer, String> genres = loadGenres();
@@ -43,7 +40,6 @@ public class MediaManager {
 
     private boolean showUnplayableSongs = false;
 
-    // TODO einlesen bei Jazzy night und ambient pearls hat Probleme
     private static final String genreFilename = "genres.txt";
 
     public void firstLoad() {
@@ -52,8 +48,8 @@ public class MediaManager {
         // letzte Playlisten werden geladen
         for (PlaylistExternalizable playlistExt : SettingFile.load().getPlaylists()) {
             ArrayList<Song> songs = new ArrayList<>();
-            for (String string : playlistExt.getPaths()) {
-                Path path = Helper.uris2p(string);
+            for (URIS uris : playlistExt.getPaths()) {
+                Path path = uris.getPath();
                 if (path == null) {
                     continue;
                 }
@@ -122,9 +118,9 @@ public class MediaManager {
         }
 
         for (Song song : getMusic(Whitelist.PLAYABLE)) {
-            Media media = new Media(Helper.p2uris(song.getPath()));
+            Media media = new URIS(song.getPath()).toMedia();
             media.getMetadata().addListener((MapChangeListener<String, Object>) metadata -> {
-                // TODO there are some more metadata like albums, year
+                // TODO there are some more metadata like albums, year etc. we could use
                 //System.out.println(metadata.getMap());
                 FilteredList<Song> fl = music.filtered(
                         s -> s.isPlayable() && Objects.equals(s, song));
@@ -134,7 +130,6 @@ public class MediaManager {
                 Song song1 = fl.get(0);
                 assert song1 == song;
 
-                // TODO big error some music dont get
                 Object titel = metadata.getMap().get("title");
                 if (titel != null && song1.getTitle().isEmpty()) {
                     song1.setTitle(titel.toString());
@@ -217,8 +212,7 @@ public class MediaManager {
     public enum Whitelist {
         PLAYABLE,
         UNPLAYABLE,
-        RESPECT,
-        ALL
+        RESPECT
     }
 }
 
