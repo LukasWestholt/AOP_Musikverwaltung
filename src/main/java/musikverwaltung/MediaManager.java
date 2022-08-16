@@ -28,27 +28,29 @@ import musikverwaltung.data.SettingFile;
 import musikverwaltung.data.Song;
 
 public class MediaManager {
-    private final HashSet<Path> mediaFiles = new HashSet<>();
     private final HashMap<Integer, String> genres = loadGenres();
 
-    // TODO was macht das?
+    // this ObservableList will fire change events on add, delete etc AND on events of the extractor parameter
+    // there is currently no listener on this object, so this feature is unused.
     public final ObservableList<Song> music = FXCollections.observableArrayList(o -> new Observable[]{
             o.getTitleProperty(),
             o.getArtistProperty(),
-            o.getGenreProperty()
+            o.getGenreProperty(),
+            o.getCoverProperty()
     });
 
-    public final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
+    private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
+
+    private boolean showUnplayableSongs = false;
 
     // TODO einlesen bei Jazzy night und ambient pearls hat Probleme
     private static final String genreFilename = "genres.txt";
 
-    public MediaManager() {
-        clearAndLoadAll(() -> {});
+    public void firstLoad() {
+        update(null);
 
         // letzte Playlisten werden geladen
-        SettingFile settingFile = SettingFile.load();
-        for (PlaylistExternalizable playlistExt : settingFile.getPlaylists()) {
+        for (PlaylistExternalizable playlistExt : SettingFile.load().getPlaylists()) {
             ArrayList<Song> songs = new ArrayList<>();
             for (String string : playlistExt.getPaths()) {
                 Path path = Helper.uris2p(string);
@@ -67,8 +69,7 @@ public class MediaManager {
                         e.printStackTrace();
                     }
                 }
-                // TODO settingFile.getShowUnplayableSongs() is wrong here
-                if (!found && settingFile.getShowUnplayableSongs()) {
+                if (!found) {
                     Song song = new Song(path);
                     System.out.println("add unplayable: " + song);
                     song.setPlayable(false);
@@ -80,44 +81,70 @@ public class MediaManager {
         }
     }
 
-    public void clearAndLoadAll(Runnable refreshCallback) {
-        music.clear();
-        mediaFiles.clear();
+    public void update(Runnable refreshCallback) {
+        HashSet<Path> mediaFiles = new HashSet<>();
 
-        ArrayList<String> paths = SettingFile.load().getPaths();
+        SettingFile settingFile = SettingFile.load();
+        ArrayList<String> paths = settingFile.getPaths();
         for (String folder : paths) {
             try (Stream<Path> pathsStream = Files.walk(Helper.s2p(folder))) {
-                pathsStream.filter(Files::isRegularFile).forEach(this::checkMediaExtension);
+                pathsStream.filter(Files::isRegularFile).forEach(
+                        path -> {
+                            String pattern = "glob:" + Helper.audioExtensions;
+                            PathMatcher matcher = FileSystems.getDefault().getPathMatcher(pattern);
+                            if (matcher.matches(path.getFileName())) {
+                                mediaFiles.add(path);
+                            }
+                        }
+                );
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        showUnplayableSongs = settingFile.getShowUnplayableSongs();
 
-        MapChangeListener<String, Object> metadataListener;
+        for (Song song : music) {
+            song.setPlayable(mediaFiles.contains(song.getPath()));
+        }
+
         for (Path mediaFile : mediaFiles) {
-            music.add(new Song(mediaFile));
-            Media media = new Media(Helper.p2uris(mediaFile));
-            metadataListener = metadata -> {
+            boolean found = false;
+            for (Song song : music) {
+                if (song.getPath().equals(mediaFile)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                System.out.println("found new music: " + mediaFile);
+                music.add(new Song(mediaFile));
+            }
+        }
+
+        for (Song song : getMusic(Whitelist.PLAYABLE)) {
+            Media media = new Media(Helper.p2uris(song.getPath()));
+            media.getMetadata().addListener((MapChangeListener<String, Object>) metadata -> {
                 // TODO there are some more metadata like albums, year
                 //System.out.println(metadata.getMap());
                 FilteredList<Song> fl = music.filtered(
-                        p -> p.isPlayable() && Objects.equals(p.getPath(), mediaFile));
+                        s -> s.isPlayable() && Objects.equals(s, song));
                 if (fl.size() != 1) {
                     throw new InternalError("There is a problem");
                 }
-                Song song = fl.get(0);
+                Song song1 = fl.get(0);
+                assert song1 == song;
 
                 // TODO big error some music dont get
                 Object titel = metadata.getMap().get("title");
-                if (titel != null && song.getTitle().isEmpty()) {
-                    song.setTitle(titel.toString());
+                if (titel != null && song1.getTitle().isEmpty()) {
+                    song1.setTitle(titel.toString());
                 }
                 Object interpret = metadata.getMap().get("artist");
-                if (interpret != null && song.getArtist().isEmpty()) {
-                    song.setArtist(interpret.toString());
+                if (interpret != null && song1.getArtist().isEmpty()) {
+                    song1.setArtist(interpret.toString());
                 }
                 Object genre = metadata.getMap().get("genre");
-                if (genre != null && song.getGenre().isEmpty()) {
+                if (genre != null && song1.getGenre().isEmpty()) {
                     String genreStr = genre.toString();
 
                     // https://regex101.com/r/NYHAf3/1
@@ -129,24 +156,16 @@ public class MediaManager {
                             genreStr = genres.get(id);
                         }
                     }
-                    song.setGenre(genreStr);
+                    song1.setGenre(genreStr);
                 }
                 Object image = metadata.getMap().get("image");
-                if (image != null && song.getCover() == null && image instanceof Image) {
-                    song.setCover((Image) image);
+                if (image != null && song1.getCover() == null && image instanceof Image) {
+                    song1.setCover((Image) image);
                 }
-                refreshCallback.run();
-            };
-            media.getMetadata().addListener(metadataListener);
-        }
-        // TODO save playlists earlier
-    }
-
-    private void checkMediaExtension(Path path) {
-        String pattern = "glob:" + Helper.audioExtensions;
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher(pattern);
-        if (matcher.matches(path.getFileName())) {
-            mediaFiles.add(path);
+                if (refreshCallback != null) {
+                    refreshCallback.run();
+                }
+            });
         }
     }
 
@@ -178,8 +197,28 @@ public class MediaManager {
         return genresMap;
     }
 
-    public FilteredList<Song> getPlayableMusic() {
-        return music.filtered(Song::isPlayable);
+    public FilteredList<Song> getMusic(Whitelist whitelist) {
+        switch (whitelist) {
+            case PLAYABLE:
+                return music.filtered(Song::isPlayable);
+            case UNPLAYABLE:
+                return music.filtered(s -> !s.isPlayable());
+            case RESPECT:
+                return music.filtered(s -> showUnplayableSongs || s.isPlayable());
+            default:
+                return new FilteredList<>(music);
+        }
+    }
+
+    public ObservableList<Playlist> getPlaylists() {
+        return this.playlists;
+    }
+
+    public enum Whitelist {
+        PLAYABLE,
+        UNPLAYABLE,
+        RESPECT,
+        ALL
     }
 }
 

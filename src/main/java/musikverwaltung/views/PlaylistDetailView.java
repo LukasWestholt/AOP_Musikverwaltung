@@ -70,7 +70,7 @@ public class PlaylistDetailView extends MainView {
 
     public void showPlaylist(Playlist playlist) {
         this.playlist = playlist;
-        songFilterForPlaylist.bind(Bindings.createObjectBinding(() -> playlist::contains));
+        songFilterForPlaylist.bind(Bindings.createObjectBinding(() -> playlist::contains, playlist.getAll()));
         welcomeLabel.textProperty().bind(playlist.getNameProperty());
     }
 

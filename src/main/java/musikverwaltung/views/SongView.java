@@ -281,6 +281,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         // if stage shown and graph was last activated, it gets activated again
 
         // TODO kann das in den Konstruktor? Sonst wird das jedes mal aufgerufen
+        // TODO lieber noch ein check auf player != null oder?
         stage.showingProperty().addListener((observableValue, oldVal, isShowing) -> {
             if (chartIsVisible.get() && isShowing) {
                 player.setAudioSpectrumListener(audioSpectrumListener);
@@ -422,7 +423,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         }
         Path lastPlayedSongPath = SettingFile.load().getLastSong();
         if (lastPlayedSongPath != null) {
-            for (Song song : mediaManager.getPlayableMusic()) {
+            for (Song song : mediaManager.getMusic(MediaManager.Whitelist.PLAYABLE)) {
                 try {
                     if (Files.isSameFile(song.getPath(), lastPlayedSongPath)) {
                         return song;

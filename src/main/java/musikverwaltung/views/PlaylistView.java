@@ -45,8 +45,8 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
 
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
-        playlists = mediaManager.playlists;
-        flSongs = mediaManager.getPlayableMusic();
+        playlists = mediaManager.getPlaylists();
+        flSongs = mediaManager.getMusic(MediaManager.Whitelist.PLAYABLE);
 
         addActiveMenuButton(settingViewButton,
                 e -> screenController.activateWindow(SettingsView.class, false)
@@ -187,6 +187,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         //System.out.println(genreCriteria + "\n" + artistCriteria);
 
         for (String genre : genreCriteria) {
+            // TODO this is properly a bug
             flSongs.setPredicate(p -> p.getGenre().contains(genre));
             if (flSongs.size() >= threshold) {
                 Playlist automaticPlaylist = new Playlist();
@@ -296,6 +297,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
 
     @Override
     public void destroy() {
+        // TODO save playlists earlier
         SettingFile.savePlaylists(playlists);
     }
 }

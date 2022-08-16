@@ -75,7 +75,6 @@ public class Song {
         this.cover.set(cover);
     }
 
-    @SuppressWarnings("unused")
     public SimpleObjectProperty<Image> getCoverProperty() {
         return cover;
     }

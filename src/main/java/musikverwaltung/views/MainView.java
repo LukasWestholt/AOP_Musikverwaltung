@@ -1,5 +1,6 @@
 package musikverwaltung.views;
 
+import java.util.ArrayList;
 import java.util.function.Predicate;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
@@ -66,14 +67,15 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
                 e -> screenController.activateWindow(CreditsView.class, false)
         );
         setActiveMenuItem(mainViewButton);
-        refresh().run();
 
         songFilterForPlaylist.bind(Bindings.createObjectBinding(() -> song -> true));
         ObjectProperty<Predicate<Song>> userFilter = new SimpleObjectProperty<>();
         userFilter.bind(Bindings.createObjectBinding(() -> song -> true));
 
         //Pass the data to a filtered list
-        flSong = new FilteredList<>(mediaManager.music.filtered(s -> includeUnplayableSongs || s.isPlayable()));
+        flSong = new FilteredList<>(mediaManager.getMusic(
+                includeUnplayableSongs ? MediaManager.Whitelist.RESPECT : MediaManager.Whitelist.PLAYABLE));
+        //flSong = new FilteredList<>(mediaManager.music.filtered(s -> includeUnplayableSongs || s.isPlayable()));
         flSong.predicateProperty().bind(Bindings.createObjectBinding(
                 () -> songFilterForPlaylist.get().and(userFilter.get()),
                 songFilterForPlaylist, userFilter));
@@ -240,6 +242,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
                 } else {
                     actionLabel.setText("Playlist existiert bereits");
                 }
+                // TODO reset all checkboxes
             }
         });
 
@@ -264,7 +267,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
 
     public Runnable refresh() {
         return () -> {
-            mediaManager.clearAndLoadAll(table::refresh);
+            mediaManager.update(table::refresh);
             showPlaylistAdd.set(false);
         };
     }
@@ -288,8 +291,14 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
                 )));
     }
 
-    FilteredList<Song> getSelectedSongs() {
-        return flSong.filtered(Song::isSelected);
+
+    /**
+     * This method copies the list of songs so that it is frozen.
+     *
+     * @return all visible song which have been selected.
+     */
+    ArrayList<Song> getSelectedSongs() {
+        return new ArrayList<>(flSong.filtered(Song::isSelected));
     }
 
     // https://stackoverflow.com/q/26906810/8980073

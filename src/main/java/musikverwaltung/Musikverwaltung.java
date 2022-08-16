@@ -33,6 +33,7 @@ public class Musikverwaltung extends Application {
         screenController.activate(HelloView.class);
         screenController.deleteScreen(HelloView.class);
         screenController.activate(MainView.class, true, 2000);
+        mediaManager.firstLoad();
     }
 
     @Override

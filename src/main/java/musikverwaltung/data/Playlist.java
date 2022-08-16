@@ -23,7 +23,7 @@ public class Playlist {
         this.name.setValue("Playlist 1");
     }
 
-    public Playlist(String name, ObservableList<Song> playlist) {
+    public Playlist(String name, List<Song> playlist) {
         this.name.setValue(name);
         this.songs.setAll(playlist);
     }
@@ -169,7 +169,7 @@ public class Playlist {
         LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();
         attributes.put("name", getName());
         attributes.put("songs", songs);
-        attributes.put("previewImage", getPreviewImage());
+        attributes.put("previewImage", getPreviewImage() != null);
         return Helper.toString(this, attributes);
     }
 
