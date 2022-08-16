@@ -12,7 +12,7 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import musikverwaltung.ScreenController;
-
+//TODO ausklappteil wandern nicht anch ganz links beim kleiner werden
 public abstract class MenuBarView extends GenericView {
     private final ToolBar menuToolBar = new ToolBar();
     private final VBox wrapperVBox = new VBox();

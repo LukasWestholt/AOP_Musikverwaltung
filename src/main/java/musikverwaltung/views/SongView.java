@@ -25,7 +25,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import musikverwaltung.GradientBackground;
+import musikverwaltung.nodes.GradientBackground;
 import musikverwaltung.Helper;
 import musikverwaltung.MediaManager;
 import musikverwaltung.ScreenController;
@@ -271,6 +271,10 @@ public class SongView extends MenuBarView implements DestroyListener {
         VBox playerVBox = new VBox(labelSongName, centerContainer, mediaControlVBox);
         playerVBox.setAlignment(Pos.CENTER);
         playerVBox.setSpacing(10);
+
+        StackPane.setAlignment(background, Pos.TOP_LEFT);
+        StackPane.setAlignment(playerVBox, Pos.TOP_LEFT);
+
         showNodes(background, playerVBox);
     }
 

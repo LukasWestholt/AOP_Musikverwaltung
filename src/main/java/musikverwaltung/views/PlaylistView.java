@@ -15,10 +15,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import musikverwaltung.*;
@@ -27,6 +24,7 @@ import musikverwaltung.data.SettingFile;
 import musikverwaltung.data.Song;
 import musikverwaltung.data.URIS;
 import musikverwaltung.handlers.DestroyListener;
+import musikverwaltung.nodes.GradientBackground;
 import musikverwaltung.nodes.ImageButton;
 import musikverwaltung.nodes.OpenSongViewButton;
 
@@ -155,8 +153,11 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         vbox.getChildren().addAll(welcomeLabel, playlistScrollPane, openSongViewButton, automaticPlaylistButton);
         GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
         Rectangle background = gradientMaker.getDefaultRectangle();
-
         buildTiles();
+
+        StackPane.setAlignment(background, Pos.TOP_LEFT);
+        StackPane.setAlignment(vbox, Pos.TOP_LEFT);
+
         showNodes(background, vbox);
     }
 
