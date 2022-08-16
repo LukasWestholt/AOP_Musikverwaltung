@@ -11,8 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import musikverwaltung.Helper;
@@ -31,7 +29,6 @@ public class CreditsView extends GenericView {
         WebEngine webEngine = webView.getEngine();
         webEngine.load(Helper.getResourcePathURIS(this.getClass(), "/credits.html", false).toString());
         //webEngine.setUserStyleSheetLocation(getClass().getResource("/style.css").toExternalForm());
-        // TODO scrollBar hides text
         webEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
             if (Worker.State.SUCCEEDED.equals(newValue)) {
                 Document document = webEngine.getDocument();
@@ -61,14 +58,8 @@ public class CreditsView extends GenericView {
         buttonCancel.setOnAction(e -> stage.close());
         HBox buttonHBox = new HBox(buttonCancel);
         VBox creditsVbox = new VBox(webView, buttonHBox);
-        //TODO macht nichts
-        Rectangle background = new Rectangle();
-        background.setFill(Color.rgb(142, 196, 117));
-        System.out.println(background.getFill());
-
-        StackPane.setAlignment(background, Pos.TOP_LEFT);
         StackPane.setAlignment(creditsVbox, Pos.TOP_LEFT);
 
-        showNodes(background, creditsVbox);
+        showNodes(creditsVbox);
     }
 }

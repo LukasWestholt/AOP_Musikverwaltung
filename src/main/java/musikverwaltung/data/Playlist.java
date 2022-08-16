@@ -155,11 +155,12 @@ public class Playlist {
         return songs.size();
     }
 
-    //TODO:
     /**
-     * @param index
-     * @param onRepeat
-     * @return
+     * This method determines a song based on input conditions.
+     *
+     * @param index Relative location of song
+     * @param onRepeat Indicates whether the song should be determined in a repeat mode.
+     * @return requested song
      */
     public Song getRelativeSong(int index, boolean onRepeat) {
         System.out.println("Queue(" + index + "/" + songs.getRemainingSongs() + "): "
@@ -209,9 +210,8 @@ public class Playlist {
         }
     }
 
-    //TODO
     /**
-     *
+     * Resets playlist
      */
     public void reset() {
         lastPlayedSong = null;
