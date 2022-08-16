@@ -12,6 +12,9 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/lib" />
       <excludeFolder url="file://$MODULE_DIR$/scenicview-win" />
+      <excludeFolder url="file://$MODULE_DIR$/mp3tag" />
+      <excludeFolder url="file://$MODULE_DIR$/mp3tag/data/columns" />
+      <excludeFolder url="file://$MODULE_DIR$/mp3tag/data/panels" />
       <excludePattern pattern=".classpath" />
       <excludePattern pattern=".project" />
     </content>

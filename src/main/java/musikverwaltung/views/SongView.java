@@ -304,7 +304,7 @@ public class SongView extends MenuBarView implements DestroyListener {
     }
 
     private void reset() {
-        if (isPlayerUnavailable()) {
+        if (player == null || player.getStatus() == MediaPlayer.Status.DISPOSED) {
             return;
         }
         player.dispose();
@@ -343,7 +343,6 @@ public class SongView extends MenuBarView implements DestroyListener {
             player.setAudioSpectrumListener(audioSpectrumListener);
             player.setAudioSpectrumThreshold(-dbThreshold);
         }
-        listenerInitiator.getListeners().forEach(l -> l.setActionLabel("Spiele: " + labelSongName.getText()));
     }
 
     private void skipforwards() {

@@ -40,7 +40,6 @@ public class MediaManager {
 
     private boolean showUnplayableSongs = false;
 
-    // TODO einlesen bei Jazzy night und ambient pearls hat Probleme
     private static final String genreFilename = "genres.txt";
 
     public void firstLoad() {
@@ -121,7 +120,7 @@ public class MediaManager {
         for (Song song : getMusic(Whitelist.PLAYABLE)) {
             Media media = new URIS(song.getPath()).toMedia();
             media.getMetadata().addListener((MapChangeListener<String, Object>) metadata -> {
-                // TODO there are some more metadata like albums, year
+                // TODO there are some more metadata like albums, year etc. we could use
                 //System.out.println(metadata.getMap());
                 FilteredList<Song> fl = music.filtered(
                         s -> s.isPlayable() && Objects.equals(s, song));
