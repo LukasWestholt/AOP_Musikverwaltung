@@ -135,7 +135,7 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
     private void documentSet(int size, List<Song> list) {
         nextReplace(0, size, list);
         resetRemainingSongs();
-        if (firstSong == null) {
+        if (firstSong == null && !list.isEmpty()) {
             firstSong = list.get(0);
         }
     }
