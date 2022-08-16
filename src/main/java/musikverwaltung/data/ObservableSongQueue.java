@@ -7,8 +7,9 @@ import javafx.collections.ObservableListBase;
  * data structure functions as an observable deque for songs.
  * holds information about songs it contains and the number of songs there is
  *
+ * https://stackoverflow.com/a/28468340/8980073
  */
-//https://stackoverflow.com/a/28468340/8980073
+
 public class ObservableSongQueue extends ObservableListBase<Song> implements Deque<Song> {
     private final ArrayDeque<Song> queue;
     private Song firstSong;

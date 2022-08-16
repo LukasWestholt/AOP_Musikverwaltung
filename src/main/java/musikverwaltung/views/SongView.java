@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+
 import javafx.beans.binding.When;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -32,7 +32,7 @@ import musikverwaltung.data.*;
 import musikverwaltung.handlers.DestroyListener;
 import musikverwaltung.handlers.ListenerInitiator;
 import musikverwaltung.handlers.SetActionLabelListener;
-import musikverwaltung.nodes.GradientBackground;
+import musikverwaltung.nodes.GradientBackgroundRectangle;
 import musikverwaltung.nodes.ImageButton;
 
 public class SongView extends MenuBarView implements DestroyListener {
@@ -57,10 +57,9 @@ public class SongView extends MenuBarView implements DestroyListener {
     private boolean onRepeat = true;
     public final ListenerInitiator<SetActionLabelListener> listenerInitiator = new ListenerInitiator<>();
 
+    //http://kenyadevelopers.blogspot.com/2015/06/javafx-audiospectrum-and-barchartbeauty.html
     public SongView(ScreenController sc, MediaManager mediaManager) {
-        /*
-        http://kenyadevelopers.blogspot.com/2015/06/javafx-audiospectrum-and-barchartbeauty.html
-         */
+
         super(sc, 320, 560);
 
         this.mediaManager = mediaManager;
@@ -84,8 +83,6 @@ public class SongView extends MenuBarView implements DestroyListener {
 
         labelSongName = new Label("Unbekannt");
         labelSongName.getStyleClass().add("header");
-        //labelSongName.setStyle("-fx-font-size: 25pt; -fx-font-family: Manrope-Light;"
-        // "-fx-text-fill: rgb(225, 228, 203);");
 
         StackPane centerContainer = new StackPane();
         centerContainer.setAlignment(Pos.CENTER);
@@ -266,9 +263,11 @@ public class SongView extends MenuBarView implements DestroyListener {
             }
         });
 
-        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
+        /*GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
         List<String> colours = Arrays.asList("#222A35", "#203864", "#4472C4");
-        Rectangle background = gradientMaker.getCustomRectangle(colours);
+        Rectangle background = gradientMaker.getCustomRectangle(colours);*/
+
+        Rectangle background = new GradientBackgroundRectangle(getWidthProperty(), getHeightProperty(), Arrays.asList("#222A35", "#203864", "#4472C4"));
 
         VBox playerVBox = new VBox(labelSongName, centerContainer, mediaControlVBox);
         playerVBox.setAlignment(Pos.CENTER);

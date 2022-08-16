@@ -19,7 +19,7 @@ import musikverwaltung.ScreenController;
 import musikverwaltung.data.SettingFile;
 import musikverwaltung.handlers.ListenerInitiator;
 import musikverwaltung.handlers.RefreshListener;
-import musikverwaltung.nodes.GradientBackground;
+import musikverwaltung.nodes.GradientBackgroundRectangle;
 
 public class SettingsView extends GenericView {
     private final ObservableList<String> directories = FXCollections.observableArrayList();
@@ -57,8 +57,7 @@ public class SettingsView extends GenericView {
         HBox buttonHBox = new HBox(buttonSave, buttonCancel);
         VBox settingsVBox = new VBox(selectDirectory, listDirectory, checkBox, buttonHBox);
 
-        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
-        Rectangle background = gradientMaker.getDefaultRectangle();
+        Rectangle background =  new GradientBackgroundRectangle(getWidthProperty(), getHeightProperty());
 
         StackPane.setAlignment(background, Pos.TOP_LEFT);
         StackPane.setAlignment(settingsVBox, Pos.TOP_LEFT);

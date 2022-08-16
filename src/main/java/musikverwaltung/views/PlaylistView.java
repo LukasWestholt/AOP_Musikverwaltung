@@ -24,7 +24,7 @@ import musikverwaltung.data.SettingFile;
 import musikverwaltung.data.Song;
 import musikverwaltung.data.URIS;
 import musikverwaltung.handlers.DestroyListener;
-import musikverwaltung.nodes.GradientBackground;
+import musikverwaltung.nodes.GradientBackgroundRectangle;
 import musikverwaltung.nodes.ImageButton;
 import musikverwaltung.nodes.OpenSongViewButton;
 
@@ -151,8 +151,8 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10));
         vbox.getChildren().addAll(welcomeLabel, playlistScrollPane, openSongViewButton, automaticPlaylistButton);
-        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
-        Rectangle background = gradientMaker.getDefaultRectangle();
+
+        Rectangle background =  new GradientBackgroundRectangle(getWidthProperty(), getHeightProperty());
         buildTiles();
 
         StackPane.setAlignment(background, Pos.TOP_LEFT);

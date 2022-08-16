@@ -26,7 +26,7 @@ import musikverwaltung.data.Playlist;
 import musikverwaltung.data.Song;
 import musikverwaltung.handlers.RefreshListener;
 import musikverwaltung.handlers.SetActionLabelListener;
-import musikverwaltung.nodes.GradientBackground;
+import musikverwaltung.nodes.GradientBackgroundRectangle;
 import musikverwaltung.nodes.OpenSongViewButton;
 
 public class MainView extends MenuBarView implements SetActionLabelListener, RefreshListener {
@@ -250,8 +250,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
             }
         });
 
-        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
-        Rectangle background = gradientMaker.getDefaultRectangle();
+        Rectangle background =  new GradientBackgroundRectangle(getWidthProperty(), getHeightProperty());
 
         //important for background!
         StackPane.setAlignment(centerVbox, Pos.TOP_LEFT);
