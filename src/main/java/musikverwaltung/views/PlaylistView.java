@@ -29,6 +29,8 @@ import musikverwaltung.handlers.DestroyListener;
 import musikverwaltung.nodes.ImageButton;
 import musikverwaltung.nodes.OpenSongViewButton;
 
+
+//https://stackoverflow.com/questions/54844351/javafx-dropshadow-css-what-do-the-parameters-mean-how-to-implement-width-and-h
 public class PlaylistView extends MenuBarView implements DestroyListener {
 
     private final ObservableList<Playlist> playlists;
@@ -37,7 +39,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
 
     private Playlist selectedPlaylist;
 
-    private final TilePane tilePane = new TilePane();
+    private final TilePane playlistPane = new TilePane();
     private final TextField nameField = new TextField();
     private final ContextMenu quickOptions = new ContextMenu();
 
@@ -62,12 +64,13 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         Label welcomeLabel = new Label("Playlisten");
         welcomeLabel.getStyleClass().add("header");
 
-        tilePane.setId("playlists");
-        tilePane.setHgap(5);
-        tilePane.setVgap(5);
-        tilePane.setPadding(new Insets(5, 5, 0, 5));
-        tilePane.setPrefColumns(1);
-        tilePane.setMaxHeight(Region.USE_PREF_SIZE);
+        playlistPane.setId("playlists");
+        playlistPane.setHgap(5);
+        playlistPane.setVgap(5);
+        playlistPane.setPadding(new Insets(5, 5, 0, 5));
+        playlistPane.setPrefColumns(1);
+        playlistPane.setMaxHeight(Region.USE_PREF_SIZE);
+        playlistPane.setStyle("-fx-background-color: rgb(225, 228, 203);");
 
         MenuItem deleteMenu = new MenuItem("Löschen");
         deleteMenu.setOnAction(action -> playlists.remove(selectedPlaylist));
@@ -119,13 +122,17 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
 
         playlists.addListener((ListChangeListener<? super Playlist>) change -> buildTiles());
 
-        ScrollPane sp = new ScrollPane();
-        sp.setId("scroll-playlists");
-        sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        sp.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        sp.setFitToWidth(true);
-        sp.setContent(tilePane);
-        sp.setMaxHeight(Control.USE_PREF_SIZE);
+        ScrollPane playlistScrollPane = new ScrollPane();
+        playlistScrollPane.setId("scroll-playlists");
+        playlistScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        playlistScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        playlistScrollPane.setFitToWidth(true);
+        playlistScrollPane.setContent(playlistPane);
+        playlistScrollPane.prefViewportHeightProperty().bind(getHeightProperty().divide(1.25));
+        playlistScrollPane.prefViewportWidthProperty().bind(getWidthProperty().divide(1.25));
+        playlistScrollPane.setMaxHeight(Control.USE_PREF_SIZE);
+        playlistScrollPane.setStyle("-fx-background-color: rgb(225, 228, 203); -fx-border-color: rgb(103, 100, 78); -fx-border-width: 1.5;");
+
 
         Button automaticPlaylistButton = new Button("Playlist Vorschläge");
         automaticPlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
@@ -144,7 +151,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10));
-        vbox.getChildren().addAll(welcomeLabel, sp, openSongViewButton, automaticPlaylistButton);
+        vbox.getChildren().addAll(welcomeLabel, playlistScrollPane, openSongViewButton, automaticPlaylistButton);
         GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
         Rectangle background = gradientMaker.getDefaultRectangle();
 
@@ -217,17 +224,17 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
     }
 
     private void buildTiles() {
-        tilePane.getChildren().clear();
+        playlistPane.getChildren().clear();
         for (Playlist playlist : playlists) {
             Button playlistButton = new Button(playlist.getName());
             playlistButton.setMinWidth(Region.USE_PREF_SIZE);
             playlistButton.setWrapText(true);
-            playlistButton.setStyle("-fx-font-size:18; -fx-background-color: rgb(44, 90, 118)");
+            playlistButton.setStyle("-fx-font-size:20; -fx-background-color: rgb(129, 140, 48)");
             playlistButton.hoverProperty().addListener((obs, oldValue, newValue) -> {
                 if (newValue) {
-                    playlistButton.setStyle("-fx-font-size:14; -fx-background-color: rgb(129, 140, 48)");
+                    playlistButton.setStyle("-fx-font-size:16; -fx-background-color: #87BF61");
                 } else {
-                    playlistButton.setStyle("-fx-font-size:18; -fx-background-color: rgb(44, 90, 118)");
+                    playlistButton.setStyle("-fx-font-size:20; -fx-background-color: rgb(129, 140, 48)");
                 }
             });
 
@@ -273,7 +280,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
             playlistButton.setStyle("-fx-font-size:20");
             playlistButton.setPrefHeight(100);
             playlistButton.setPrefWidth(175);
-            tilePane.getChildren().add(playlistButton);
+            playlistPane.getChildren().add(playlistButton);
         }
     }
 

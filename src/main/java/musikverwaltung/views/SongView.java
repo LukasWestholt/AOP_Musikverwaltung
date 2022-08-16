@@ -86,9 +86,8 @@ public class SongView extends MenuBarView implements DestroyListener {
         screenController.listenerInitiator.addListenerIfNotContains(this);
 
         labelSongName = new Label("Unbekannt");
-        labelSongName.getStyleClass().add("songViewHeader");
-        labelSongName.setStyle("-fx-font-size: 25pt; -fx-font-family: Manrope-Light;"
-                + "-fx-text-fill: rgb(225, 228, 203);");
+        labelSongName.getStyleClass().add("header");
+        //labelSongName.setStyle("-fx-font-size: 25pt; -fx-font-family: Manrope-Light;" "-fx-text-fill: rgb(225, 228, 203);");
 
         StackPane centerContainer = new StackPane();
         centerContainer.setAlignment(Pos.CENTER);
@@ -106,8 +105,8 @@ public class SongView extends MenuBarView implements DestroyListener {
         contextMenu.getItems().addAll(headerMenu, radioImageMenu, radioChartMenu);
         imageView.setPreserveRatio(true);
         imageView.setSmooth(true);
-        imageView.fitWidthProperty().bind(getWidthProperty().subtract(30));
-        imageView.fitHeightProperty().bind(getHeightProperty().divide(2));
+        imageView.fitWidthProperty().bind(getWidthProperty().subtract(25));
+        imageView.fitHeightProperty().bind(getHeightProperty().divide(1.5));
         imageView.setOnMouseClicked(event -> contextMenu.show(imageView, event.getScreenX(), event.getScreenY()));
         imageView.setImage(defaultImage);
         centerContainer.getChildren().add(imageView);
@@ -272,8 +271,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         Rectangle background = gradientMaker.getCustomRectangle(colours);
 
 
-
-        VBox playerVBox = new VBox(labelSongName, centerContainer, mediaControlVBox);
+                VBox playerVBox = new VBox(labelSongName, centerContainer, mediaControlVBox);
         playerVBox.setAlignment(Pos.CENTER);
         playerVBox.setSpacing(10);
         showNodes(background, playerVBox);

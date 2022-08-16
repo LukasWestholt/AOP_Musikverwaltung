@@ -80,6 +80,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
 
         welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.getStyleClass().add("header");
+       // welcomeLabel.setStyle("-fx-effect: dropshadow( one-pass-box , black , 4 , 0.0 , 1 , 0 )");
 
         actionLabel = new Label();
         actionLabel.setAlignment(Pos.CENTER);
