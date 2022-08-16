@@ -191,9 +191,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
             // TODO this is properly a bug
             flSongs.setPredicate(p -> p.getGenre().contains(genre));
             if (flSongs.size() >= threshold) {
-                Playlist automaticPlaylist = new Playlist();
-                automaticPlaylist.setName("Genre: " + genre);
-                automaticPlaylist.setAll(flSongs);
+                Playlist automaticPlaylist = new Playlist("Genre: " + genre, flSongs);
                 isCreatedAlready = false;
                 for (Playlist playlist : playlists) {
                     if (playlist.isAlmostEqual(automaticPlaylist)) {
@@ -209,9 +207,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         for (String artist : artistCriteria) {
             flSongs.setPredicate(p -> p.getArtist().contains(artist));
             if (flSongs.size() >= threshold) {
-                Playlist automaticPlaylist = new Playlist();
-                automaticPlaylist.setName("Artist: " + artist);
-                automaticPlaylist.setAll(flSongs);
+                Playlist automaticPlaylist = new Playlist("Artist: " + artist, flSongs);
                 isCreatedAlready = false;
                 for (Playlist playlist : playlists) {
                     if (playlist.isAlmostEqual(automaticPlaylist)) {

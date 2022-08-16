@@ -9,6 +9,7 @@ import javafx.collections.ObservableListBase;
  */
 public class ObservableSongQueue extends ObservableListBase<Song> implements Deque<Song> {
     private final ArrayDeque<Song> queue;
+    private Song firstSong;
     private int remainingSongs;
 
     public ObservableSongQueue() {
@@ -20,28 +21,94 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         return this.remainingSongs;
     }
 
-    public void resetRemainingSongs() {
+    private void resetRemainingSongs() {
         this.remainingSongs = queue.size();
     }
 
+    public int getRelativePositionOfFirstSong() {
+        if (firstSong == null) {
+            return -1;
+        }
+        int r = 0;
+        for (Song song : queue) {
+            if (firstSong != song) {
+                r++;
+            } else {
+                break;
+            }
+        }
+        assert r < queue.size();
+        return r;
+    }
+
+    public void setRemainingSongs(int i) {
+        this.remainingSongs = i;
+    }
+
+    public void reset() {
+        this.remainingSongs = queue.size();
+        while (firstSong != null && queue.peekFirst() != firstSong) {
+            circleForwards();
+        }
+        assert firstSong == null || queue.peekFirst() == firstSong;
+    }
+
+    public Song circleForwards() {
+        beginChange();
+        try {
+            Song s = queue.removeFirst();
+            nextRemove(0, s);
+            queue.addLast(s);
+            nextAdd(queue.size() - 1, queue.size());
+            return s;
+        } finally {
+            endChange();
+        }
+    }
+
+    public Song circleBackwards() {
+        beginChange();
+        try {
+            Song s = queue.removeLast();
+            nextRemove(queue.size() - 1, s);
+            queue.addFirst(s);
+            nextAdd(0, 1);
+            return s;
+        } finally {
+            endChange();
+        }
+    }
+
     public void addToRemainingSongs(int i) {
-        System.out.println("+" + i);
         this.remainingSongs += i;
     }
 
     private void documentAdd(int i1, int i2) {
         nextAdd(i1, i2);
         remainingSongs += i2 - i1;
+        if (firstSong == null) {
+            firstSong = get(i1);
+        }
     }
 
     private void documentRemove(int i, Song song) {
         nextRemove(i, song);
         remainingSongs--;
+        if (firstSong == song) {
+            if (queue.size() == 0) {
+                firstSong = null;
+            } else {
+                firstSong = get(i);
+            }
+        }
     }
 
     private void documentSet(int size, List<Song> list) {
         nextReplace(0, size, list);
         resetRemainingSongs();
+        if (firstSong == null) {
+            firstSong = list.get(0);
+        }
     }
 
     @Override

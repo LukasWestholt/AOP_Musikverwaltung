@@ -45,19 +45,36 @@ public class MediaManager {
     public void firstLoad() {
         update(null);
 
-        // letzte Playlisten werden geladen
+        // letzte Playlisten werden geladen. Dabei wird die Order eingehalten.
         for (PlaylistExternalizable playlistExt : SettingFile.load().getPlaylists()) {
             ArrayList<Song> songs = new ArrayList<>();
+
+            for (Song song : music) {
+                for (URIS uris : playlistExt.getPaths()) {
+                    Path path = uris.getPath();
+                    if (path == null) {
+                        continue;
+                    }
+                    try {
+                        if (Files.isSameFile(song.getPath(), path)) {
+                            songs.add(song);
+                            break;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
             for (URIS uris : playlistExt.getPaths()) {
                 Path path = uris.getPath();
                 if (path == null) {
                     continue;
                 }
                 boolean found = false;
-                for (Song song : music) {
+                for (Song song : songs) {
                     try {
                         if (Files.isSameFile(song.getPath(), path)) {
-                            songs.add(song);
                             found = true;
                             break;
                         }
@@ -72,6 +89,7 @@ public class MediaManager {
                     music.add(song);
                 }
             }
+
             Playlist playlist = new Playlist(playlistExt.getName(), songs, playlistExt.getPreviewImagePath());
             playlists.add(playlist);
         }
@@ -112,7 +130,6 @@ public class MediaManager {
                 }
             }
             if (!found) {
-                System.out.println("found new music: " + mediaFile);
                 music.add(new Song(mediaFile));
             }
         }

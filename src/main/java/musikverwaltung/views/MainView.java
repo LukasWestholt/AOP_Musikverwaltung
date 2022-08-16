@@ -29,7 +29,6 @@ import musikverwaltung.handlers.RefreshListener;
 import musikverwaltung.handlers.SetActionLabelListener;
 import musikverwaltung.nodes.OpenSongViewButton;
 
-
 public class MainView extends MenuBarView implements SetActionLabelListener, RefreshListener {
     public static final String HIGHLIGHT_START = "<HIGHLIGHT_START>";
     public static final String HIGHLIGHT_END = "<HIGHLIGHT_END>";

@@ -18,10 +18,6 @@ public class Playlist {
 
     private Song lastPlayedSong;
 
-    public Playlist() {
-        this.name.setValue("Playlist 1");
-    }
-
     public Playlist(String name, List<Song> playlist) {
         this.name.setValue(name);
         this.songs.setAll(playlist);
@@ -76,14 +72,6 @@ public class Playlist {
         return songs;
     }
 
-    public void setAll(List<Song> playlist) {
-        songs.setAll(playlist);
-    }
-
-    public void add(Song song) {
-        songs.add(song);
-    }
-
     public void remove(int index) {
         songs.remove(index);
     }
@@ -106,15 +94,16 @@ public class Playlist {
 
     public Song getRelativeSong(int index, boolean onRepeat) {
         System.out.println("Queue(" + index + "/" + songs.getRemainingSongs() + "): "
-                + songs.stream().map(Song::getPrimaryKey).collect(Collectors.toList()));
+                + songs.stream().map(Song::getPrimaryKey).collect(Collectors.toList())
+                + " onRepeat: " + onRepeat);
+
         if (songs.size() == 0) {
             return null;
         }
 
         // if going backwards and there is still a remaining song
         if (index < 0 && (onRepeat || songs.getRemainingSongs() != songs.size())) {
-            Song nextSong = songs.removeLast();
-            songs.addFirst(nextSong);
+            Song nextSong = songs.circleBackwards();
             if (!onRepeat) {
                 songs.addToRemainingSongs(1);
             }
@@ -130,11 +119,10 @@ public class Playlist {
         } else if (index > 0) {
             // return null if there is no remaining song and the end is reached
             if (songs.getRemainingSongs() == 0) {
-                // TODO show first song of playlist like in spotify
+                reset();
                 return null;
             }
-            Song nextSong = songs.removeFirst();
-            songs.addLast(nextSong);
+            Song nextSong = songs.circleForwards();
             if (!onRepeat) {
                 songs.addToRemainingSongs(-1);
             }
@@ -148,15 +136,24 @@ public class Playlist {
 
             // else: index==0 or going backwards without remaining song
         } else {
-            if (!lastPlayedSong.isPlayable()) {
-                return null;
-            }
             return lastPlayedSong;
         }
     }
 
-    public void resetRemainingSongs() {
-        songs.resetRemainingSongs();
+    public void reset() {
+        lastPlayedSong = null;
+        songs.reset();
+    }
+
+    public void onSwitchRepeat(boolean newOnSwitch) {
+        if (!newOnSwitch) {
+            int relativePositionOfFirstSong = songs.getRelativePositionOfFirstSong();
+            if (relativePositionOfFirstSong != -1) {
+                songs.setRemainingSongs(relativePositionOfFirstSong);
+            }
+        } else {
+            songs.setRemainingSongs(songs.size());
+        }
     }
 
     @Override

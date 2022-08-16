@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javafx.beans.binding.When;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -34,7 +35,6 @@ import musikverwaltung.handlers.ListenerInitiator;
 import musikverwaltung.handlers.SetActionLabelListener;
 import musikverwaltung.nodes.ImageButton;
 
-//TODO einzelsong bei repeat hin und her wechseln sehr verbuggt
 public class SongView extends MenuBarView implements DestroyListener {
     private final MediaManager mediaManager;
     private double songLength = Double.MAX_VALUE;
@@ -75,6 +75,7 @@ public class SongView extends MenuBarView implements DestroyListener {
                 e -> {
                     onRepeat = !onRepeat;
                     onRepeatButton.setText(onRepeat ? "Repeat" : "No Repeat");
+                    playlist.onSwitchRepeat(onRepeat);
                 }
         );
         ignoreMenuItems(settingViewButton, playlistViewButton, creditsViewButton);
@@ -144,7 +145,7 @@ public class SongView extends MenuBarView implements DestroyListener {
                 Helper.getResourcePath(this.getClass(), "/icons/skip.png", false),
                 false, true
         );
-        skipForward.setOnAction(e -> skipforwards());
+        skipForward.setOnAction(e -> skipforwards(true));
         setDynamicSize(skipForward);
         skipForward.setPrefSize(30, 30);
 
@@ -310,11 +311,13 @@ public class SongView extends MenuBarView implements DestroyListener {
         player.dispose();
         startStop.switchImage(playImage);
         audioData.getData().clear();
+
+        playerSongLengthListener.changed(null, null, new Duration(0));
     }
 
     private void updateSong(Song nextSong, boolean startPlaying) {
         reset();
-        if (nextSong == null) {
+        if (nextSong == null || !nextSong.isPlayable() || Files.notExists(nextSong.getPath())) {
             return;
         }
         songHistoryStack.add(nextSong);
@@ -327,10 +330,9 @@ public class SongView extends MenuBarView implements DestroyListener {
             imageView.setImage(defaultImage);
         }
         Media currentSong = new URIS(path).toMedia();
-        // TODO memory leak on Media/MediaPlayer ? i cant delete music files after they got played
         assert player == null || player.getStatus() == MediaPlayer.Status.DISPOSED;
         player = new MediaPlayer(currentSong);
-        player.setOnEndOfMedia(this::skipforwards);
+        player.setOnEndOfMedia(() -> skipforwards(false));
         player.setVolume(volume);
 
         //next song starts immediately or stops before
@@ -345,11 +347,16 @@ public class SongView extends MenuBarView implements DestroyListener {
         }
     }
 
-    private void skipforwards() {
+    private void skipforwards(boolean forceStartPlaying) {
         if (playlist == null) {
             return;
         }
-        updateSong(playlist.getRelativeSong(1, onRepeat), true);
+        Song nextSong = playlist.getRelativeSong(1, onRepeat);
+        if (nextSong == null) {
+            updateSong(playlist.getRelativeSong(1, onRepeat), forceStartPlaying);
+        } else {
+            updateSong(nextSong, true);
+        }
     }
 
     private void skipbackwards() {
@@ -384,16 +391,15 @@ public class SongView extends MenuBarView implements DestroyListener {
 
     void setPlaylist(Playlist playlist, boolean startPlaying) {
         this.playlist = playlist;
-        this.playlist.resetRemainingSongs();
+        this.playlist.reset();
         updateSong(playlist.getRelativeSong(1, onRepeat), startPlaying);
     }
 
     void setPlaylist(Song song, boolean startPlaying) {
-        if (song == null || !song.isPlayable()) {
+        if (song == null) {
             return;
         }
-        Playlist singleSongPlaylist = new Playlist();
-        singleSongPlaylist.add(song);
+        Playlist singleSongPlaylist = new Playlist("Anonymous", Collections.singletonList(song));
         setPlaylist(singleSongPlaylist, startPlaying);
     }
 
