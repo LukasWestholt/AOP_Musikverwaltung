@@ -55,18 +55,30 @@ public class PlaylistExternalizable implements Externalizable {
         this.name = name;
     }
 
+    /**
+     * @return identifier for preview image
+     */
     public URIS getPreviewImagePath() {
         return previewImagePath;
     }
 
+    /**
+     * @param uris = identifier for preview image
+     */
     public void setPreviewImagePath(URIS uris) {
         this.previewImagePath = uris;
     }
 
+    /**
+     * @return identifiers for all songs in PlaylistExternalizable
+     */
     public ArrayList<URIS> getPaths() {
         return songs;
     }
 
+    /**
+     * @param songs = adds all identifiers for songs in PlaylistExternalizable -> adds new songs
+     */
     public void addPaths(ArrayList<URIS> songs) {
         this.songs.addAll(songs);
     }

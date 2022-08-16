@@ -1,6 +1,5 @@
 package musikverwaltung.data;
 
-import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
@@ -33,7 +32,13 @@ public class Playlist {
         this.name.setValue(name);
         this.songs.setAll(playlist);
     }
-
+     /**
+     * gets created with name, and list of songs and identifier for preview image
+     *
+     * @param name = name of Playlist
+     * @param playlist = list of songs in the playlist
+     * @param previewImagePath = identifier for preview image
+     */
     public Playlist(String name, List<Song> playlist, URIS previewImagePath) {
         this.name.setValue(name);
         this.songs.setAll(playlist);
@@ -79,6 +84,9 @@ public class Playlist {
         return image.getUrl();
     }
 
+    /**
+     * @param uris = identifier for preview image
+     */
     public void setPreviewImage(URIS uris) {
         String string = uris.toString();
         if (string != null && !string.isEmpty()) {
@@ -86,6 +94,9 @@ public class Playlist {
         }
     }
 
+    /**
+     * @return property for preview image
+     */
     public SimpleObjectProperty<Image> getPreviewImageProperty() {
         return previewImage;
     }
