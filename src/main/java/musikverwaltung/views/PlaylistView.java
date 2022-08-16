@@ -15,10 +15,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import musikverwaltung.*;
@@ -27,6 +24,7 @@ import musikverwaltung.data.SettingFile;
 import musikverwaltung.data.Song;
 import musikverwaltung.data.URIS;
 import musikverwaltung.handlers.DestroyListener;
+import musikverwaltung.nodes.GradientBackground;
 import musikverwaltung.nodes.ImageButton;
 import musikverwaltung.nodes.OpenSongViewButton;
 
@@ -132,8 +130,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         playlistScrollPane.prefViewportHeightProperty().bind(getHeightProperty().divide(1.25));
         playlistScrollPane.prefViewportWidthProperty().bind(getWidthProperty().divide(1.25));
         playlistScrollPane.setMaxHeight(Control.USE_PREF_SIZE);
-        playlistScrollPane.setStyle("-fx-background-color: rgb(225, 228, 203); -fx-border-color: rgb(103, 100, 78);"
-                + "-fx-border-width: 1.5;");
+        playlistScrollPane.setStyle("-fx-background-color: rgb(225, 228, 203); -fx-border-color: rgb(103, 100, 78); -fx-border-width: 1.5;");
 
 
         Button automaticPlaylistButton = new Button("Playlist Vorschläge");
@@ -156,8 +153,11 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         vbox.getChildren().addAll(welcomeLabel, playlistScrollPane, openSongViewButton, automaticPlaylistButton);
         GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
         Rectangle background = gradientMaker.getDefaultRectangle();
-
         buildTiles();
+
+        StackPane.setAlignment(background, Pos.TOP_LEFT);
+        StackPane.setAlignment(vbox, Pos.TOP_LEFT);
+
         showNodes(background, vbox);
     }
 
@@ -276,7 +276,6 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
                     .then((ImageView) null).otherwise(previewView));
             playlistButton.textProperty().bind(playlist.getNameProperty());
             playlistButton.setAlignment(Pos.BASELINE_CENTER);
-            playlistButton.setStyle("-fx-font-size:20");
             playlistButton.setPrefHeight(100);
             playlistButton.setPrefWidth(175);
             playlistPane.getChildren().add(playlistButton);

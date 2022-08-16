@@ -6,16 +6,20 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import musikverwaltung.CachedPathChooser;
 import musikverwaltung.ScreenController;
 import musikverwaltung.data.SettingFile;
 import musikverwaltung.handlers.ListenerInitiator;
 import musikverwaltung.handlers.RefreshListener;
+import musikverwaltung.nodes.GradientBackground;
 
 public class SettingsView extends GenericView {
     private final ObservableList<String> directories = FXCollections.observableArrayList();
@@ -26,7 +30,7 @@ public class SettingsView extends GenericView {
     public SettingsView(ScreenController sc) {
         super(sc, 350, 300);
 
-        Button selectDirectory = new Button("Select Directory");
+        Button selectDirectory = new Button("Ordner auswählen");
         selectDirectory.setOnAction(e -> {
             Path selectedDirectory = CachedPathChooser.showDialog(stage, null);
             if (selectedDirectory != null) {
@@ -38,21 +42,28 @@ public class SettingsView extends GenericView {
         listDirectory.setFocusTraversable(false);
         VBox.setVgrow(listDirectory, Priority.ALWAYS);
 
-        checkBox = new CheckBox("Show unplayable songs");
+        checkBox = new CheckBox("Zeige unabspielbare Songs");
 
-        Button buttonSave = new Button("Save");
+        Button buttonSave = new Button("Speichern");
         buttonSave.setOnAction(e -> {
             SettingFile.savePaths(new ArrayList<>(directories));
             SettingFile.saveShowUnplayableSongs(checkBox.isSelected());
             stage.close();
             listenerInitiator.getListeners().forEach(l -> l.refresh().run());
         });
-        Button buttonCancel = new Button("Cancel");
+        Button buttonCancel = new Button("Abbruch");
         buttonCancel.setCancelButton(true);
         buttonCancel.setOnAction(e -> stage.close());
         HBox buttonHBox = new HBox(buttonSave, buttonCancel);
         VBox settingsVBox = new VBox(selectDirectory, listDirectory, checkBox, buttonHBox);
-        showNodes(settingsVBox);
+
+        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
+        Rectangle background = gradientMaker.getDefaultRectangle();
+
+        StackPane.setAlignment(background, Pos.TOP_LEFT);
+        StackPane.setAlignment(settingsVBox, Pos.TOP_LEFT);
+
+        showNodes(background, settingsVBox);
     }
 
     @Override
@@ -65,7 +76,7 @@ public class SettingsView extends GenericView {
     static class DirectoryCell extends ListCell<String> {
         final HBox hbox = new HBox();
         final Label label = new Label("");
-        final Button button = new Button("(Del)");
+        final Button button = new Button("Löschen");
 
         public DirectoryCell(DoubleBinding widthProperty) {
             super();

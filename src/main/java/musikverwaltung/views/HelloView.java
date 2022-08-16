@@ -14,12 +14,10 @@ import musikverwaltung.data.Quote;
 public class HelloView extends GenericView {
     public HelloView(ScreenController sc) {
         super(sc);
-        Label title = new Label("Musikverwaltung");
-        title.getStyleClass().add("header");
         Label quotesLabel = new Label(getRandomQuote());
         quotesLabel.setWrapText(true);
         quotesLabel.getStyleClass().add("quote");
-        VBox vbox = new VBox(title, quotesLabel);
+        VBox vbox = new VBox(quotesLabel);
         vbox.setAlignment(Pos.CENTER);
         vbox.setSpacing(10);
         BorderPane borderPane = new BorderPane();

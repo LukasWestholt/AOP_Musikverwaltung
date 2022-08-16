@@ -8,19 +8,30 @@ import java.util.Objects;
 import javafx.collections.ObservableList;
 import musikverwaltung.Helper;
 
-public class SettingFile implements Externalizable {
 
+/**
+ * externalizable object that saves the settings of the Musikverwaltung
+ * it holds the name of the file all information gets saved to
+ * information about the directories where the audio files from the user are located -> all songs will be visible as long as the directory paths are the same
+ * information about the last played song -> can be seen in Player next time the app is opened
+ * information about all playlists -> can be seen in PlaylistView next time the app is opened
+ */
+public class SettingFile implements Externalizable {
     // explicitly
     @SuppressWarnings("unused")
     private static final long SerialVersionUID = 10L;
-
     private static final String filename = "settings.ser";
-
     private ArrayList<PlaylistExternalizable> playlists = new ArrayList<>();
     private ArrayList<String> paths = new ArrayList<>();
     private Path lastSong;
     private boolean showUnplayableSongs;
 
+    /**
+     * creates array of PlaylistExternalizable and compares it to the already saved playlists
+     * if there are the same, nothing happens, else: new playlist will be saved as part of SettingsFile
+     *
+     * @param playlists = playlists from the user
+     */
     public static void savePlaylists(ObservableList<Playlist> playlists) {
         SettingFile setting = load();
         ArrayList<PlaylistExternalizable> playlistsExt = new ArrayList<>();
@@ -34,6 +45,12 @@ public class SettingFile implements Externalizable {
         }
     }
 
+    /**
+     * compares already saved paths with paths
+     * if there are the same, nothing happens, else: new paths will be saved as part of SettingsFile
+     *
+     * @param paths = paths to the directories where the audio files from the user are located
+     */
     public static void savePaths(ArrayList<String> paths) {
         SettingFile setting = load();
         if (!setting.paths.equals(paths)) {
@@ -43,6 +60,12 @@ public class SettingFile implements Externalizable {
         }
     }
 
+    /**
+     * compares already saved last played Song with lastSong
+     * if there are the same, nothing happens, else: new lastSong will be saved as part of SettingsFile
+     *
+     * @param lastSong = last played Song
+     */
     public static void saveLastSong(Path lastSong) {
         SettingFile setting = load();
         if (!Objects.equals(setting.lastSong, lastSong)) {
@@ -52,6 +75,12 @@ public class SettingFile implements Externalizable {
         }
     }
 
+    /**
+     * compares already saved unplayable songs with UnplayableSong
+     * if there are the same, nothing happens, else: new UnplayableSong will be saved as part of SettingsFile
+     *
+     * @param showUnplayableSongs = information whether unplayable songs (wrong path or wrong format) should be saved too
+     */
     public static void saveShowUnplayableSongs(boolean showUnplayableSongs) {
         SettingFile setting = load();
         if (setting.showUnplayableSongs != showUnplayableSongs) {
@@ -61,22 +90,37 @@ public class SettingFile implements Externalizable {
         }
     }
 
+    /**
+     * @return saved playlists
+     */
     public ArrayList<PlaylistExternalizable> getPlaylists() {
         return playlists;
     }
 
+    /**
+     * @return saved directory paths
+     */
     public ArrayList<String> getPaths() {
         return paths;
     }
 
+    /**
+     * @return saved last Song
+     */
     public Path getLastSong() {
         return lastSong;
     }
 
+    /**
+     * @return information whether unplayable songs are included
+     */
     public boolean getShowUnplayableSongs() {
         return showUnplayableSongs;
     }
 
+    /**
+     * @return gets saved SettingFile object from file it was saved to
+     */
     public static SettingFile load() {
         try {
             FileInputStream in = new FileInputStream(filename);
@@ -87,6 +131,9 @@ public class SettingFile implements Externalizable {
         }
     }
 
+    /**
+     * @param setting SettingsFile object that will be written to a file
+     */
     private static void save(SettingFile setting) {
         try (
                 FileOutputStream f = new FileOutputStream(filename);
@@ -97,7 +144,13 @@ public class SettingFile implements Externalizable {
             err.printStackTrace();
         }
     }
-
+    /**
+     * overrides the writeExternal method of Externalizable
+     * externalizes SettingsFile object (playlists, paths, lastSong, showUnplayableSongs)
+     *
+     * @param out the stream to write the object to
+     * @throws IOException
+     */
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(playlists);
@@ -105,7 +158,13 @@ public class SettingFile implements Externalizable {
         out.writeObject(new URIS(lastSong));
         out.writeBoolean(showUnplayableSongs);
     }
-
+    /**
+     * overrides the readExternal method of Externalizable
+     * reads in externalizes playlist object (playlists, paths, lastSong, showUnplayableSongs)
+     *
+     * @param in the stream to read data from in order to restore the object
+     * @throws IOException, ClassNotFoundException
+     */
     @Override
     @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
@@ -115,6 +174,9 @@ public class SettingFile implements Externalizable {
         this.showUnplayableSongs = in.readBoolean();
     }
 
+    /**
+     * @return String representation of SettingsFile object
+     */
     @Override
     public String toString() {
         LinkedHashMap<String, Object> attributes = new LinkedHashMap<>();

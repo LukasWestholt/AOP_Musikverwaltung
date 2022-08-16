@@ -20,7 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 import javafx.util.Duration;
-import musikverwaltung.GradientBackground;
+import musikverwaltung.nodes.GradientBackground;
 import musikverwaltung.MediaManager;
 import musikverwaltung.ScreenController;
 import musikverwaltung.data.Playlist;
@@ -81,7 +81,6 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
 
         welcomeLabel = new Label("Willkommen in der Musikverwaltung");
         welcomeLabel.getStyleClass().add("header");
-        // welcomeLabel.setStyle("-fx-effect: dropshadow( one-pass-box , black , 4 , 0.0 , 1 , 0 )");
 
         actionLabel = new Label();
         actionLabel.setAlignment(Pos.CENTER);
@@ -99,12 +98,6 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         reloadButton.setOnAction(e -> {
             actionLabel.setText("Reload");
             refresh().run();
-            /*geklärt "Playlist erstellen" button geht nicht weg -> AR: müsste gefixt sein
-            wenn man von playlistview wieder zur mainview wechselt wird uniquerefreshrunnable ausgeführt
-            (müsste vielleicht gar nicht) da der selct status nicht gespeichert bleibt sind
-            alle songs wieder auf unselected (was gut ist), aber der boolwert weiß noch nicht bescheid
-            -> diesen im runnable auf false gesetzt
-            */
         });
 
         Button selectAll = new Button("alle auswählen");
@@ -240,8 +233,9 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
                     actionLabel.setText("Playlist mit " + returnPlaylist.size() + " Songs hinzugefügt");
                 } else {
                     actionLabel.setText("Playlist existiert bereits");
+                    //TODO das Fenster der Playlisten öffnet sich trotzdem (nutzer könnte verwirrt sein)
                 }
-                // TODO reset all checkboxes
+                refresh();
             }
         });
 
@@ -259,15 +253,23 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
         GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
         Rectangle background = gradientMaker.getDefaultRectangle();
 
+        //important for background!
         StackPane.setAlignment(centerVbox, Pos.TOP_LEFT);
         StackPane.setAlignment(background, Pos.TOP_LEFT);
+
         showNodes(background, centerVbox);
+    }
+    public void unselectAllSongs() {
+        for (Song song:flSong) {
+            song.deselect();
+        }
     }
 
     public Runnable refresh() {
         return () -> {
             mediaManager.update(table::refresh);
             showPlaylistAdd.set(false);
+            unselectAllSongs();
         };
     }
 

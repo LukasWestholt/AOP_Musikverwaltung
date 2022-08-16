@@ -1,4 +1,4 @@
-package musikverwaltung;
+package musikverwaltung.nodes;
 
 import java.util.List;
 import javafx.beans.binding.DoubleBinding;

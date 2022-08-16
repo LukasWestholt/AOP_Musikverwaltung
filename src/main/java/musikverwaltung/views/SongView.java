@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 import javafx.beans.binding.When;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -25,7 +26,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import musikverwaltung.GradientBackground;
+import musikverwaltung.nodes.GradientBackground;
 import musikverwaltung.Helper;
 import musikverwaltung.MediaManager;
 import musikverwaltung.ScreenController;
@@ -59,8 +60,6 @@ public class SongView extends MenuBarView implements DestroyListener {
 
     public SongView(ScreenController sc, MediaManager mediaManager) {
         /*
-        https://www.geeksforgeeks.org/javafx-progressbar/
-        https://stackoverflow.com/questions/26850828/how-to-make-a-javafx-button-with-circle-shape-of-3xp-diameter
         http://kenyadevelopers.blogspot.com/2015/06/javafx-audiospectrum-and-barchartbeauty.html
          */
         super(sc, 320, 560);
@@ -130,12 +129,12 @@ public class SongView extends MenuBarView implements DestroyListener {
                 }
             }
         });
-        //TODO image ist nicht mittig!!!!!!
         playImage = Helper.getResourcePathURIS(this.getClass(), "/icons/play.png", false).toImage(true);
         pauseImage = Helper.getResourcePathURIS(this.getClass(), "/icons/pause.png", false).toImage(true);
         startStop = new ImageButton(playImage, true, true);
         startStop.setOnAction(e -> startStopSong());
-        startStop.setPrefSize(30, 30);
+        startStop.setPrefSize(33, 33);
+        //startStop.setAlignment(Pos.CENTER);
         startStop.setMaxWidth(Double.MAX_VALUE);
         startStop.maxHeightProperty().bind(startStop.widthProperty());
 
@@ -147,7 +146,8 @@ public class SongView extends MenuBarView implements DestroyListener {
         );
         skipForward.setOnAction(e -> skipforwards(true));
         setDynamicSize(skipForward);
-        skipForward.setPrefSize(30, 30);
+        skipForward.setPrefSize(33, 33);
+        //skipForward.setAlignment(Pos.CENTER);
 
         ImageButton skipBackward = new ImageButton(
                 Helper.getResourcePath(this.getClass(), "/icons/skipback.png", false),
@@ -155,29 +155,32 @@ public class SongView extends MenuBarView implements DestroyListener {
         );
         skipBackward.setOnAction(e -> skipbackwards());
         setDynamicSize(skipBackward);
-        skipBackward.setPrefSize(30, 30);
+        skipBackward.setPrefSize(33, 33);
+        //skipBackward.setAlignment(Pos.CENTER);
 
-        /*startStop.minWidthProperty().bind(
-                Bindings.max(skipBackward.heightProperty(), skipForward.heightProperty())
-        );*/
         ImageButton skipAhead = new ImageButton(
                 Helper.getResourcePath(this.getClass(), "/icons/15sAhead.png", false),
                 false, true
                 );
         skipAhead.setOnAction(e -> skipTime(15));
         setDynamicSize(skipAhead);
-        skipAhead.setPrefSize(30, 30);
+        skipAhead.setPrefSize(33, 33);
+        //skipAhead.setAlignment(Pos.CENTER);
 
         ImageButton skipBehind = new ImageButton(Helper.getResourcePath(
                 this.getClass(), "/icons/15sBack.png", false),
                 false, true);
         skipBehind.setOnAction(e -> skipTime(-15));
         setDynamicSize(skipBehind);
-        skipBehind.setPrefSize(30, 30);
+        skipBehind.setPrefSize(33, 33);
+        //skipBehind.setAlignment(Pos.CENTER);
 
         HBox buttonHBox = new HBox(skipBehind, skipBackward, startStop, skipForward, skipAhead);
         buttonHBox.setAlignment(Pos.CENTER);
-        buttonHBox.setSpacing(10);
+        for (int i = 0; i < buttonHBox.getChildren().size(); i++) {
+            Node button = buttonHBox.getChildren().get(i);
+            ((Button) button).setAlignment(Pos.CENTER);
+        }
         buttonHBox.maxWidthProperty().bind(getHeightProperty().divide(2));
 
         Slider slider = new Slider(0, 1, 0);
@@ -191,6 +194,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         });
 
         HBox sliderHBox = new HBox(slider);
+        sliderHBox.setPadding(new Insets(3));
         sliderHBox.maxWidthProperty().bind(new When(startStop.widthProperty().lessThan(120))
                 .then(120).otherwise(startStop.widthProperty()));
         sliderHBox.setAlignment(Pos.CENTER);
@@ -206,7 +210,6 @@ public class SongView extends MenuBarView implements DestroyListener {
 
         audioSpectrumListener = (timestamp, duration, magnitudes, phases) -> {
             for (int i = 0; i < magnitudes.length; i++) {
-                System.out.println("doing");
                 audioData.getData().add(new XYChart.Data<>(Integer.toString(i), magnitudes[i] + dbThreshold));
             }
         };
@@ -269,6 +272,10 @@ public class SongView extends MenuBarView implements DestroyListener {
         VBox playerVBox = new VBox(labelSongName, centerContainer, mediaControlVBox);
         playerVBox.setAlignment(Pos.CENTER);
         playerVBox.setSpacing(10);
+
+        StackPane.setAlignment(background, Pos.TOP_LEFT);
+        StackPane.setAlignment(playerVBox, Pos.TOP_LEFT);
+
         showNodes(background, playerVBox);
     }
 
@@ -276,14 +283,13 @@ public class SongView extends MenuBarView implements DestroyListener {
     public Node get() {
         // on exit the automatic graph updates will stop
         // if stage shown and graph was last activated, it gets activated again
-
-        // stage var is only ready in get method
-        // TODO lieber noch ein check auf player != null oder?
         stage.showingProperty().addListener((observableValue, oldVal, isShowing) -> {
-            if (chartIsVisible.get() && isShowing) {
-                player.setAudioSpectrumListener(audioSpectrumListener);
-            } else {
-                player.setAudioSpectrumListener(null);
+            if (player != null) {
+                if (chartIsVisible.get() && isShowing) {
+                    player.setAudioSpectrumListener(audioSpectrumListener);
+                } else {
+                    player.setAudioSpectrumListener(null);
+                }
             }
         });
         return super.get();
