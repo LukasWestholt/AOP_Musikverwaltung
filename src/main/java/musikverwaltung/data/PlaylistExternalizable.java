@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 /**
  * Allows the Playlist object to be externalized and saved as part of SettingsFile
+ *
+ * https://www.geeksforgeeks.org/externalizable-interface-java/
  */
 public class PlaylistExternalizable implements Externalizable {
 
@@ -90,7 +92,6 @@ public class PlaylistExternalizable implements Externalizable {
      * @param out the stream to write the object to
      * @throws IOException
      */
-    //https://www.geeksforgeeks.org/externalizable-interface-java/
     @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeUTF(name);

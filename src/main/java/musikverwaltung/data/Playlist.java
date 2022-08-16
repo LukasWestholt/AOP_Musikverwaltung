@@ -87,7 +87,10 @@ public class Playlist {
     public void setPreviewImage(URIS uris) {
         String string = uris.toString();
         if (string != null && !string.isEmpty()) {
-            previewImage.set(new Image(string, true));
+            Image image = new Image(string, true);
+            if (!image.isError()) {
+                previewImage.set(image);
+            }
         }
     }
 

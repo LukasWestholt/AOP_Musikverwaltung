@@ -13,7 +13,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import musikverwaltung.ScreenController;
 
-//TODO ausklappteil wandern nicht anch ganz links beim kleiner werden
 public abstract class MenuBarView extends GenericView {
     private final ToolBar menuToolBar = new ToolBar();
     private final VBox wrapperVBox = new VBox();
@@ -22,10 +21,11 @@ public abstract class MenuBarView extends GenericView {
     final Button playlistViewButton = new Button("Playlist");
     final Button settingViewButton = new Button("Einstellungen");
     final Button creditsViewButton = new Button("Credits");
+    final Button songViewButton = new Button("Player");
 
     MenuBarView(ScreenController sc, double prefWidth, double prefHeight) {
         super(sc, prefWidth, prefHeight);
-        addMenuItems(true, mainViewButton, playlistViewButton, settingViewButton, creditsViewButton);
+        addMenuItems(true, mainViewButton, playlistViewButton, songViewButton, settingViewButton, creditsViewButton);
         wrapperVBox.getChildren().addAll(menuToolBar, stackPane);
         menuToolBar.getItems().addListener((ListChangeListener<? super Node>) change -> {
             if (wrapperVBox.getChildren().contains(menuToolBar) && menuToolBar.getItems().size() == 0) {

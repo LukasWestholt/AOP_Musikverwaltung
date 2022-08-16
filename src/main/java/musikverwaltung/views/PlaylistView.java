@@ -24,9 +24,8 @@ import musikverwaltung.data.SettingFile;
 import musikverwaltung.data.Song;
 import musikverwaltung.data.URIS;
 import musikverwaltung.handlers.DestroyListener;
-import musikverwaltung.nodes.GradientBackground;
+import musikverwaltung.nodes.GradientBackgroundRectangle;
 import musikverwaltung.nodes.ImageButton;
-import musikverwaltung.nodes.OpenSongViewButton;
 
 
 //https://stackoverflow.com/questions/54844351/javafx-dropshadow-css-what-do-the-parameters-mean-how-to-implement-width-and-h
@@ -34,18 +33,17 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
 
     private final ObservableList<Playlist> playlists;
 
-    private final FilteredList<Song> flSongs;
-
     private Playlist selectedPlaylist;
 
     private final TilePane playlistPane = new TilePane();
     private final TextField nameField = new TextField();
     private final ContextMenu quickOptions = new ContextMenu();
+    private final MediaManager mediaManager;
 
     public PlaylistView(ScreenController sc, MediaManager mediaManager) {
         super(sc);
+        this.mediaManager = mediaManager;
         playlists = mediaManager.getPlaylists();
-        flSongs = mediaManager.getMusic(MediaManager.Whitelist.PLAYABLE);
 
         addActiveMenuButton(settingViewButton,
                 e -> screenController.activateWindow(SettingsView.class, false)
@@ -55,6 +53,14 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         );
         addActiveMenuButton(creditsViewButton,
                 e -> screenController.activateWindow(CreditsView.class, false)
+        );
+        addActiveMenuButton(songViewButton, e -> {
+                    GenericView view = screenController.activateWindow(SongView.class, true);
+                    if (view instanceof SongView) {
+                        SongView songView = (SongView) view;
+                        songView.setPlaylistLastSong();
+                    }
+                }
         );
         setActiveMenuItem(playlistViewButton);
 
@@ -137,22 +143,12 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         automaticPlaylistButton.setMinWidth(Control.USE_PREF_SIZE);
         automaticPlaylistButton.setOnAction(e -> createAutomaticPlaylists());
 
-        OpenSongViewButton openSongViewButton = new OpenSongViewButton(
-                e -> {
-                    GenericView view = screenController.activateWindow(SongView.class, true);
-                    if (view instanceof SongView) {
-                        SongView songView = (SongView) view;
-                        songView.setPlaylistLastSong();
-                    }
-                }
-        );
-
         VBox vbox = new VBox();
         vbox.setSpacing(5);
         vbox.setPadding(new Insets(10));
-        vbox.getChildren().addAll(welcomeLabel, playlistScrollPane, openSongViewButton, automaticPlaylistButton);
-        GradientBackground gradientMaker = new GradientBackground(getWidthProperty(), getHeightProperty());
-        Rectangle background = gradientMaker.getDefaultRectangle();
+        vbox.getChildren().addAll(welcomeLabel, playlistScrollPane, automaticPlaylistButton);
+
+        Rectangle background =  new GradientBackgroundRectangle(getWidthProperty(), getHeightProperty());
         buildTiles();
 
         StackPane.setAlignment(background, Pos.TOP_LEFT);
@@ -172,6 +168,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
     }
 
     private void createAutomaticPlaylists() {
+        FilteredList<Song> flSongs = mediaManager.getMusic(MediaManager.Whitelist.ALL);
         final int threshold = 5;
         boolean isCreatedAlready;
         //Criteria: genre and artist
@@ -185,11 +182,9 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
                 artistCriteria.add(flSong.getArtist());
             }
         }
-        //System.out.println(genreCriteria + "\n" + artistCriteria);
 
         for (String genre : genreCriteria) {
-            // TODO this is properly a bug
-            flSongs.setPredicate(p -> p.getGenre().contains(genre));
+            flSongs.setPredicate(p -> p.getGenre().contains(genre) && p.isPlayable());
             if (flSongs.size() >= threshold) {
                 Playlist automaticPlaylist = new Playlist("Genre: " + genre, flSongs);
                 isCreatedAlready = false;
@@ -205,7 +200,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
         }
         flSongs.setPredicate(null);
         for (String artist : artistCriteria) {
-            flSongs.setPredicate(p -> p.getArtist().contains(artist));
+            flSongs.setPredicate(p -> p.getArtist().contains(artist) && p.isPlayable());
             if (flSongs.size() >= threshold) {
                 Playlist automaticPlaylist = new Playlist("Artist: " + artist, flSongs);
                 isCreatedAlready = false;
@@ -293,7 +288,6 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
 
     @Override
     public void destroy() {
-        // TODO save playlists earlier
         SettingFile.savePlaylists(playlists);
     }
 }

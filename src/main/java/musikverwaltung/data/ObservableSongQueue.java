@@ -7,8 +7,9 @@ import javafx.collections.ObservableListBase;
  * Data structure functions as an observable deque for songs.
  * Holds information about songs and keeps the order.
  * Circular song output possible.
+ * https://stackoverflow.com/a/28468340/8980073
  */
-//https://stackoverflow.com/a/28468340/8980073
+
 public class ObservableSongQueue extends ObservableListBase<Song> implements Deque<Song> {
     private final ArrayDeque<Song> queue;
     private Song firstSong;
