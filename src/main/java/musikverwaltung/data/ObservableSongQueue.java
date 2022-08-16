@@ -185,8 +185,9 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         try {
             Iterator<Song> iterator = queue.iterator();
             for (int i = 0; i < queue.size(); i++) {
-                // TODO equals should be ==
-                if (iterator.next().equals(o)) {
+                Song temp = iterator.next(); // TODO
+                assert (temp == o) == temp.equals(o);
+                if (temp == o) {
                     boolean success = queue.removeFirstOccurrence(o);
                     if (success) {
                         documentRemove(i, (Song) o);
@@ -206,8 +207,9 @@ public class ObservableSongQueue extends ObservableListBase<Song> implements Deq
         try {
             Iterator<Song> iterator = queue.descendingIterator();
             for (int i = 0; i < queue.size(); i++) {
-                // TODO equals should be ==
-                if (iterator.next().equals(o)) {
+                Song temp = iterator.next(); // TODO
+                assert (temp == o) == temp.equals(o);
+                if (temp == o) {
                     boolean success = queue.removeLastOccurrence(o);
                     if (success) {
                         documentRemove(i, (Song) o);

@@ -275,6 +275,7 @@ public class MainView extends MenuBarView implements SetActionLabelListener, Ref
     @Override
     public Node get() {
         Platform.runLater(refresh());
+        // TODO checkbox unselect
         return super.get();
     }
 

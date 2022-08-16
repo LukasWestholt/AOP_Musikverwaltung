@@ -28,10 +28,7 @@ import musikverwaltung.GradientBackground;
 import musikverwaltung.Helper;
 import musikverwaltung.MediaManager;
 import musikverwaltung.ScreenController;
-import musikverwaltung.data.Playlist;
-import musikverwaltung.data.SettingFile;
-import musikverwaltung.data.Song;
-import musikverwaltung.data.SongHistoryList;
+import musikverwaltung.data.*;
 import musikverwaltung.handlers.DestroyListener;
 import musikverwaltung.handlers.ListenerInitiator;
 import musikverwaltung.handlers.SetActionLabelListener;
@@ -48,9 +45,8 @@ public class SongView extends MenuBarView implements DestroyListener {
     private final Image pauseImage;
     private final Label labelSongName;
     final ImageView imageView = new ImageView();
-    private final Image defaultImage = new Image(
-            Helper.getResourcePathUriString(this.getClass(), "/default_img.jpg", false)
-    );
+    private final Image defaultImage =
+            Helper.getResourcePathURIS(this.getClass(), "/default_img.jpg", false).toImage(true);
     private MediaPlayer player;
     private final int dbThreshold = 60;
     private XYChart.Series<String, Number> audioData;
@@ -134,8 +130,8 @@ public class SongView extends MenuBarView implements DestroyListener {
             }
         });
         //TODO image ist nicht mittig!!!!!!
-        playImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/icons/play.png", false));
-        pauseImage = new Image(Helper.getResourcePathUriString(this.getClass(), "/icons/pause.png", false));
+        playImage = Helper.getResourcePathURIS(this.getClass(), "/icons/play.png", false).toImage(true);
+        pauseImage = Helper.getResourcePathURIS(this.getClass(), "/icons/pause.png", false).toImage(true);
         startStop = new ImageButton(playImage, true, true);
         startStop.setOnAction(e -> startStopSong());
         startStop.setPrefSize(30, 30);
@@ -280,7 +276,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         // on exit the automatic graph updates will stop
         // if stage shown and graph was last activated, it gets activated again
 
-        // TODO kann das in den Konstruktor? Sonst wird das jedes mal aufgerufen
+        // stage var is only ready in get method
         // TODO lieber noch ein check auf player != null oder?
         stage.showingProperty().addListener((observableValue, oldVal, isShowing) -> {
             if (chartIsVisible.get() && isShowing) {
@@ -330,7 +326,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         } else {
             imageView.setImage(defaultImage);
         }
-        Media currentSong = new Media(Helper.p2uris(path));
+        Media currentSong = new URIS(path).toMedia();
         // TODO memory leak on Media/MediaPlayer ? i cant delete music files after they got played
         assert player == null || player.getStatus() == MediaPlayer.Status.DISPOSED;
         player = new MediaPlayer(currentSong);

@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import musikverwaltung.Helper;
+import musikverwaltung.data.URIS;
 
 public class ImageButton extends Button {
     private final ImageView imageView = new ImageView();
@@ -26,7 +26,7 @@ public class ImageButton extends Button {
     }
 
     public ImageButton(Path path, boolean isCircle, boolean withoutButtonStyle) {
-        this(new Image(Helper.p2uris(path), true), isCircle, withoutButtonStyle);
+        this(new URIS(path).toImage(true), isCircle, withoutButtonStyle);
     }
 
     public void switchImage(Image image) {

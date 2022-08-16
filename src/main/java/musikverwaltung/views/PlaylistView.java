@@ -25,6 +25,7 @@ import musikverwaltung.*;
 import musikverwaltung.data.Playlist;
 import musikverwaltung.data.SettingFile;
 import musikverwaltung.data.Song;
+import musikverwaltung.data.URIS;
 import musikverwaltung.handlers.DestroyListener;
 import musikverwaltung.nodes.ImageButton;
 import musikverwaltung.nodes.OpenSongViewButton;
@@ -86,7 +87,7 @@ public class PlaylistView extends MenuBarView implements DestroyListener {
                 return;
             }
             try {
-                selectedPlaylist.setPreviewImage(imageFile);
+                selectedPlaylist.setPreviewImage(new URIS(imageFile));
             } catch (InvalidPathException ignored) {
                 System.out.println("Problem on loading File");
             }

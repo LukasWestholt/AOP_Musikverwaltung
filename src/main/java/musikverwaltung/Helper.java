@@ -1,12 +1,12 @@
 package musikverwaltung;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import musikverwaltung.data.URIS;
 
 /**
  * Helper class with static methods.
@@ -41,31 +41,12 @@ public class Helper {
         return path;
     }
 
-    public static String getResourcePathUriString(Class<?> c, String resourcePath, boolean exitOnFailure) {
-        return p2uris(getResourcePath(c, resourcePath, exitOnFailure));
-    }
-
-    // TODO own datastructure for uris
-    public static String p2uris(Path path) {
-        if (path == null) {
-            return "";
-        }
-        return path.toUri().toString();
+    public static URIS getResourcePathURIS(Class<?> c, String resourcePath, boolean exitOnFailure) {
+        return new URIS(getResourcePath(c, resourcePath, exitOnFailure));
     }
 
     public static Path s2p(String string) {
         return Paths.get(string);
-    }
-
-    public static Path uris2p(String string) {
-        if (string.isEmpty()) {
-            return null;
-        }
-        try {
-            return Paths.get(new URI(string));
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static Path url2p(URL url) {

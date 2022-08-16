@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
-import javafx.scene.image.Image;
-import musikverwaltung.Helper;
 
 public class PlaylistExternalizable implements Externalizable {
 
@@ -16,20 +14,15 @@ public class PlaylistExternalizable implements Externalizable {
 
     private String name;
 
-    private final ArrayList<String> songs = new ArrayList<>();
-    private String previewImagePath;
+    private final ArrayList<URIS> songs = new ArrayList<>();
+    private URIS previewImagePath;
 
     public PlaylistExternalizable(Playlist playlist) {
         name = playlist.getName();
         for (Song song : playlist.getAll()) {
-            songs.add(Helper.p2uris(song.getPath()));
+            songs.add(new URIS(song.getPath()));
         }
-        Image image = playlist.getPreviewImage();
-        if (image == null) {
-            previewImagePath = "";
-        } else {
-            previewImagePath = image.getUrl();
-        }
+        previewImagePath = new URIS(playlist.getPreviewImage());
     }
 
     // Externalizable needs a public no-args constructor
@@ -43,19 +36,19 @@ public class PlaylistExternalizable implements Externalizable {
         this.name = name;
     }
 
-    public String getPreviewImagePath() {
+    public URIS getPreviewImagePath() {
         return previewImagePath;
     }
 
-    public void setPreviewImagePath(String path) {
-        this.previewImagePath = path;
+    public void setPreviewImagePath(URIS uris) {
+        this.previewImagePath = uris;
     }
 
-    public ArrayList<String> getPaths() {
+    public ArrayList<URIS> getPaths() {
         return songs;
     }
 
-    public void addPaths(ArrayList<String> songs) {
+    public void addPaths(ArrayList<URIS> songs) {
         this.songs.addAll(songs);
     }
 
@@ -64,14 +57,14 @@ public class PlaylistExternalizable implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeUTF(name);
         out.writeObject(songs);
-        out.writeUTF(previewImagePath);
+        out.writeObject(previewImagePath);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         setName(in.readUTF());
-        addPaths((ArrayList<String>) in.readObject());
-        setPreviewImagePath(in.readUTF());
+        addPaths((ArrayList<URIS>) in.readObject());
+        setPreviewImagePath((URIS) in.readObject());
     }
 }

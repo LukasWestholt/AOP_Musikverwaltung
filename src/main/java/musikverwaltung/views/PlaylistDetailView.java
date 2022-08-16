@@ -41,9 +41,8 @@ public class PlaylistDetailView extends MainView {
         deleteButton.setOnAction(e -> {
             getSelectedSongs().forEach(song -> {
                 int i = song.getRowIndex();
-                // TODO theoretisch könnte man hier auch playlist.get(i) == song machen, wenn der song überall
-                //  nur referenziert wird
-                if (i != -1 && i < playlist.size() && playlist.get(i).equals(song)) {
+                assert (playlist.get(i) == song) == playlist.get(i).equals(song);
+                if (i != -1 && i < playlist.size() && playlist.get(i) == song) {
                     playlist.remove(i);
                 } else {
                     // fallback
