@@ -15,6 +15,7 @@
       <excludeFolder url="file://$MODULE_DIR$/mp3tag" />
       <excludeFolder url="file://$MODULE_DIR$/mp3tag/data/columns" />
       <excludeFolder url="file://$MODULE_DIR$/mp3tag/data/panels" />
+      <excludeFolder url="file://$MODULE_DIR$/Prüfung" />
       <excludePattern pattern=".classpath" />
       <excludePattern pattern=".project" />
     </content>
