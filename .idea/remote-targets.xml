@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <targets>
+      <target name="lwesthol@kain.imn.htwk-leipzig.de:22" type="ssh/sftp" uuid="f48e2316-7768-46e6-821e-809a08329fb0">
+        <config>
+          <option name="projectRootOnTarget" value="/home/lwesthol/AOP_Musikverwaltung" />
+          <option name="serverName" value="lwesthol@kain.imn.htwk-leipzig.de:22 password" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="javaVersionString" value="1.6.0_81" />
+          </config>
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>

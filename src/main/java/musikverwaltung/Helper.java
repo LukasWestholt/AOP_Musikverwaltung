@@ -1,0 +1,72 @@
+package musikverwaltung;
+
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
+import musikverwaltung.data.URIS;
+
+/**
+ * Helper class with static methods.
+ */
+public class Helper {
+
+
+    public static final List<String> imageExtensions = List.of(
+            "*.png", "*.jpg", "*.jpeg", "*.tif", "*.tiff", "*.gif", "*.bmp"
+    );
+    public static final String audioExtensions = "*.{wav,mp3,m4a,aif,aiff}";
+
+    /**
+     * get a resource path by a path string.
+     * https://stackoverflow.com/a/19459180/8980073
+     *
+     * @param c The class to which the resources are searched relative to.
+     * @param resourcePath The relative path of the resource.
+     * @param exitOnFailure JVA terminates with error on failure if true.
+     * @return Path from URL or null.
+     */
+    public static Path getResourcePath(Class<?> c, String resourcePath, boolean exitOnFailure) {
+        if (!resourcePath.startsWith("/")) {
+            System.out.println("resourcePath is not starting with a '/'. Are you sure this is correct?");
+        }
+        URL url = c.getResource(resourcePath);
+        Path path = url2p(url);
+        if (path == null & exitOnFailure) {
+            System.out.println("Resource \"" + resourcePath + "\" not found. Aborting.");
+            System.exit(-1);
+        }
+        return path;
+    }
+
+    public static URIS getResourcePathURIS(Class<?> c, String resourcePath, boolean exitOnFailure) {
+        return new URIS(getResourcePath(c, resourcePath, exitOnFailure));
+    }
+
+    public static Path s2p(String string) {
+        return Paths.get(string);
+    }
+
+    public static Path url2p(URL url) {
+        if (url != null) {
+            try {
+                return Paths.get(url.toURI());
+            } catch (URISyntaxException e) {
+                return Paths.get(url.getPath());
+            }
+        }
+        return null;
+    }
+
+    public static String toString(Object o, Map<String, Object> attributes) {
+        StringBuilder builder = new StringBuilder();
+        String sep = ", ";
+        attributes.forEach((key, value) -> builder.append(key).append(": ").append(value).append(sep));
+        String endString = builder.toString();
+        endString = endString.substring(0, endString.length() - sep.length());
+        return "<" + o.getClass().getSimpleName() + "@" + Integer.toHexString(System.identityHashCode(o)) + "> "
+                + endString;
+    }
+}

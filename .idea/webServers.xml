@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="d7ec6d65-d825-496e-a3da-be9951403d79" name="HTWK Server-Pool">
+        <fileTransfer rootFolder="/home/lwesthol" accessType="SFTP" host="kain.imn.htwk-leipzig.de" port="22" sshConfigId="6fa0312b-2c88-497e-b183-8c574b432cdf" sshConfig="lwesthol@kain.imn.htwk-leipzig.de:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

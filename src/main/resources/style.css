@@ -1,0 +1,142 @@
+/*noinspection CssUnusedSymbol*/
+.root {
+    -fx-font-size: 14pt;
+    -fx-font-family: Manrope-Light;
+    -fx-base: rgb(132, 145, 47);
+    -fx-background: rgb(225, 228, 203);
+}
+
+/*noinspection CssUnusedSymbol*/
+.button {
+    -fx-text-fill: rgb(49, 89, 23);
+    -fx-border-color: rgb(49, 89, 23);
+    -fx-border-radius: 5;
+    -fx-padding: 3 6 6 6;
+}
+
+.circle.button {
+    -fx-background-radius: 5em;
+    -fx-border-radius: 5em;
+    -fx-padding: 6;
+    -fx-border-insets: 0;
+}
+
+/*noinspection CssUnusedSymbol*/
+.borders {
+    -fx-border-color: rgb(103, 100, 78);
+    -fx-border-style: dotted;
+    -fx-border-width: 1.5;
+    -fx-border-insets: -5;
+}
+
+/*noinspection CssUnusedSymbol*/
+.header {
+    -fx-font-size: 25pt;
+    -fx-font-family: Manrope-Light;
+    -fx-text-fill: rgb(225, 228, 203);
+    -fx-effect: dropshadow( one-pass-box , black , 8 , 0.0 , 1 , 0 );
+}
+
+/*noinspection CssUnusedSymbol*/
+#scroll-playlists.scroll-pane {
+    -fx-font-family: "Courier New";
+    -fx-background-color: lightgrey;
+}
+
+/*noinspection CssUnusedSymbol*/
+#scroll-playlists.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+#playlists {
+}
+
+#playlists > * {
+    -fx-background-color: rgb(44, 90, 118);
+    -fx-text-fill: white;
+    -fx-text-overrun: clip;
+}
+
+#playlists > *:hover {
+    -fx-background-color: rgb(129, 140, 48);
+    -fx-text-fill: black;
+}
+
+#active {
+    -fx-background-color: lightblue;
+    -fx-border-color: grey;
+}
+
+/*noinspection CssUnusedSymbol*/
+.header-menu-item:focused {
+    -fx-background-color: rgb(219, 224, 181);
+
+}
+/*noinspection CssUnusedSymbol*/
+.header-menu-item:focused .label
+{
+  -fx-text-fill: black;
+}
+
+/*noinspection CssUnusedSymbol*/
+.song.slider {
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-border-insets: 0;
+    -fx-padding: 0 -10 0 -10;
+}
+
+/*noinspection CssUnusedSymbol*/
+.song.slider .thumb {
+    -fx-background-color: white;
+    -fx-pref-width: 25;
+    -fx-pref-height: 25;
+}
+
+/*noinspection CssUnusedSymbol*/
+.song.slider .track {
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+    -fx-border-insets: 0;
+}
+
+/*noinspection CssUnusedSymbol*/
+.song.progress-bar {
+    -fx-background-insets: 1;
+    -fx-background-radius: 1;
+}
+
+/*noinspection CssUnusedSymbol*/
+.song.progress-bar .track {
+    -fx-background-color: rgb(129, 140, 48);
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+/*noinspection CssUnusedSymbol*/
+.song.progress-bar .bar {
+    -fx-background-color:linear-gradient(to right, #81c483,#fcc200);
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+/*noinspection CssUnusedSymbol*/
+.volume.slider .thumb {
+    -fx-background-image: url("/icons/speaker.png");
+    -fx-background-size: 15, 15;
+    -fx-pref-width: 20;
+    -fx-pref-height: 20;
+    -fx-background-position: center, center;
+    -fx-background-repeat: no-repeat;
+}
+
+/*noinspection CssUnusedSymbol*/
+.chart-bar {
+    -fx-background-color:linear-gradient(to top,#C00000, #F2700E,#D33503);
+}
+
+/*noinspection CssUnusedSymbol*/
+.quote {
+    -fx-font-style: italic;
+}
