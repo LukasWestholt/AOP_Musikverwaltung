@@ -206,6 +206,7 @@ public class SongView extends MenuBarView implements DestroyListener {
         VBox.setMargin(mediaControlVBox, new Insets(0, 15, 15, 15));
 
         audioSpectrumListener = (timestamp, duration, magnitudes, phases) -> {
+            audioData.getData().clear();
             for (int i = 0; i < magnitudes.length; i++) {
                 audioData.getData().add(new XYChart.Data<>(Integer.toString(i), magnitudes[i] + dbThreshold));
             }
