@@ -39,9 +39,14 @@ public class MediaManager {
 
     private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
 
-    private boolean showUnplayableSongs = false;
+    private boolean showUnplayableSongs;
 
     private static final String genreFilename = "genres.txt";
+
+    public MediaManager() {
+        SettingFile settingFile = SettingFile.load();
+        showUnplayableSongs = settingFile.getShowUnplayableSongs();
+    }
 
     public void firstLoad() {
         update(null);
@@ -88,6 +93,7 @@ public class MediaManager {
                     System.out.println("add unplayable: " + song);
                     song.setPlayable(false);
                     music.add(song);
+                    songs.add(song);
                 }
             }
 
