@@ -27,13 +27,14 @@ import musikverwaltung.data.*;
 public class MediaManager {
     private final HashMap<Integer, String> genres = loadGenres();
 
-    // this ObservableList will fire change events on add, delete etc AND on events of the extractor parameter
-    // there is currently no listener on this object, so this feature is unused.
+    // this ObservableList will fire change events on add, delete etc. AND on events of the extractor parameter
+    // this is used by flSong var
     public final ObservableList<Song> music = FXCollections.observableArrayList(o -> new Observable[]{
             o.getTitleProperty(),
             o.getArtistProperty(),
             o.getGenreProperty(),
-            o.getCoverProperty()
+            o.getCoverProperty(),
+            o.getPlayableProperty()
     });
 
     private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();

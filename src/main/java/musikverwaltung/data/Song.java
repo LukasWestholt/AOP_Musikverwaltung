@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
@@ -26,7 +27,7 @@ public class Song {
     private final SimpleStringProperty genre = new SimpleStringProperty();
     private final SimpleObjectProperty<Image> cover = new SimpleObjectProperty<>();
     private ReadOnlyIntegerProperty rowIndex;
-    private boolean isPlayable = true;
+    private final SimpleBooleanProperty isPlayable = new SimpleBooleanProperty();
 
     /**
      * @param path is going to be the unique identifier for every Song
@@ -169,14 +170,21 @@ public class Song {
      * @return isPlayable
      */
     public boolean isPlayable() {
-        return isPlayable;
+        return isPlayable.get();
     }
 
     /**
      * @param isPlayable  sets the information that Song can be played
      */
     public void setPlayable(boolean isPlayable) {
-        this.isPlayable = isPlayable;
+        this.isPlayable.set(isPlayable);
+    }
+
+    /**
+     * @return isPlayable
+     */
+    public SimpleBooleanProperty getPlayableProperty() {
+        return isPlayable;
     }
 
     /**
