@@ -27,7 +27,7 @@ public class Song {
     private final SimpleStringProperty genre = new SimpleStringProperty();
     private final SimpleObjectProperty<Image> cover = new SimpleObjectProperty<>();
     private ReadOnlyIntegerProperty rowIndex;
-    private final SimpleBooleanProperty isPlayable = new SimpleBooleanProperty();
+    private final SimpleBooleanProperty isPlayable = new SimpleBooleanProperty(true);
 
     /**
      * @param path is going to be the unique identifier for every Song
